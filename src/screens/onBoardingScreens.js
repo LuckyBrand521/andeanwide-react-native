@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: hp('1.5%'),
     overflow: 'hidden',
+    display: 'none',
   },
 
   buttonText: {

@@ -39,7 +39,6 @@ function Navigation() {
           name="RegistrationScreen"
           component={RegistrationScreen}
         />
-
         <Stack.Screen name="SignupCompleted" component={SignupCompleted} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="PinCodeScreen" component={PinCodeScreen} />
