@@ -38,7 +38,7 @@ export default function CarteraDocumentTypeSCreen({navigation}) {
 
       <View>
         <TouchableOpacity
-          onPress={() => navigation.navigate('CarteraAddPersonnelDetails')}>
+          onPress={() => navigation.navigate('DocumentVerificationScreen')}>
           <View style={styles.listContainer}>
           < MaterialCommunityIcons style={styles.documentIcon} name="file-document" color="#fff" size={40} />
 

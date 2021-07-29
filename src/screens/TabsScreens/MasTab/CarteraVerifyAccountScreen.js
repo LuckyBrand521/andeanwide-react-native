@@ -62,7 +62,8 @@ export default function CarteraVerifyAccountScreen({navigation}) {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('ResidanceVerificationScreen')}>
           <View style={styles.listContainer}>
             <LinearGradient
               start={{x: 0, y: 0}}

@@ -21,10 +21,14 @@ import SignupCompleted from '../screens/SignupCompleted';
 import DocumentVerificationScreen from '../screens/TabsScreens/MasTab/DocumentVerificationScreen';
 import PassportVerificationScreen from '../screens/TabsScreens/MasTab/PassportVerificationScreen';
 import AfidavetVerificationScreen from '../screens/TabsScreens/MasTab/AfidavetVerificationScreen';
+import CarteraAddEmpresa from '../screens/TabsScreens/MasTab/CarteraAddEmpresa';
+import ResidanceVerificationScreen from '../screens/TabsScreens/MasTab/ResidanceVerificationScreen';
+import EmpresaVerficationMenuScreen from '../screens/TabsScreens/MasTab/EmpresaVerficationMenuScreen';
 import BalanceScreen from '../screens/TabsScreens/BalanceHomeTab/BalanceScreen';
 import EnviarScreen from '../screens/TabsScreens/EnviarTab/EnviarScreen';
 import BeneficiariosScreen from '../screens/TabsScreens/BeneficiaryTab/BeneficiariosScreen';
 import CrearBeneficiarioScreen from '../screens/TabsScreens/BeneficiaryTab/CrearBeneficiarioScreen';
+import BusinessViewEmpressa from '../components/RegistrationScreen/BusinessViewEmpressa';
 
 const Stack = createStackNavigator();
 
@@ -287,6 +291,11 @@ function MasStack() {
         />
 
         <Stack1.Screen
+          name="BusinessViewEmpressa"
+          component={BusinessViewEmpressa}
+        />
+
+        <Stack1.Screen
           name="DocumentVerificationScreen"
           component={DocumentVerificationScreen}
         />
@@ -299,6 +308,21 @@ function MasStack() {
         <Stack1.Screen
           name="AfidavetVerificationScreen"
           component={AfidavetVerificationScreen}
+        />
+
+        <Stack1.Screen
+          name="CarteraAddEmpresa"
+          component={CarteraAddEmpresa}
+        />
+
+        <Stack1.Screen
+          name="EmpresaVerficationMenuScreen"
+          component={EmpresaVerficationMenuScreen}
+        />
+
+        <Stack1.Screen
+          name="ResidanceVerificationScreen"
+          component={ResidanceVerificationScreen}
         />
       </Stack1.Navigator>
     </NavigationContainer>

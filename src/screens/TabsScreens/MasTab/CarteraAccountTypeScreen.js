@@ -38,7 +38,7 @@ export default function CarteraAccountTypeScreen({navigation}) {
 
       <View>
         <TouchableOpacity
-          onPress={() => navigation.navigate('CarteraDocumentTypeSCreen')}>
+          onPress={() => navigation.navigate('CarteraAddPersonnelDetails')}>
           <View style={styles.listContainer}>
             <LinearGradient
               start={{x: 0, y: 0}}
@@ -55,22 +55,24 @@ export default function CarteraAccountTypeScreen({navigation}) {
             </View>
           </View>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('CarteraAddEmpresa')}>
+          <View style={styles.listContainer}>
+            <LinearGradient
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}
+              colors={['#078F41', '#17DD6F']}
+              style={styles.plusCircle}>
+              <AntDesign name="plus" size={16} color="#fff" />
+            </LinearGradient>
 
-        <View style={styles.listContainer}>
-          <LinearGradient
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            colors={['#078F41', '#17DD6F']}
-            style={styles.plusCircle}>
-            <AntDesign name="plus" size={16} color="#fff" />
-          </LinearGradient>
-
-          <View>
-            <Text style={{...styles.headerText, ...styles.listTitle}}>
-              Cuenta empresa
-            </Text>
+            <View>
+              <Text style={{...styles.headerText, ...styles.listTitle}}>
+                Cuenta empresa
+              </Text>
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
