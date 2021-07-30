@@ -8,19 +8,18 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 export default function PinCodeScreen({navigation}) {
 
  const  finishProcess = async () => {
-        const hasPin = await hasUserSetPinCode();
-        if (hasPin) {
-          Alert.alert(null, "You have successfully set/entered your pin.", [
-            {
-              title: "Ok",
-              onPress: () => {
-                navigation.navigate('FaceConfigurationScreen')
-              },
+      const hasPin = await hasUserSetPinCode();
+      if (hasPin) {
+        Alert.alert(null, "You have successfully set/entered your pin.", [
+          {
+            title: "Ok",
+            onPress: () => {
+              navigation.navigate('FaceConfigurationScreen')
             },
-          ]);
-        
-        }
-      };
+          },
+        ]);
+      }
+    };
 
   return (
     <View style={styles.container}>

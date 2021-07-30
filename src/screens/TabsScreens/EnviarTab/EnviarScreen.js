@@ -18,10 +18,11 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
+
 const options = ['CLP', 'COP', 'PEN', 'USD'];
 const options2 = ['CLP', 'COP', 'PEN', 'USD'];
 
-export default function EnviarScreen() {
+export default function EnviarScreen({navigation}) {
   const [currency1, setCurrecny1] = useState('');
   const [currency2, setCurrecny2] = useState('');
 
@@ -432,7 +433,7 @@ export default function EnviarScreen() {
       </View>
 
       <View style={styles.footerButtonContainer}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('ReviewEnviarScreen')}>
           <LinearGradient
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}

@@ -69,7 +69,7 @@ export default function PassportVerificationScreen({navigation}) {
   return (
     <SafeAreaView style={styles.container}>
 
-<RBSheet
+      <RBSheet
         ref={sheet}
         height={350}
         closeOnDragDown={true}

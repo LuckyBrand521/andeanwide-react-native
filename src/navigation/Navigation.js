@@ -26,6 +26,7 @@ import ResidanceVerificationScreen from '../screens/TabsScreens/MasTab/Residance
 import EmpresaVerficationMenuScreen from '../screens/TabsScreens/MasTab/EmpresaVerficationMenuScreen';
 import BalanceScreen from '../screens/TabsScreens/BalanceHomeTab/BalanceScreen';
 import EnviarScreen from '../screens/TabsScreens/EnviarTab/EnviarScreen';
+import ReviewEnviarScreen from '../screens/TabsScreens/EnviarTab/ReviewEnviarScreen';
 import BeneficiariosScreen from '../screens/TabsScreens/BeneficiaryTab/BeneficiariosScreen';
 import CrearBeneficiarioScreen from '../screens/TabsScreens/BeneficiaryTab/CrearBeneficiarioScreen';
 import BusinessViewEmpressa from '../components/RegistrationScreen/BusinessViewEmpressa';
@@ -35,7 +36,8 @@ const Stack = createStackNavigator();
 function Navigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator headerMode="none" initialRouteName={SplashScreen}>
+      {/* <Stack.Navigator headerMode="none" initialRouteName={SplashScreen}> */}
+      <Stack.Navigator headerMode="none" initialRouteName={MyTabs}>
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="tabs" component={MyTabs} />
         <Stack.Screen name="onBoardingScreens" component={onBoardingScreens} />
@@ -349,6 +351,7 @@ function EnviarStack() {
     <NavigationContainer independent={true} headerMode>
       <Stack3.Navigator headerMode="none" initialRouteName={EnviarScreen}>
         <Stack3.Screen name="EnviarScreen" component={EnviarScreen} />
+        <Stack3.Screen name="ReviewEnviarScreen" component={ReviewEnviarScreen} />
       </Stack3.Navigator>
     </NavigationContainer>
   );
