@@ -8,7 +8,7 @@ import {
 export default function LogSignButton({title, bgcolor,onpress,display}) {
   return (
     <TouchableOpacity
-   onPress={onpress}
+      onPress={onpress}
       style={{
         ...styles.buttonContainer,
         backgroundColor: bgcolor,
