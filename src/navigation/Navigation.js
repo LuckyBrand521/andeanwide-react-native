@@ -27,6 +27,7 @@ import EmpresaVerficationMenuScreen from '../screens/TabsScreens/MasTab/EmpresaV
 import BalanceScreen from '../screens/TabsScreens/BalanceHomeTab/BalanceScreen';
 import EnviarScreen from '../screens/TabsScreens/EnviarTab/EnviarScreen';
 import ReviewEnviarScreen from '../screens/TabsScreens/EnviarTab/ReviewEnviarScreen';
+import PriorityScreen from '../screens/TabsScreens/EnviarTab/PriorityScreen';
 import BeneficiariosScreen from '../screens/TabsScreens/BeneficiaryTab/BeneficiariosScreen';
 import CrearBeneficiarioScreen from '../screens/TabsScreens/BeneficiaryTab/CrearBeneficiarioScreen';
 import BusinessViewEmpressa from '../components/RegistrationScreen/BusinessViewEmpressa';
@@ -352,6 +353,7 @@ function EnviarStack() {
       <Stack3.Navigator headerMode="none" initialRouteName={EnviarScreen}>
         <Stack3.Screen name="EnviarScreen" component={EnviarScreen} />
         <Stack3.Screen name="ReviewEnviarScreen" component={ReviewEnviarScreen} />
+        <Stack3.Screen name="PriorityScreen" component={PriorityScreen} />
       </Stack3.Navigator>
     </NavigationContainer>
   );

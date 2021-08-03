@@ -247,7 +247,7 @@ export default function EnviarScreen({navigation}) {
               </View>
             </View>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('PriorityScreen')}>
               <LinearGradient
                 start={{x: 0, y: 0}}
                 end={{x: 1, y: 0}}
@@ -406,7 +406,7 @@ export default function EnviarScreen({navigation}) {
               </View>
             </View>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('PriorityScreen')}>
               <LinearGradient
                 start={{x: 0, y: 0}}
                 end={{x: 1, y: 0}}
