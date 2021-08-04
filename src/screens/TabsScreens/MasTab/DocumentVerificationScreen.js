@@ -341,9 +341,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: hp('1.5%'),
     overflow: 'hidden',
-    borderWidth: 4,
-    borderColor: '#919191',
-    backgroundColor: '#1A8D35',
   },
 
   buttonText: {
@@ -365,7 +362,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: wp('4%'),
   },
 
   cardText: {

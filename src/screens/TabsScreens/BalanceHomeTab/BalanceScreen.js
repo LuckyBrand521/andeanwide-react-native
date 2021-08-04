@@ -243,7 +243,7 @@ export default function BalanceScreen({navigation}) {
           <LinearGradient
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
-            colors={['#0D5734', '#0D5734', '#1B975B']}
+            colors={['#119438', '#1A9B36', '#1B9D36']}
             style={styles.continueButton}>
             <View
               style={{

@@ -48,7 +48,7 @@ export default function EnviarScreen({navigation}) {
   };
 
   const onpresstab2 = () => {
-    //fot  tab1
+    //for  tab1
     setSelected(1);
     setColorE('#fff');
     setbgColorE('#fff');

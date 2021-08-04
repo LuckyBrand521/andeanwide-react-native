@@ -20,8 +20,39 @@ import BusinessViewEmpressa from '../components/RegistrationScreen/BusinessViewE
 import PersonViewPersona from '../components/RegistrationScreen/PersonViewPersona';
 
 export default function RegistrationScreen() {
-  const [colorP, setColorP] = useState('#fff');
   const [bgColorP, setbgColorP] = useState('#09A04E');
+  const [bgColorE, setbgColorE] = useState('#fff');
+  const [colorP, setColorP] = useState('#fff');
+  const [colorE, setColorE] = useState('gray');
+  const [isindividual, setIsindividual] = useState(1);
+
+
+  const onpresstab1 = () => {
+    setIsindividual(1);
+    setColorE('#6D7782');
+    setbgColorE('#fff');
+
+    setColorP('#fff');
+    setbgColorP('#09A04E');
+  };
+
+  const onpresstab2 = () => {
+    setIsindividual(0);
+    //for  tab1
+    setColorE('#fff');
+    setbgColorE('#fff');
+
+    setColorP('gray');
+    setbgColorP('#09A04E');
+
+    //for tab2
+
+    setColorP('#6D7782');
+    setbgColorP('#fff');
+
+    setColorE('#fff');
+    setbgColorE('#09A04E');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -29,34 +60,44 @@ export default function RegistrationScreen() {
         <Image style={styles.topLogo} source={require('../images/logo.png')} />
 
         <Text style={styles.welcome}>Bienvenido</Text>
-
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            width: wp('68%'),
+            width: wp('80%'),
             alignSelf: 'center',
             justifyContent: 'space-around',
+            marginTop: hp('1%'),
           }}>
-          <TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={onpresstab1}>
             <View>
               <Text
-                style={{
-                  color: colorP,
-                  textAlign: 'center',
-                  marginBottom: 4,
-                  fontSize: 20,
-                }}>
-                CREAR CUENTA
+                style={{color: colorP, textAlign: 'center', marginBottom: 4}}>
+                Persona
               </Text>
               <View
-                style={{width: wp('70%'), height: 4, backgroundColor: bgColorP}}
+                style={{width: 150, height: 5, backgroundColor: bgColorP}}
+              />
+            </View>
+          </TouchableWithoutFeedback>
+
+          <TouchableWithoutFeedback onPress={onpresstab2}>
+            <View>
+              <Text
+                style={{color: colorE, textAlign: 'center', marginBottom: 4}}>
+                Empresa
+              </Text>
+              <View
+                style={{width: 150, height: 5, backgroundColor: bgColorE}}
               />
             </View>
           </TouchableWithoutFeedback>
         </View>
-
+        {isindividual === 1 ? (
         <PersonViewPersona />
+        ) : (
+          <BusinessViewEmpressa />
+        )}
       </View>
     </SafeAreaView>
   );

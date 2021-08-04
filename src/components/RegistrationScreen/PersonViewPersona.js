@@ -11,130 +11,191 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
+import { useForm } from 'react-hook-form';
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import CheckBox from '@react-native-community/checkbox';
-import {useNavigation} from '@react-navigation/core';
+import { useNavigation } from '@react-navigation/core';
+import axios from 'axios';
 
 export default function PersonViewPersona() {
-  const navigation = useNavigation();
-  //our states
-  const [mail, onChangemail] = React.useState('');
-  const [pass, onChangePass] = React.useState('');
-  const [toggleCheckBox, setToggleCheckBox] = React.useState(false);
+	const navigation = useNavigation();
+	// yup schema configuration for form validation
+	const validationSchema = yup.object().shape({
+		username: yup.string().required(),
+		email: yup.string().email().required(),
+		password: yup.string().min(6).max(32).required(),
+		confirmPassword: yup.string().oneOf([Yup.ref('password'), null]).required(),
+		acceptTerms: yup.bool().oneOf([true])
+	});
 
-  const [emailerror, setEmailError] = React.useState('');
+	// functions to build the form returned by useForm() hook
+	const { register, handleSubmit, reset, errors } = useForm({
+		resolver: yupResolver(validationSchema)
+	});
 
-  const insert = () => {
-    if (mail.length === 0 || pass.length === 0) {
-      setEmailError('Some fields are missing');
-    } else {
-      setEmailError('');
-      navigation.navigate('SignupCompleted');
-    }
-  };
+	function onSubmit(data) {
+		// display form data on success
+		alert('SUCCESS!! :-)\n\n' + JSON.stringify(data, null, 4));
+	}
 
-  return (
-    <View style={styles.container}>
-      <Text
-        style={{
-          color: 'tomato',
-          fontSize: 18,
-          textAlign: 'center',
-          marginTop: 10,
-        }}>
-        {emailerror}
-      </Text>
+	//our states
+	
+	const [state, setState] = useState({
+		username: '',
+		email: '',
+		password: '',
+		confirmPassword: '',
+		acceptTerms: false
+	});
 
-      <View>
-        <TextInput
-          placeholder="Email"
-          keyboardType="email-address"
-          placeholderTextColor="#919191"
-          style={styles.input}
-          onChangeText={onChangemail}
-          value={mail}
-        />
+	// const handleChange = (data, ev) => {
+	// 	setState({...state, [data]: ev.target.value});
+	// }
+	
+	
 
-        <TextInput
-          secureTextEntry={true}
-          placeholder="Contraseña"
-          placeholderTextColor="#919191"
-          style={styles.input}
-          onChangeText={onChangePass}
-          value={pass}
-        />
-      </View>
 
-      <View style={styles.termsContainer}>
-        <CheckBox
-          tintColor="#aaaaaa"
-          onFillColor="#09A04E"
-          tintColors
-          disabled={false}
-          value={toggleCheckBox}
-          onValueChange={newValue => setToggleCheckBox(newValue)}
-        />
-        <Text style={styles.acceptTerms}>
-          Acepto los terminos y condiciones{'\n'}
-          de Andean Wide
-        </Text>
-      </View>
+	// const insert = () => {
+	// 	if (!validate()) {
+	// 	setEmailError('Some fields are missing');
+	// 	} else {
+	// 	setEmailError('');
+	// 	axios.post("https://api.andeanwide.com/register/", {
+	// 		name: "admin",
+	// 		email: mail,
+	// 		password: pass,
+	// 		password_confirmation: pass
+	// 	}).then((res) => {
+	// 		// console.log(res.data.err);
+	// 		// navigation.navigate('SignupCompleted');
+	// 		// console.log(res.data)
+	// 	}).catch(e => {
+	// 		console.log(e);
+	// 		console.log("=========")
+	// 	})
+	// 	// navigation.navigate('SignupCompleted');
+	// 	}
+	// };
 
-      <View>
-        <TouchableOpacity
-          onPress={insert}
-          style={{
-            ...styles.buttonContainer,
-          }}>
-          <Text style={styles.buttonText}>Registro</Text>
-        </TouchableOpacity>
+	return (
+		<View style={styles.container}>
+			<Text
+				style={{
+				color: 'tomato',
+				fontSize: 18,
+				textAlign: 'center',
+				marginTop: 10,
+				}}>
+				{emailerror}
+			</Text>
 
-        <TouchableOpacity
-          style={{
-            ...styles.buttonContainer,
-          }}>
-          <Text style={styles.buttonText}>Cancelar</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-}
+			<View>
+				<TextInput
+				placeholder="Username"
+				placeholderTextColor="#919191"
+				style={styles.input}
+				key = "username"
+				value={username}
+				/>
 
-const styles = StyleSheet.create({
-  container: {},
-  input: {
-    marginTop: hp('2.2%'),
-    borderBottomWidth: 2,
-    borderBottomColor: '#919191',
-    width: wp('65%'),
-    alignSelf: 'center',
-    color: '#919191',
-  },
+				<TextInput
+				placeholder="Email"
+				keyboardType="email-address"
+				placeholderTextColor="#919191"
+				style={styles.input}
+				key="email"
+				value={email}
+				/>
 
-  acceptTerms: {
-    color: '#919191',
-    textAlign: 'center',
-  },
+				<TextInput
+				secureTextEntry={true}
+				placeholder="Contraseña"
+				placeholderTextColor="#919191"
+				style={styles.input}
+				key="password"
+				value={password}
+				/>
 
-  termsContainer: {
-    flexDirection: 'row',
+				<TextInput
+				secureTextEntry={true}
+				placeholder="Contraseña confirmada"
+				placeholderTextColor="#919191"
+				style={styles.input}
+				value={confirmPassword}
+				/>  
+			</View>
 
-    alignSelf: 'center',
-    marginTop: hp('2%'),
-  },
+			<View style={styles.termsContainer}>
+				<CheckBox
+				tintColor="#aaaaaa"
+				onFillColor="#09A04E"
+				tintColors
+				disabled={false}
+				value={acceptTerms}
+				/>
+				<Text style={styles.acceptTerms}>
+				Acepto los terminos y condiciones{'\n'}
+				de Andean Wide
+				</Text>
+			</View>
 
-  buttonContainer: {
-    width: wp('45%'),
-    height: 45,
-    borderRadius: 10,
-    justifyContent: 'center',
-    backgroundColor: '#474B52',
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginTop: hp('2%'),
-  },
+			<View>
+				<TouchableOpacity
+				onPress={handleSubmit(onSubmit)}
+				style={{
+					...styles.buttonContainer,
+				}}>
+				<Text style={styles.buttonText}>Registro</Text>
+				</TouchableOpacity>
 
-  buttonText: {
-    color: '#fff',
-  },
+				<TouchableOpacity
+				onPress={navigation.navigate('')}
+				style={{
+					...styles.buttonContainer,
+				}}>
+				<Text style={styles.buttonText}>Cancelar</Text>
+				</TouchableOpacity>
+			</View>
+		</View>
+		);
+	}
+
+	const styles = StyleSheet.create({
+	container: {},
+	input: {
+		marginTop: hp('0.2%'),
+		borderBottomWidth: 2,
+		borderBottomColor: '#919191',
+		width: wp('65%'),
+		alignSelf: 'center',
+		color: '#919191',
+	},
+
+	acceptTerms: {
+		color: '#919191',
+		textAlign: 'center',
+	},
+
+	termsContainer: {
+		flexDirection: 'row',
+
+		alignSelf: 'center',
+		marginTop: hp('2%'),
+	},
+
+	buttonContainer: {
+		width: wp('45%'),
+		height: 45,
+		borderRadius: 10,
+		justifyContent: 'center',
+		backgroundColor: '#474B52',
+		alignItems: 'center',
+		alignSelf: 'center',
+		marginTop: hp('2%'),
+	},
+
+	buttonText: {
+		color: '#fff',
+	},
 });

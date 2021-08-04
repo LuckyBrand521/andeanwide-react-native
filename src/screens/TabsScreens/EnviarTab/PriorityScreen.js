@@ -21,7 +21,6 @@ const choice_data = [
     {
         label: 
         <View>
-            <Text></Text>
             <Text
                 style={{
 					color:'#FFF',
@@ -43,7 +42,6 @@ const choice_data = [
     {
         label: 
         <View>
-            <Text></Text>
             <Text
                 style={{
 					color:'#FFF',
@@ -218,8 +216,12 @@ const styles = StyleSheet.create({
         marginLeft: 15
     },
 
+    buttonText: {
+        color: '#fff',
+        fontSize: 15
+    },
     continueButton: {
-        width: wp('70%'),
+        width: wp('80%'),
         height: 45,
         borderRadius: 15,
         backgroundColor: '#1A8D35',

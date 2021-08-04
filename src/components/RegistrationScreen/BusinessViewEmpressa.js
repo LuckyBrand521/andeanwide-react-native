@@ -19,6 +19,8 @@ export default function BusinessViewEmpressa() {
   //our states
   const [mail, onChangemail] = React.useState('');
   const [pass, onChangePass] = React.useState('');
+  const [pass_confirmation, onChangePassConfirmation] = React.useState('');
+  
   const [toggleCheckBox, setToggleCheckBox] = React.useState(false);
 
   const [emailerror, setEmailError] = React.useState('');
@@ -61,6 +63,14 @@ export default function BusinessViewEmpressa() {
           onChangeText={onChangePass}
           value={pass}
         />
+        <TextInput
+          secureTextEntry={true}
+          placeholder="Contraseña confirmada"
+          placeholderTextColor="#919191"
+          style={styles.input}
+          onChangeText={onChangePassConfirmation}
+          value={pass_confirmation}
+        /> 
       </View>
 
       <View style={styles.termsContainer}>

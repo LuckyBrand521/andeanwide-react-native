@@ -345,8 +345,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: hp('1.5%'),
     overflow: 'hidden',
-    borderWidth: 4,
-    borderColor: '#919191',
   },
 
   buttonText: {
