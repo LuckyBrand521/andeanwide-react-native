@@ -11,9 +11,9 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers';
+import * as yup from 'yup';
 import CheckBox from '@react-native-community/checkbox';
 import { useNavigation } from '@react-navigation/core';
 import axios from 'axios';
@@ -79,7 +79,7 @@ export default function PersonViewPersona() {
 	// };
 
 	return (
-		<View style={styles.container}>
+		<Controller style={styles.container}>
 			<Text
 				style={{
 				color: 'tomato',
@@ -157,7 +157,7 @@ export default function PersonViewPersona() {
 				<Text style={styles.buttonText}>Cancelar</Text>
 				</TouchableOpacity>
 			</View>
-		</View>
+		</Controller>
 		);
 	}
 
