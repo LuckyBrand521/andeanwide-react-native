@@ -38,7 +38,7 @@ export default function PersonViewPersona() {
 	const [checkTerms, setCheckTerms] = useState(false);
     const registerSubmitAPI = (values) => {
         setLoading(true);
-		if(checkTerms) {
+		if(checkTerms) {	
 			axios.post(APP.APP_URL+'api/users/register', values)
 				.then(res => {
 					const message = res.data.message;

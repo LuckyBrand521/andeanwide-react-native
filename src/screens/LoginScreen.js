@@ -145,7 +145,7 @@ function LoginScreen({ navigation, loginAction, token }) {
 }
 
 const mapStateToProps = state => ({
-    token: state.token,
+    token: state.root,
 });
 
 

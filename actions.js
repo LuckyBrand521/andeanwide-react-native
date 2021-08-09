@@ -31,6 +31,11 @@ export const error = error => ({
     error,
 });
 
+export const savePersonalAccInfo = (value) => ({
+    type: 'SAVE_PERSONAL_ACCINFO',
+    value,
+});
+
 export const loginAction = (values) => dispatch => {
     //display loading screen
     // dispatch(loading(true));
@@ -86,3 +91,7 @@ export const removeUserToken = () => dispatch =>
             dispatch(loading(false));
             dispatch(error(err.message || 'ERROR'));
         })
+
+export const personalAccountVerfify = (values) => dispatch => {
+    dispatch(savePersonalAccInfo(values));
+}

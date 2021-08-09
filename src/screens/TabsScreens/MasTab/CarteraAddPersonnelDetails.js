@@ -23,6 +23,7 @@ import {
 
 import LinearGradient from 'react-native-linear-gradient';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import  { personalAccountVerfify } from '../../../../actions';
 
 const options = ['Masculina', 'Mujer'];
 const options2 = ['Casada', 'Única'];
@@ -286,6 +287,15 @@ export default function CarteraAddPersonnelDetails({navigation}) {
     </SafeAreaView>
   );
 }
+
+const mapStateToProps = state => ({
+    token: state.root,
+});
+
+
+const mapDispatchToProps = dispatch => ({
+    personalAccountVerfify: (values) => dispatch(personalAccountVerfify(values)),
+});
 
 const styles = StyleSheet.create({
   container: {

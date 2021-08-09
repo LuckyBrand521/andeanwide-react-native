@@ -4,6 +4,7 @@ const initial_state = {
     token: {},
     loading: false,
     error: null,
+    userinfo: {},
 }
 const rootReducer = (state = 
     initial_state,
@@ -22,11 +23,13 @@ const rootReducer = (state =
             return { ...state, loading: action.isLoading };
         case 'ERROR':
             return { ...state, error: action.error };
+        case 'SAVE_PERSONAL_ACCINFO':
+            return { ...state, userinfo: action.value };
         default:
             return state;
     }
 };
 
 export default combineReducers({
-    token: rootReducer
+    root: rootReducer
 });
