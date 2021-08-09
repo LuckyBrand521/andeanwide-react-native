@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import APP from '../../app.json'
 import { Alert } from 'react-native';
 import { Formik } from 'formik';
@@ -14,28 +15,49 @@ import {
     Platform,
     Button
 } from 'react-native';
+import Spinner  from 'react-native-loading-spinner-overlay';
+
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import * as yup from 'yup';
-import axios from "axios"; 
+
+import  { loginAction } from '../../actions';
+
+
 const loginFormSchema = yup.object().shape({
     email: yup.string().email('Please input valid email').required('Email address is requried'),
     password: yup.string().min(6, ({ min }) => `Password must be at least ${min} characters`).max(32).required('Password is required'),
 })
 
-export default function LoginScreen({ navigation }) {
+function LoginScreen({ navigation, loginAction, token }) {
+    const [isLoading, setLoading] = useState(false);
     const loginSubmitAPI = (values) => {
-        console.log(APP.APP_URL);
-        axios.post(APP.APP_URL, values)
-            .then(res => {
-                console.log(res);
-            })
-            .catch(ex => {
-                console.log('Error caught ', ex);
-            })
+        setLoading(true);
+        loginAction(values).then(() => {
+            navigation.navigate('FaceConfigurationScreen');
+        })
+        .catch( (err) => {
+            console.error(err);
+        })
+        .finally( () => {
+            setLoading(false);
+        });
     }
+    
+    if (isLoading) {
+        return (
+        <SafeAreaView style={styles.container}>    
+            <Spinner
+            visible={ isLoading }
+            textContent={'Logging in...'}
+            textStyle={styles.spinnerTextStyle}
+            />
+        </SafeAreaView>
+        )
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.contentContainer}>
@@ -122,6 +144,17 @@ export default function LoginScreen({ navigation }) {
     );
 }
 
+const mapStateToProps = state => ({
+    token: state.token,
+});
+
+
+const mapDispatchToProps = dispatch => ({
+    loginAction: (values) => dispatch(loginAction(values)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -167,5 +200,9 @@ const styles = StyleSheet.create({
 
     buttonsContainer: {
         marginTop: hp('2%'),
+    },
+
+    spinnerTextStyle: {
+        color: '#FFF'
     },
 });

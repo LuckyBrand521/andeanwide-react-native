@@ -39,6 +39,7 @@ function Navigation() {
     <NavigationContainer>
       {/* <Stack.Navigator headerMode="none" initialRouteName={SplashScreen}> */}
       <Stack.Navigator headerMode="none" initialRouteName={MyTabs}>
+        
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="tabs" component={MyTabs} />
         <Stack.Screen name="onBoardingScreens" component={onBoardingScreens} />
