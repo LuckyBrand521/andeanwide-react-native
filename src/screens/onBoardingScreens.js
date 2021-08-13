@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useState, useMemo} from 'react';
 import {
   Image,
   SafeAreaView,
@@ -36,7 +36,6 @@ export default function onBoardingScreens({navigation}) {
           autoplay={true}
           loop={true}>
           {/* First Onboarding */}
-
           <SafeAreaView style={styles.container}>
             <StatusBar
               barStyle="light-content"

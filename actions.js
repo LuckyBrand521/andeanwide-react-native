@@ -1,97 +1,101 @@
 import APP from './app.json';
-import axios from "axios"; 
+import axios from 'axios';
 
-
-export const getToken = (token) => ({
-    type: 'GET_TOKEN',
-    token,
+export const getToken = token => ({
+  type: 'GET_TOKEN',
+  token,
 });
 
-export const APILoginAction = (token) => ({
-    type: 'API_LOGIN',
-    token,
+export const APILoginAction = token => ({
+  type: 'API_LOGIN',
+  token,
 });
 
-export const saveToken = (token) => ({
-    type: 'SAVE_TOKEN',
-    token,
+export const saveToken = token => ({
+  type: 'SAVE_TOKEN',
+  token,
 });
 
 export const removeToken = () => ({
-    type: 'REMOVE_TOKEN',
+  type: 'REMOVE_TOKEN',
 });
 
 export const loading = bool => ({
-    type: 'LOADING',
-    isLoading: bool,
+  type: 'LOADING',
+  isLoading: bool,
 });
 
 export const error = error => ({
-    type: 'ERROR',
-    error,
+  type: 'ERROR',
+  error,
 });
 
-export const savePersonalAccInfo = (value) => ({
-    type: 'SAVE_PERSONAL_ACCINFO',
-    value,
+export const savePersonalAccInfo = value => ({
+  type: 'SAVE_PERSONAL_ACCINFO',
+  value,
 });
 
-export const loginAction = (values) => dispatch => {
-    //display loading screen
-    // dispatch(loading(true));
-    //login with the user value to API
-    return axios.post(APP.APP_URL+'api/auth/login', values)
-        .then(res => {
-            const token_value = res.data.token ? res.data.token : null;
-            const expiration = res.data.expiration ? res.data.expiration : null;
-            const token = {'value': token_value, 'expiration': expiration};
-            dispatch(saveToken(token));
-            // dispatch(loading(false));
-            return Promise.resolve();
-        })
-        .catch(err => {
-            // dispatch(loading(false));
-            dispatch(error(err.message || 'ERROR'));
-            return Promise.reject(err);
-        })
-}
+export const loginAction = values => dispatch => {
+  //login with the user value to API
+  return axios
+    .post(APP.APP_URL + 'api/auth/login', values)
+    .then(res => {
+      const token_value = res.data.token ? res.data.token : null;
+      const expiration = res.data.expiration ? res.data.expiration : null;
+      const token = {value: token_value, expiration: expiration};
+      dispatch(saveToken(token));
+      return Promise.resolve();
+    })
+    .catch(err => {
+      dispatch(error(err.message || 'ERROR'));
+      return Promise.reject(err);
+    });
+};
 
-export const getUserToken = () => dispatch => 
+export const personalAccountVerfify = values => dispatch => {
+  dispatch(savePersonalAccInfo(values));
+  //submit the personal form data to the server
+  return axios
+    .post(APP.APP_URL + 'api/users/identity', values)
+    .then(res => {
+      console.log(res);
+      return Promise.resolve();
+    })
+    .catch(err => {
+      console.log(err);
+      dispatch(error(err.message || 'ERROR'));
+      return Promise.reject(err);
+    });
+};
+export const getUserToken = () => dispatch =>
+  AsyncStorage.getItem('userToken')
+    .then(data => {
+      dispatch(loading(false));
+      dispatch(getToken(data));
+    })
+    .catch(err => {
+      dispatch(loading(false));
+      dispatch(error(err.message || 'ERROR'));
+    });
 
- AsyncStorage.getItem('userToken')
-        .then((data) => {
-            dispatch(loading(false));
-            dispatch(getToken(data));
-        })
-        .catch((err) => {
-            dispatch(loading(false));
-            dispatch(error(err.message || 'ERROR'));
-        })
-
-
-
-export const saveUserToken = (data) => dispatch =>
-    AsyncStorage.setItem('userToken', 'abc')
-        .then((data) => {
-            dispatch(loading(false));
-            dispatch(saveToken('token saved'));
-        })
-        .catch((err) => {
-            dispatch(loading(false));
-            dispatch(error(err.message || 'ERROR'));
-        })
+export const saveUserToken = data => dispatch =>
+  AsyncStorage.setItem('userToken', 'abc')
+    .then(data => {
+      dispatch(loading(false));
+      dispatch(saveToken('token saved'));
+    })
+    .catch(err => {
+      dispatch(loading(false));
+      dispatch(error(err.message || 'ERROR'));
+    });
 
 export const removeUserToken = () => dispatch =>
-    AsyncStorage.removeItem('userToken')
-        .then((data) => {
-            dispatch(loading(false));
-            dispatch(removeToken(data));
-        })
-        .catch((err) => {
-            dispatch(loading(false));
-            dispatch(error(err.message || 'ERROR'));
-        })
-
-export const personalAccountVerfify = (values) => dispatch => {
-    dispatch(savePersonalAccInfo(values));
-}
+  AsyncStorage.removeItem('userToken')
+    .then(data => {
+      dispatch(loading(false));
+      dispatch(removeToken(data));
+    })
+    .catch(err => {
+      dispatch(loading(false));
+      dispatch(error(err.message || 'ERROR'));
+    });
