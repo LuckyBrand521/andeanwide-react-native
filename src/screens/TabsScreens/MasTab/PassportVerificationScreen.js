@@ -1,4 +1,6 @@
-import React, {useState,useRef} from 'react';
+import React, {useState, useRef} from 'react';
+import APP from '../../../../app.json';
+import axios from 'axios';
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,25 +15,22 @@ import {
 } from 'react-native';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
-
+import Toast from 'react-native-simple-toast';
+import Spinner from 'react-native-loading-spinner-overlay';
 import ImagePicker from 'react-native-image-crop-picker';
 import RBSheet from 'react-native-raw-bottom-sheet';
-
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
 import LinearGradient from 'react-native-linear-gradient';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
 export default function PassportVerificationScreen({navigation}) {
-
   const sheet = useRef();
-
-
   const [image, setImage] = useState('');
-  
+  const [passportImage, setPassportImage] = useState(null);
+  const [isLoading, setLoading] = useState(false);
 
   //For Front-Side-Image
   const takePhotoFromCamera = () => {
@@ -43,7 +42,7 @@ export default function PassportVerificationScreen({navigation}) {
     }).then(image => {
       console.log(image);
       setImage(image.path);
-
+      setPassportImage(image);
       sheet.current.close();
     });
   };
@@ -58,17 +57,62 @@ export default function PassportVerificationScreen({navigation}) {
       console.log(image);
       console.log('Image one called');
       setImage(image.path);
-
+      setPassportImage(image);
       sheet.current.close();
     });
   };
+  // uploads image to the server based on passed in url and image
+  const handleSubmit = () => {
+    if (passportImage) {
+      setLoading(true);
+      let formData = new FormData();
+      formData.append('image', {
+        name: passportImage.path.split('/').pop(),
+        type: passportImage.mime,
+        uri:
+          Platform.OS === 'android'
+            ? passportImage.path
+            : passportImage.path.replace('file://', ''),
+      });
+      axios
+        .post(APP.APP_URL + 'api/users/identity/attach-front-image', formData, {
+          headers: {'Content-type': 'multipart/form-data'},
+        })
+        .then(response => {
+          setLoading(false);
+          Toast.show('Successfully uploaded!', Toast.LONG, [
+            'UIAlertController',
+          ]);
+          navigation.navigate('AfidavetVerificationScreen');
+        })
+        .catch(error => {
+          setLoading(false);
+          Toast.show('An error occurred while uploading!', Toast.LONG, [
+            'UIAlertController',
+          ]);
+          console.log(error);
+          // To be removed after completion
+          navigation.navigate('AfidavetVerificationScreen');
+        });
+    } else {
+      Toast.show('Please upload the image!', Toast.LONG, ['UIAlertController']);
+    }
+  };
 
-  
-
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Spinner
+          visible={isLoading}
+          textContent={'Submitting data...'}
+          textStyle={styles.spinnerTextStyle}
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-
       <RBSheet
         ref={sheet}
         height={350}
@@ -128,29 +172,26 @@ export default function PassportVerificationScreen({navigation}) {
 
         <View>
           <TouchableOpacity onPress={() => sheet.current.open()}>
-           
-           {image===""
-           ?
-           <View style={styles.imageContainer}>
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#078F41', '#17DD6F']}
-                style={styles.plusCircle}>
-                <AntDesign name="plus" size={16} color="#fff" />
-              </LinearGradient>
-              <Text style={styles.cardText}>Cargar Imagen</Text>
-            </View>
-            :
-            <ImageBackground
+            {image === '' ? (
+              <View style={styles.imageContainer}>
+                <LinearGradient
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 0}}
+                  colors={['#078F41', '#17DD6F']}
+                  style={styles.plusCircle}>
+                  <AntDesign name="plus" size={16} color="#fff" />
+                </LinearGradient>
+                <Text style={styles.cardText}>Cargar Imagen</Text>
+              </View>
+            ) : (
+              <ImageBackground
                 resizeMode="cover"
                 style={{...styles.imageContainer, overflow: 'hidden'}}
                 source={{
                   uri: image,
                 }}
               />
-           }
-           
+            )}
           </TouchableOpacity>
           <Text style={{...styles.cardText, color: '#919191'}}>
             Sube una foto o un escaneado de la foto{'\n'}
@@ -160,27 +201,12 @@ export default function PassportVerificationScreen({navigation}) {
       </View>
 
       <View style={styles.footerButtonContainer}>
-        <TouchableOpacity
-        onPress={()=>navigation.navigate('AfidavetVerificationScreen')}
-        >
+        <TouchableOpacity onPress={handleSubmit}>
           <LinearGradient
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
             colors={['#119438', '#1A9B36', '#1B9D36']}
             style={styles.continueButton}>
-            <View
-              style={{
-                width: 70,
-                height: 40,
-                right: -5,
-                bottom: 15,
-                transform: [{scaleX: 2}],
-                overflow: 'hidden',
-                position: 'absolute',
-                borderRadius: 80,
-                backgroundColor: '#1A8D35',
-              }}
-            />
             <Text style={styles.buttonText}>Continuar</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -341,5 +367,8 @@ const styles = StyleSheet.create({
     // shadowOffset: {width: 0, height: 0},
     // shadowRadius: 5,
     // shadowOpacity: 0.4,
+  },
+  spinnerTextStyle: {
+    color: '#FFF',
   },
 });

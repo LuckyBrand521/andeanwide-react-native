@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,11 +14,22 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-
 import {TouchableOpacity} from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default function CarteraDocumentTypeSCreen({navigation}) {
+import {setDocType} from '../../../../actions';
+
+function CarteraDocumentTypeSCreen({navigation, setDocType, userinfo}) {
+  const handleSubmit = val => {
+    setDocType(val).then(() => {
+      if (val == 'dni') {
+        navigation.navigate('DocumentVerificationScreen');
+      } else if (val == 'passport') {
+        navigation.navigate('PassportVerificationScreen');
+      }
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -31,48 +43,67 @@ export default function CarteraDocumentTypeSCreen({navigation}) {
       </View>
 
       <View>
-        <Text style={{...styles.verifyText}}>
-        Tipo de documento
-        </Text>
+        <Text style={{...styles.verifyText}}>Tipo de documento</Text>
       </View>
 
       <View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('DocumentVerificationScreen')}>
+        <TouchableOpacity onPress={() => handleSubmit('dni')}>
           <View style={styles.listContainer}>
-          < MaterialCommunityIcons style={styles.documentIcon} name="file-document" color="#fff" size={40} />
+            <MaterialCommunityIcons
+              style={styles.documentIcon}
+              name="file-document"
+              color="#fff"
+              size={40}
+            />
 
             <View>
               <Text style={{...styles.headerText, ...styles.listTitle}}>
-              Documento de identidad
+                Documento de identidad
               </Text>
               <Text style={{...styles.verifyText, ...styles.listSubtitle}}>
-              Sube una foto o un escaneado de tu documento{'\n'}de identidad.
-            </Text>
+                Sube una foto o un escaneado de tu documento{'\n'}de identidad.
+              </Text>
             </View>
           </View>
         </TouchableOpacity>
-          
-        <TouchableOpacity onPress={() => navigation.navigate('PassportVerificationScreen')}>
-         
-        <View style={styles.listContainer}>
-       < MaterialCommunityIcons style={styles.documentIcon} name="file-document" color="#fff" size={40} />
-      
-          <View>
-            <Text style={{...styles.headerText, ...styles.listTitle}}>
-            Pasaporte
-            </Text>
 
-            <Text style={{...styles.verifyText, ...styles.listSubtitle}}>
-            Sube una foto o un escaneado de tu pasaporte.
-            </Text>
+        <TouchableOpacity onPress={() => handleSubmit('passport')}>
+          <View style={styles.listContainer}>
+            <MaterialCommunityIcons
+              style={styles.documentIcon}
+              name="file-document"
+              color="#fff"
+              size={40}
+            />
+
+            <View>
+              <Text style={{...styles.headerText, ...styles.listTitle}}>
+                Pasaporte
+              </Text>
+
+              <Text style={{...styles.verifyText, ...styles.listSubtitle}}>
+                Sube una foto o un escaneado de tu pasaporte.
+              </Text>
+            </View>
           </View>
-        </View>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
+
+const mapStateToProps = state => ({
+  userinfo: state.root.userinfo,
+});
+
+const mapDispatchToProps = dispatch => ({
+  setDocType: value => dispatch(setDocType(value)),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(CarteraDocumentTypeSCreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -116,8 +147,6 @@ const styles = StyleSheet.create({
   },
 
   documentIcon: {
-     
-   
     marginRight: wp('4%'),
   },
 

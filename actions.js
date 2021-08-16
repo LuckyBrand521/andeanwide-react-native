@@ -1,5 +1,6 @@
-import APP from './app.json';
 import axios from 'axios';
+import APP from './app.json';
+import store from './store.js';
 
 export const getToken = token => ({
   type: 'GET_TOKEN',
@@ -30,8 +31,13 @@ export const error = error => ({
   error,
 });
 
-export const savePersonalAccInfo = value => ({
-  type: 'SAVE_PERSONAL_ACCINFO',
+export const saveAccInfo = value => ({
+  type: 'SAVE_USERINFO',
+  value,
+});
+
+export const saveBalanceInfo = value => ({
+  type: 'SAVE_BALANCE_INFO',
   value,
 });
 
@@ -52,13 +58,23 @@ export const loginAction = values => dispatch => {
     });
 };
 
-export const personalAccountVerfify = values => dispatch => {
-  dispatch(savePersonalAccInfo(values));
-  //submit the personal form data to the server
+export const getMyInfo = () => dispatch => {
+  //gets user data from server
+  const accessToken = store.getState().root.token.value;
   return axios
-    .post(APP.APP_URL + 'api/users/identity', values)
+    .post(
+      APP.APP_URL + 'api/auth/me',
+      {},
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    )
     .then(res => {
-      console.log(res);
+      dispatch(saveAccInfo(res.data.user));
       return Promise.resolve();
     })
     .catch(err => {
@@ -67,16 +83,83 @@ export const personalAccountVerfify = values => dispatch => {
       return Promise.reject(err);
     });
 };
-export const getUserToken = () => dispatch =>
-  AsyncStorage.getItem('userToken')
-    .then(data => {
-      dispatch(loading(false));
-      dispatch(getToken(data));
+export const setAccountType = values => dispatch => {
+  const accessToken = store.getState().root.token.value;
+  return axios
+    .post(APP.APP_URL + 'api/users/set-account-type', values, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(res => {
+      dispatch(saveAccInfo(res.data.data));
+      return Promise.resolve();
     })
     .catch(err => {
-      dispatch(loading(false));
+      console.log(err);
       dispatch(error(err.message || 'ERROR'));
+      return Promise.reject(err);
     });
+};
+export const personalAccountVerfify = values => dispatch => {
+  const accessToken = store.getState().root.token.value;
+  //submit the personal form data to the server
+  return axios
+    .put(APP.APP_URL + 'api/users/identity', values, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(res => {
+      dispatch(saveAccInfo(res.data.data));
+      return Promise.resolve();
+    })
+    .catch(err => {
+      console.log(err);
+      dispatch(error(err.message || 'ERROR'));
+      return Promise.reject(err);
+    });
+};
+
+export const addressVerify = values => dispatch => {
+  const accessToken = store.getState().root.token.value;
+  //submit the personal form data to the server
+  return axios
+    .put(APP.APP_URL + 'api/users/address', values, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(res => {
+      dispatch(saveAccInfo(res.data.data));
+      return Promise.resolve();
+    })
+    .catch(err => {
+      console.log(err);
+      dispatch(error(err.message || 'ERROR'));
+      return Promise.reject(err);
+    });
+};
+
+export const setDocType = value => dispatch => {
+  let userInfo = store.getState().root.userinfo;
+  userInfo.identity.document_type = value;
+  dispatch(saveAccInfo(userInfo));
+  return Promise.resolve();
+};
+
+export const getUserToken = () => dispatch => {
+  const userToken = store.getState().root.token
+    ? store.getState().root.token
+    : null;
+  return userToken;
+};
 
 export const saveUserToken = data => dispatch =>
   AsyncStorage.setItem('userToken', 'abc')
@@ -99,3 +182,8 @@ export const removeUserToken = () => dispatch =>
       dispatch(loading(false));
       dispatch(error(err.message || 'ERROR'));
     });
+
+// request API to get wallet balance information
+export const requestBalanceInfoAPI = () => dispatch => {
+  return null;
+};

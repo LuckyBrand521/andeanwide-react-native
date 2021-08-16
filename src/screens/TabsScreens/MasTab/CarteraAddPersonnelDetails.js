@@ -10,13 +10,18 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
+import {Select, CheckIcon} from 'native-base';
 import Toast from 'react-native-simple-toast';
 import {Formik} from 'formik';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+// import {AutocompleteDropdown} from 'react-native-autocomplete-dropdown';
+// import Autocomplete from 'react-native-autocomplete-input';
 
 //Pickers
 import DatePicker from 'react-native-datepicker';
 import SelectPicker from 'react-native-form-select-picker';
+import Spinner from 'react-native-loading-spinner-overlay';
+// import CountryPicker from 'react-native-country-picker-modal';
 
 import {
   widthPercentageToDP as wp,
@@ -26,71 +31,82 @@ import * as yup from 'yup';
 import LinearGradient from 'react-native-linear-gradient';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {personalAccountVerfify} from '../../../../actions';
-import CountryPicker from 'react-native-country-picker-modal';
+import countryList from '../../../data/countries';
 
-const gender_options = ['Masculina', 'Mujer'];
-const marital_options = ['Casada', 'Única'];
+const gender_options = [
+  {label: 'Masculina', val: 'M'},
+  {label: 'Mujer', val: 'F'},
+];
+const marital_options = [
+  {label: 'Casada', val: 'married'},
+  {label: 'Única', val: 'single'},
+];
+const today = new Date();
+const maxDob = new Date(new Date().setDate(today.getDate() - 365 * 18));
 const infoFormSchema = yup.object().shape({
-  name: yup.string().required('This field is requried'),
-  issuance_country_id: yup.string().required('This field is required'),
-  nationality_country_id: yup.string().required('This field is required'),
-  country: yup.string().required('This field is requried'),
-  birthday: yup.date().required('This field is requried'),
+  firstname: yup.string().required('This field is requried'),
+  lastname: yup.string().required('This field is required'),
+  dob: yup.date().max(maxDob).required('This field is requried'),
   gender: yup.string().required('This field is requried'),
-  doc_num: yup.number().required('This field is requried'),
-  issue_date: yup.date().required('This field is requried'),
-  expiration_date: yup.date().required('This field is requried'),
+  identity_number: yup.number().required('This field is requried'),
+  issuance_date: yup.date().required('This field is requried'),
+  expiration_date: yup.date().min(today).required('This field is requried'),
   profession: yup.string().required('This field is requried'),
-  marry_status: yup.string().required('This field is requried'),
+  state: yup.string().required('This field is requried'),
 });
-const initial_from_data = {
-  name: '',
-  birthday: '',
+let initial_form_data = {
+  firstname: '',
+  lastname: '',
+  dob: '',
   gender: '',
-  doc_num: '',
-  issue_date: '',
+  identity_number: '',
+  issuance_date: '',
   expiration_date: '',
   profession: '',
-  marry_status: '',
-  issuance_country_id: 'CL',
-  nationality_country_id: 'CL',
+  state: '',
 };
 function CarteraAddPersonnelDetails({
   navigation,
   personalAccountVerfify,
   userinfo,
 }) {
+  if (userinfo != null) {
+    initial_form_data.firstname = userinfo.identity.firstname;
+    initial_form_data.lastname = userinfo.identity.lastname;
+    initial_form_data.identity_number = userinfo.identity.identity_number;
+    initial_form_data.dob = userinfo.identity.dob;
+    initial_form_data.gender = userinfo.identity.gender;
+    initial_form_data.issuance_date = userinfo.identity.issuance_date;
+    initial_form_data.expiration_date = userinfo.identity.expiration_date;
+    initial_form_data.profession = userinfo.identity.profession;
+    initial_form_data.state = userinfo.identity.state;
+  }
   const [isLoading, setLoading] = useState(false);
 
   /**
    * Country picker information states
    */
-  const [issuanceCountry, setIssuanceCountry] = useState({
-    countryCode: 'CL',
-    name: 'Chile',
-  });
+  const [issuanceCountryName, setIssuanceCountryName] = useState(
+    userinfo ? userinfo.identity.issuance_country.id : '',
+  );
+  const [nationalityCountryName, setNationalityCountryName] = useState(
+    userinfo ? userinfo.identity.nationality_country.id : '',
+  );
 
-  const [nationalityCountry, setNationalityCountry] = useState({
-    countryCode: 'CL',
-    name: 'Chile',
-  });
-
-  const onSelect1 = country => {
-    setIssuanceCountry({
-      countryCode: country.cca2,
-      name: country.name,
-    });
-  };
-  const onSelect2 = country => {
-    setNationalityCountry({
-      countryCode: country.cca2,
-      flag: country.flag,
-      name: country.name,
-    });
-  };
   //inputs are in the same pattern as UI
   // submits the form to /api/users/identify
   const userInfoSubmit = values => {
+    values = {
+      ...values,
+      issuance_country_id: issuanceCountryName,
+      nationality_country_id: nationalityCountryName,
+      // account_type: userinfo.account_type,
+      document_type: 'dni',
+      position: null,
+      // pep_declaration: null,
+      // funds_declaration: null,
+      // veracity_declaration: null,
+    };
     setLoading(true);
     personalAccountVerfify(values)
       .then(() => {
@@ -98,29 +114,20 @@ function CarteraAddPersonnelDetails({
       })
       .catch(err => {
         console.log(err);
+        Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
       })
       .finally(() => {
         setLoading(false);
+        navigation.navigate('ResidanceVerificationScreen');
       });
   };
-  // const loginSubmitAPI = (values) => {
-  //     setLoading(true);
-  //     loginAction(values).then(() => {
-  //         navigation.navigate('FaceConfigurationScreen');
-  //     })
-  //     .catch( (err) => {
-  //         console.error(err);
-  //     })
-  //     .finally( () => {
-  //         setLoading(false);
-  //     });
-  // }
+
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Logging in...'}
+          textContent={'Submitting data...'}
           textStyle={styles.spinnerTextStyle}
         />
       </SafeAreaView>
@@ -164,57 +171,96 @@ function CarteraAddPersonnelDetails({
 
             <View style={styles.middleInputsContainer}>
               <ScrollView>
-                <View style={styles.countryPicker}>
-                  <Text style={styles.countryname}>
-                    País de Emision del Documento
-                  </Text>
-                  <CountryPicker
-                    {...{
-                      countryCode: issuanceCountry.countryCode,
-                      onSelect: onSelect1,
-                    }}
-                    visible="false"
-                  />
-                  {/* {issuanceCountry !== null && (
-                    <Text style={styles.countryname}>
-                      {JSON.stringify(issuanceCountry.name)}
-                    </Text>
-                  )} */}
+                <View>
+                  <Select
+                    // mode="dropdown"
+                    style={styles.countryPicker}
+                    minWidth={wp('75%')}
+                    paddingLeft={1}
+                    borderWidth="0"
+                    borderBottomWidth="2"
+                    borderRadius="0"
+                    borderColor="#919191"
+                    alignSelf="center"
+                    placeholder="País de Emision del Documento"
+                    selectedValue={issuanceCountryName}
+                    onValueChange={setIssuanceCountryName}
+                    _selectedItem={{
+                      bg: 'cyan.600',
+                      endIcon: <CheckIcon size={4} />,
+                    }}>
+                    {Object.values(countryList).map((item, index) => {
+                      return (
+                        <Select.Item
+                          label={item.label}
+                          value={item.value}
+                          key={item.label}
+                        />
+                      );
+                    })}
+                  </Select>
                 </View>
-                <View style={styles.countryPicker}>
-                  <Text style={styles.countryname}>Pais de Nacionalida </Text>
-                  <></>
-                  <CountryPicker
-                    {...{
-                      countryCode: nationalityCountry.countryCode,
-                      onSelect: onSelect2,
-                    }}
-                    visible="false"
-                  />
-                  {/* {nationalityCountry !== null && (
-                    <Text style={styles.countryname}>
-                      {JSON.stringify(nationalityCountry.name)}
-                    </Text>
-                  )} */}
+                <View>
+                  <Select
+                    // mode="dropdown"
+                    style={styles.countryPicker}
+                    minWidth={wp('75%')}
+                    paddingLeft={1}
+                    borderWidth="0"
+                    borderBottomWidth="2"
+                    borderRadius="0"
+                    borderColor="#919191"
+                    alignSelf="center"
+                    placeholder="País nacionalidadwe"
+                    selectedValue={nationalityCountryName}
+                    onValueChange={setNationalityCountryName}
+                    _selectedItem={{
+                      bg: 'cyan.600',
+                      endIcon: <CheckIcon size={4} />,
+                    }}>
+                    {Object.values(countryList).map((item, index) => {
+                      return (
+                        <Select.Item
+                          label={item.label}
+                          value={item.value}
+                          key={item.id}
+                        />
+                      );
+                    })}
+                  </Select>
                 </View>
                 <TextInput
-                  placeholder="Nombre y Apellidos"
-                  name="name"
+                  placeholder="Nombres"
+                  name="firstname"
                   placeholderTextColor="#919191"
                   style={styles.input}
-                  onChangeText={handleChange('name')}
-                  onBlur={handleBlur('name')}
-                  value={values.name}
+                  onChangeText={handleChange('firstname')}
+                  onBlur={handleBlur('firstname')}
+                  value={values.firstname}
+                />
+                <TextInput
+                  placeholder="Apellidos"
+                  name="lastname"
+                  placeholderTextColor="#919191"
+                  style={styles.input}
+                  onChangeText={handleChange('lastname')}
+                  onBlur={handleBlur('lastname')}
+                  value={values.lastname}
                 />
 
-                <View style={{...styles.input}}>
+                <View
+                  style={{
+                    ...styles.input,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
                   <DatePicker
                     placeholder="Fecha de nacimiento"
-                    name="birthday"
+                    name="dob"
                     placeholderTextColor="#919191"
-                    onDateChange={handleChange('birthday')}
-                    onBlur={handleBlur('birthday')}
-                    date={values.birthday}
+                    onDateChange={handleChange('dob')}
+                    onBlur={handleBlur('dob')}
+                    date={values.dob}
                     mode="date" // The enum of date, datetime and time
                     customStyles={{
                       dateIcon: {
@@ -237,6 +283,12 @@ function CarteraAddPersonnelDetails({
                       },
                     }}
                   />
+                  <AntDesign
+                    style={{position: 'absolute', right: 10}}
+                    name="calendar"
+                    color="#919191"
+                    size={14}
+                  />
                 </View>
 
                 <View style={styles.input}>
@@ -251,20 +303,24 @@ function CarteraAddPersonnelDetails({
                     onBlur={handleBlur('gender')}
                     selected={values.gender}>
                     {Object.values(gender_options).map((val, index) => (
-                      <SelectPicker.Item label={val} value={val} key={index} />
+                      <SelectPicker.Item
+                        label={val.label}
+                        value={val.val}
+                        key={index}
+                      />
                     ))}
                   </SelectPicker>
                 </View>
 
                 <TextInput
                   placeholder="Número de documento"
-                  name="doc_num"
+                  name="identity_number"
                   keyboardType="number-pad"
                   placeholderTextColor="#919191"
                   style={styles.input}
-                  onChangeText={handleChange('doc_num')}
-                  onBlur={handleBlur('doc_num')}
-                  value={values.doc_num}
+                  onChangeText={handleChange('identity_number')}
+                  onBlur={handleBlur('identity_number')}
+                  value={values.identity_number}
                 />
 
                 <View
@@ -275,11 +331,11 @@ function CarteraAddPersonnelDetails({
                   }}>
                   <DatePicker
                     placeholder="Fecha de Emisión"
-                    name="issue_date"
+                    name="issuance_date"
                     placeholderTextColor="#919191"
-                    onDateChange={handleChange('issue_date')}
-                    onBlur={handleBlur('issue_date')}
-                    date={values.issue_date}
+                    onDateChange={handleChange('issuance_date')}
+                    onBlur={handleBlur('issuance_date')}
+                    date={values.issuance_date}
                     mode="date" // The enum of date, datetime and time
                     style={{width: 150, color: 'white'}}
                     customStyles={{
@@ -303,7 +359,7 @@ function CarteraAddPersonnelDetails({
                   />
                   <AntDesign
                     style={{position: 'absolute', right: 10}}
-                    name="caretdown"
+                    name="calendar"
                     color="#919191"
                     size={14}
                   />
@@ -347,7 +403,7 @@ function CarteraAddPersonnelDetails({
                   />
                   <AntDesign
                     style={{position: 'absolute', right: 10}}
-                    name="caretdown"
+                    name="calendar"
                     color="#919191"
                     size={14}
                   />
@@ -371,16 +427,20 @@ function CarteraAddPersonnelDetails({
                   }}>
                   <SelectPicker
                     placeholder="Estado Civil"
-                    name="marry_status"
-                    value={values.marry_status}
+                    name="state"
+                    value={values.state}
                     placeholderStyle={{color: '#999999'}}
                     style={{right: wp('1%')}}
                     onSelectedStyle={{color: '#999999'}}
-                    onValueChange={handleChange('marry_status')}
-                    onBlur={handleBlur('marry_status')}
-                    selected={values.marry_status}>
+                    onValueChange={handleChange('state')}
+                    onBlur={handleBlur('state')}
+                    selected={values.state}>
                     {Object.values(marital_options).map((val, index) => (
-                      <SelectPicker.Item label={val} value={val} key={index} />
+                      <SelectPicker.Item
+                        label={val.label}
+                        value={val.val}
+                        key={index}
+                      />
                     ))}
                   </SelectPicker>
                   <AntDesign
@@ -417,7 +477,7 @@ function CarteraAddPersonnelDetails({
 }
 
 const mapStateToProps = state => ({
-  userinfo: state.root,
+  userinfo: state.root.userinfo,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -461,16 +521,12 @@ const styles = StyleSheet.create({
   },
 
   countryPicker: {
-    width: wp('75%'),
-    alignSelf: 'center',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    paddingLeft: 3,
-    paddingBottom: 6,
-    marginTop: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: '#919191',
+    color: '#919191',
+    fontSize: 14,
+  },
+  itemText: {
+    fontSize: 15,
+    margin: 2,
   },
   countryname: {
     color: '#919191',
@@ -512,5 +568,16 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color: '#fff',
+  },
+  spinnerTextStyle: {
+    color: '#FFF',
+  },
+  autocompleteContainer: {
+    flex: 1,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 1,
   },
 });

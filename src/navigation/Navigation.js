@@ -39,7 +39,6 @@ function Navigation() {
     <NavigationContainer>
       {/* <Stack.Navigator headerMode="none" initialRouteName={SplashScreen}> */}
       <Stack.Navigator headerMode="none" initialRouteName={MyTabs}>
-        
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="tabs" component={MyTabs} />
         <Stack.Screen name="onBoardingScreens" component={onBoardingScreens} />
@@ -96,7 +95,7 @@ function MyTabs() {
           tabBarLabel: 'Balance',
 
           tabBarIcon: ({focused, tintColor, color}) => {
-            if (focused)
+            if (focused) {
               return (
                 <View
                   style={{
@@ -115,13 +114,14 @@ function MyTabs() {
                   />
                 </View>
               );
-            else
+            } else {
               return (
                 <Image
                   source={require('../icons/icons/1.png')}
                   style={{width: 34, height: 34}}
                 />
               );
+            }
           },
         }}
         name="BalanceStack"
@@ -132,7 +132,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Historial',
           tabBarIcon: ({focused, tintColor, color}) => {
-            if (focused)
+            if (focused) {
               return (
                 <View
                   style={{
@@ -149,13 +149,14 @@ function MyTabs() {
                   />
                 </View>
               );
-            else
+            } else {
               return (
                 <Image
                   source={require('../icons/icons/2.png')}
                   style={{width: 34, height: 34}}
                 />
               );
+            }
           },
         }}
         name="Tarjetas"
@@ -166,7 +167,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Enviar',
           tabBarIcon: ({focused, tintColor, color}) => {
-            if (focused)
+            if (focused) {
               return (
                 <View
                   style={{
@@ -183,13 +184,14 @@ function MyTabs() {
                   />
                 </View>
               );
-            else
+            } else {
               return (
                 <Image
                   source={require('../icons/icons/3.png')}
                   style={{width: 34, height: 34}}
                 />
               );
+            }
           },
         }}
         name="EnviarStack"
@@ -200,7 +202,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Beneficiarios',
           tabBarIcon: ({focused, tintColor, color}) => {
-            if (focused)
+            if (focused) {
               return (
                 <View
                   style={{
@@ -217,13 +219,14 @@ function MyTabs() {
                   />
                 </View>
               );
-            else
+            } else {
               return (
                 <Image
                   source={require('../icons/icons/4.png')}
                   style={{width: 34, height: 34}}
                 />
               );
+            }
           },
         }}
         name="BeneficiariosStack"
@@ -235,7 +238,7 @@ function MyTabs() {
           tabBarLabel: 'Mas',
 
           tabBarIcon: ({focused, tintColor, color}) => {
-            if (focused)
+            if (focused) {
               return (
                 <View
                   style={{
@@ -254,13 +257,14 @@ function MyTabs() {
                   />
                 </View>
               );
-            else
+            } else {
               return (
                 <Image
                   source={require('../icons/icons/5.png')}
                   style={{width: 34, height: 34}}
                 />
               );
+            }
           },
         }}
         name="MasStack"
@@ -275,11 +279,12 @@ function MasStack() {
     <NavigationContainer independent={true} headerMode>
       <Stack1.Navigator
         headerMode="none"
-        initialRouteName={CarteraVerifyAccountScreen}>
-        <Stack1.Screen
+        // initialRouteName={CarteraVerifyAccountScreen}
+        initialRouteName={CarteraAccountTypeScreen}>
+        {/* <Stack1.Screen
           name="CarteraVerifyAccountScreen"
           component={CarteraVerifyAccountScreen}
-        />
+        /> */}
         <Stack1.Screen
           name="CarteraAccountTypeScreen"
           component={CarteraAccountTypeScreen}
@@ -314,10 +319,7 @@ function MasStack() {
           component={AfidavetVerificationScreen}
         />
 
-        <Stack1.Screen
-          name="CarteraAddEmpresa"
-          component={CarteraAddEmpresa}
-        />
+        <Stack1.Screen name="CarteraAddEmpresa" component={CarteraAddEmpresa} />
 
         <Stack1.Screen
           name="EmpresaVerficationMenuScreen"
@@ -353,7 +355,10 @@ function EnviarStack() {
     <NavigationContainer independent={true} headerMode>
       <Stack3.Navigator headerMode="none" initialRouteName={EnviarScreen}>
         <Stack3.Screen name="EnviarScreen" component={EnviarScreen} />
-        <Stack3.Screen name="ReviewEnviarScreen" component={ReviewEnviarScreen} />
+        <Stack3.Screen
+          name="ReviewEnviarScreen"
+          component={ReviewEnviarScreen}
+        />
         <Stack3.Screen name="PriorityScreen" component={PriorityScreen} />
       </Stack3.Navigator>
     </NavigationContainer>

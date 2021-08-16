@@ -1,4 +1,6 @@
 import React, {useState} from 'react';
+import APP from '../../../../app.json';
+import axios from 'axios';
 import {
   SafeAreaView,
   StyleSheet,
@@ -11,206 +13,308 @@ import {
 } from 'react-native';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import {Formik} from 'formik';
+import Toast from 'react-native-simple-toast';
 
 //Pickers
-import DatePicker from 'react-native-datepicker';
 import SelectPicker from 'react-native-form-select-picker';
-
+import Spinner from 'react-native-loading-spinner-overlay';
+import CountryPicker from 'react-native-country-picker-modal';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
+import * as yup from 'yup';
 import LinearGradient from 'react-native-linear-gradient';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-const options = ['Masculina', 'Mujer'];
-const options2 = ['Casada', 'Única'];
+const infoFormSchema = yup.object().shape({
+  name: yup.string().required('This field is requried'),
+  id_number: yup.number().required('This field is requried'),
+  activity: yup.string().required('This field is requried'),
+  address: yup.string().required('This field is requried'),
+  has_politician_history: yup.string().required('This field is requried'),
+  activities: yup.string().required('This field is requried'),
+  anual_revenues: yup.string().required('This field is requried'),
+  company_size: yup.string().required('This field is requried'),
+  fund_origins: yup.string().required('This field is requried'),
+});
+const initial_form_data = {
+  name: '',
+  id_number: 0,
+  activity: '',
+  address: '',
+  has_politician_history: 'null',
+  activities: '',
+  anual_revenues: '',
+  company_size: '',
+  fund_origins: '',
+};
+
 const option_estim = ['10,000', '20,000', '30,000', '40,000', '50,000'];
 const option_size = ['Pequeño', 'Medio', 'Grande'];
 const option_origin = ['utilidades retenidas', 'deuda', 'patrimonio'];
 
 export default function CarteraAddEmpresa({navigation}) {
   //inputs are in the same pattern as UI
-  const [name, setName] = React.useState('');
-  const [country, setCountry] = React.useState('');
-  const [activity, setActivity] = React.useState('');
-  const [idnumber, setIdnumber] = React.useState('');
-  const [address, setAddress] = React.useState('');
-  const [companyfield, setCompanyfield] = React.useState('');
-  const [anualestim, setAnualestim] = React.useState('');
-  const [size, setSize] = React.useState('');
-  const [origin, setOrigin] = React.useState('');
+  // is initial state for country name as Chile
+  const [mycountry, setMyCountry] = useState({
+    countryCode: 'CL',
+    name: 'Chile',
+  });
+  const [isLoading, setLoading] = useState(false);
+
+  const onSelect = country => {
+    setMyCountry({
+      countryCode: country.cca2,
+      name: country.name,
+    });
+    console.log(country);
+  };
+
+  const companyInfoSubmit = values => {
+    values = {
+      ...values,
+      country_id: mycountry.countryCode,
+    };
+    setLoading(true);
+    axios
+      .post(APP.APP_URL + 'api/users/company', values)
+      .then(res => {
+        setLoading(false);
+        if (res.data) {
+          navigation.navigate('EmpresaVerficationMenuScreen');
+          // setTimeout(function () {
+          //   navigation.navigate('LoginScreen');
+          // }, 2000);
+        } else {
+          Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+        Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
+        // To be updated
+        setTimeout(function () {
+          navigation.navigate('EmpresaVerficationMenuScreen');
+        }, 2000);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Spinner
+          visible={isLoading}
+          textContent={'Submitting data...'}
+          textStyle={styles.spinnerTextStyle}
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle="light-content"
-        hidden={false}
-        backgroundColor="#18222E"
-        translucent={true}
-      />
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Datos de la empresa</Text>
-      </View>
+      <Formik
+        validationSchema={infoFormSchema}
+        initialValues={initial_form_data}
+        onSubmit={values => companyInfoSubmit(values)}>
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          isValid,
+        }) => (
+          <>
+            <StatusBar
+              barStyle="light-content"
+              hidden={false}
+              backgroundColor="#18222E"
+              translucent={true}
+            />
+            <View style={styles.header}>
+              <Text style={styles.headerText}>Datos de la empresa</Text>
+            </View>
 
-      <View>
-        <Text style={{...styles.verifyText}}>Completa tus datos</Text>
-      </View>
+            <View>
+              <Text style={{...styles.verifyText}}>Completa tus datos</Text>
+              {!isValid && (
+                <Text style={{fontSize: 14, color: 'red', textAlign: 'center'}}>
+                  Please fill the form correctly
+                </Text>
+              )}
+            </View>
+            <View style={styles.middleInputsContainer}>
+              <ScrollView>
+                <View style={styles.countryPicker}>
+                  <Text style={styles.countryname}>Pais</Text>
+                  <CountryPicker
+                    {...{
+                      countryCode: mycountry.countryCode,
+                      onSelect,
+                    }}
+                    visible="false"
+                  />
+                  {/* {issuanceCountry !== null && (
+                    <Text style={styles.countryname}>
+                      {JSON.stringify(issuanceCountry.name)}
+                    </Text>
+                  )} */}
+                </View>
+                <TextInput
+                  placeholder="Nombre o razón social"
+                  placeholderTextColor="#919191"
+                  style={styles.input}
+                  name="name"
+                  onChangeText={handleChange('name')}
+                  onBlur={handleBlur('name')}
+                  value={values.name}
+                />
+                <TextInput
+                  placeholder="Giro o Actividad"
+                  placeholderTextColor="#919191"
+                  style={styles.input}
+                  name="activity"
+                  onChangeText={handleChange('activity')}
+                  onBlur={handleBlur('activity')}
+                  value={values.activity}
+                />
+                <TextInput
+                  placeholder="Numero de identidad"
+                  placeholderTextColor="#919191"
+                  keyboardType="number-pad"
+                  style={styles.input}
+                  name="id_number"
+                  onChangeText={handleChange('id_number')}
+                  onBlur={handleBlur('id_number')}
+                  value={values.id_number}
+                />
+                <TextInput
+                  placeholder="Dirección"
+                  placeholderTextColor="#919191"
+                  style={styles.input}
+                  name="address"
+                  onChangeText={handleChange('address')}
+                  onBlur={handleBlur('address')}
+                  value={values.address}
+                />
+                <TextInput
+                  placeholder="Actividades de negocio"
+                  placeholderTextColor="#919191"
+                  style={styles.input}
+                  name="activities"
+                  onChangeText={handleChange('activities')}
+                  onBlur={handleBlur('activities')}
+                  value={values.activities}
+                />
+                <View
+                  style={{
+                    ...styles.input,
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                  }}>
+                  <SelectPicker
+                    placeholder="Facturación Anual Estimada (USD)"
+                    name="anual_revenues"
+                    value={values.anual_revenues}
+                    placeholderStyle={{color: '#999999'}}
+                    style={{right: wp('1%')}}
+                    onSelectedStyle={{color: '#999999'}}
+                    onValueChange={handleChange('anual_revenues')}
+                    onBlur={handleBlur('anual_revenues')}
+                    selected={values.anual_revenues}>
+                    {Object.values(option_estim).map((val, index) => (
+                      <SelectPicker.Item label={val} value={val} key={index} />
+                    ))}
+                  </SelectPicker>
+                  <AntDesign
+                    style={{position: 'absolute', right: 10}}
+                    name="caretdown"
+                    color="#919191"
+                    size={14}
+                  />
+                </View>
+                <View
+                  style={{
+                    ...styles.input,
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                  }}>
+                  <SelectPicker
+                    placeholder="Tamaño empresa"
+                    name="company_size"
+                    value={values.company_size}
+                    placeholderStyle={{color: '#999999'}}
+                    style={{right: wp('1%')}}
+                    onSelectedStyle={{color: '#999999'}}
+                    onValueChange={handleChange('company_size')}
+                    onBlur={handleBlur('company_size')}
+                    selected={values.company_size}>
+                    {Object.values(option_size).map((val, index) => (
+                      <SelectPicker.Item label={val} value={val} key={index} />
+                    ))}
+                  </SelectPicker>
+                  <AntDesign
+                    style={{position: 'absolute', right: 10}}
+                    name="caretdown"
+                    color="#919191"
+                    size={14}
+                  />
+                </View>
+                <View
+                  style={{
+                    ...styles.input,
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                  }}>
+                  <SelectPicker
+                    placeholder="Origen de los fondos"
+                    name="fund_origins"
+                    value={values.fund_origins}
+                    placeholderStyle={{color: '#999999'}}
+                    style={{right: wp('1%')}}
+                    onSelectedStyle={{color: '#999999'}}
+                    onValueChange={handleChange('fund_origins')}
+                    onBlur={handleBlur('fund_origins')}
+                    selected={values.fund_origins}>
+                    {Object.values(option_origin).map((val, index) => (
+                      <SelectPicker.Item label={val} value={val} key={index} />
+                    ))}
+                  </SelectPicker>
+                  <AntDesign
+                    style={{position: 'absolute', right: 10}}
+                    name="caretdown"
+                    color="#919191"
+                    size={14}
+                  />
+                </View>
+              </ScrollView>
+            </View>
 
-      <View style={styles.middleInputsContainer}>
-        <ScrollView>
-          <TextInput
-            placeholder="Pais"
-            placeholderTextColor="#919191"
-            style={styles.input}
-            onChangeText={setCountry}
-            value={country}
-          />
-          <TextInput
-            placeholder="Giro o Actividad"
-            placeholderTextColor="#919191"
-            style={styles.input}
-            onChangeText={setActivity}
-            value={activity}
-          />
-          <TextInput
-            placeholder="Numbro o razon social"
-            placeholderTextColor="#919191"
-            style={styles.input}
-            onChangeText={setName}
-            value={name}
-          />
-          <TextInput
-            placeholder="numero de identidad"
-            placeholderTextColor="#919191"
-            style={styles.input}
-            onChangeText={setIdnumber}
-            value={idnumber}
-          />
-          <TextInput
-            placeholder="Dirección"
-            placeholderTextColor="#919191"
-            style={styles.input}
-            onChangeText={setAddress}
-            value={address}
-          />
-          <TextInput
-            placeholder="Actividades de negocio"
-            placeholderTextColor="#919191"
-            style={styles.input}
-            onChangeText={setCompanyfield}
-            value={companyfield}
-          />
-          <View style={{
-              ...styles.input,
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}>
-            <SelectPicker
-              placeholderStyle={{color: '#999999'}}
-              style={{right: wp('1%')}}
-              placeholder="Facturación Anual Estimada"
-              onSelectedStyle={{color: '#999999'}}
-              onValueChange={value => {
-                // Do anything you want with the value.
-                // For example, save in state.
-                setAnualestim(value);
-              }}
-              selected={anualestim}>
-              {Object.values(option_estim).map((val, index) => (
-                <SelectPicker.Item label={val} value={val} key={index} />
-              ))}
-            </SelectPicker>
-            <AntDesign
-              style={{position: 'absolute', right: 10}}
-              name="caretdown"
-              color="#919191"
-              size={14}
-            />
-          </View>
-          <View style={{
-              ...styles.input,
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}>
-            <SelectPicker
-              placeholderStyle={{color: '#999999'}}
-              style={{right: wp('1%')}}
-              placeholder="Tamaño empresa"
-              onSelectedStyle={{color: '#999999'}}
-              onValueChange={value => {
-                // Do anything you want with the value.
-                // For example, save in state.
-                setSize(value);
-              }}
-              selected={size}>
-              {Object.values(option_size).map((val, index) => (
-                <SelectPicker.Item label={val} value={val} key={index} />
-              ))}
-            </SelectPicker>
-            <AntDesign
-              style={{position: 'absolute', right: 10}}
-              name="caretdown"
-              color="#919191"
-              size={14}
-            />
-          </View>
-          <View style={{
-              ...styles.input,
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}>
-            <SelectPicker
-              placeholderStyle={{color: '#999999'}}
-              style={{right: wp('1%')}}
-              placeholder="Origen de los fondos"
-              onSelectedStyle={{color: '#999999'}}
-              onValueChange={value => {
-                // Do anything you want with the value.
-                // For example, save in state.
-                setOrigin(value);
-              }}
-              selected={size}>
-              {Object.values(option_origin).map((val, index) => (
-                <SelectPicker.Item label={val} value={val} key={index} />
-              ))}
-            </SelectPicker>
-            <AntDesign
-              style={{position: 'absolute', right: 10}}
-              name="caretdown"
-              color="#919191"
-              size={14}
-            />
-          </View>
-        </ScrollView>
-      </View>
-
-      <View style={styles.footerButtonContainer}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('EmpresaVerficationMenuScreen')}>
-          <LinearGradient
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            colors={['#119438', '#1A9B36', '#1B9D36']}
-            style={styles.continueButton}>
-            <View
-              style={{
-                width: 70,
-                height: 40,
-                right: -5,
-                bottom: 15,
-                transform: [{scaleX: 2}],
-                overflow: 'hidden',
-                position: 'absolute',
-                borderRadius: 80,
-                backgroundColor: '#198352',
-              }}
-            />
-            <Text style={styles.buttonText}>Continuar</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+            <View style={styles.footerButtonContainer}>
+              <TouchableOpacity
+                disabled={!isValid}
+                onPress={() => {
+                  handleSubmit();
+                }}>
+                <LinearGradient
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 0}}
+                  colors={['#119438', '#1A9B36', '#1B9D36']}
+                  style={styles.continueButton}>
+                  <Text style={styles.buttonText}>Continuar</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+      </Formik>
     </SafeAreaView>
   );
 }
@@ -258,7 +362,21 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     color: '#919191',
   },
-
+  countryPicker: {
+    width: wp('75%'),
+    alignSelf: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    paddingLeft: 3,
+    paddingBottom: 6,
+    marginTop: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: '#919191',
+  },
+  countryname: {
+    color: '#919191',
+  },
   footerButtonContainer: {
     width: wp('100%'),
     height: hp('9%'),
@@ -294,5 +412,8 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color: '#fff',
+  },
+  spinnerTextStyle: {
+    color: '#FFF',
   },
 });

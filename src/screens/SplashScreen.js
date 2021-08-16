@@ -8,7 +8,10 @@ import {
   StatusBar,
 } from 'react-native';
 
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 export default function SplashScreen({navigation}) {
   const [splash, setSplash] = useState(true);
@@ -31,18 +34,15 @@ export default function SplashScreen({navigation}) {
         backgroundColor="#1E2026"
         translucent={true}
       />
-      <Image
-        style={styles.splash}
-        source={require('../images/logo.png')}
-      />
+      <Image style={styles.splash} source={require('../images/logo.png')} />
     </SafeAreaView>
   ) : null;
 }
 
 const styles = StyleSheet.create({
   container: {
-    width:wp('100%'),
-    height:hp('100%'),
+    width: wp('100%'),
+    height: hp('100%'),
     backgroundColor: '#131925',
     justifyContent: 'center',
     alignItems: 'center',

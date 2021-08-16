@@ -35,7 +35,6 @@ export default function onBoardingScreens({navigation}) {
           showsButtons={false}
           autoplay={true}
           loop={true}>
-          {/* First Onboarding */}
           <SafeAreaView style={styles.container}>
             <StatusBar
               barStyle="light-content"
@@ -72,8 +71,6 @@ export default function onBoardingScreens({navigation}) {
             </View>
           </SafeAreaView>
 
-          {/* Second Onboarding */}
-
           <SafeAreaView style={styles.container}>
             <StatusBar
               barStyle="light-content"
@@ -108,8 +105,6 @@ export default function onBoardingScreens({navigation}) {
               </Text>
             </View>
           </SafeAreaView>
-
-          {/* Third Onboarding */}
 
           <SafeAreaView style={styles.container}>
             <StatusBar
@@ -148,7 +143,6 @@ export default function onBoardingScreens({navigation}) {
           </SafeAreaView>
         </Swiper>
       </View>
-
       <View style={styles.buttonsMainContainer}>
         <View style={styles.buttonContainer}>
           <LogSignButton

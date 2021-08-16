@@ -1,4 +1,7 @@
 import React, {useState, useRef} from 'react';
+import APP from '../../../../app.json';
+import {connect} from 'react-redux';
+import axios from 'axios';
 import {
   SafeAreaView,
   StyleSheet,
@@ -6,27 +9,70 @@ import {
   View,
   Platform,
   StatusBar,
-  TextInput,
-  ScrollView,
-  TouchableHighlight,
-  ImageBackground,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
-
 
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
+import Toast from 'react-native-simple-toast';
+import Spinner from 'react-native-loading-spinner-overlay';
 import CheckBox from '@react-native-community/checkbox';
 import LinearGradient from 'react-native-linear-gradient';
 
-
-export default function AfidavetVerificationScreen({navigation}) {
+function AfidavetVerificationScreen({navigation, token}) {
   const [term1, setTerm1] = React.useState(false);
   const [term2, setTerm2] = React.useState(false);
   const [term3, setTerm3] = React.useState(false);
+  const [isLoading, setLoading] = useState(false);
+
+  const handleSubmit = () => {
+    if (term1 && term2 && term3) {
+      setLoading(true);
+      let data = new FormData();
+      data.append('funds_declaration', term1);
+      data.append('pep_declaration', term2);
+      data.append('veracity_declaration', term3);
+      axios
+        .post(APP.APP_URL + 'api/users/identity/accept-terms', data, {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(response => {
+          setLoading(false);
+          Toast.show('Successfully finished!', Toast.LONG, [
+            'UIAlertController',
+          ]);
+          navigation.navigate('CarteraAccountTypeScreen');
+        })
+        .catch(error => {
+          console.log(error);
+          setLoading(false);
+          Toast.show('An error occurred!', Toast.LONG, ['UIAlertController']);
+
+          // To be removed after completion
+          // navigation.navigate('CarteraAccountTypeScreen');
+        });
+    } else {
+      Toast.show('Please accept all terms!', Toast.LONG, ['UIAlertController']);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Spinner
+          visible={isLoading}
+          textContent={'Submitting data...'}
+          textStyle={styles.spinnerTextStyle}
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -69,9 +115,9 @@ export default function AfidavetVerificationScreen({navigation}) {
               onValueChange={newValue => setTerm2(newValue)}
             />
             <Text style={styles.termText}>
-            Declaro que los fondos acreditados en mi cuenta{'\n'}
-            no provienen ni seran utilizados para actividades{'\n'}
-            ilisitas, lavado de dinero o financiamiento al terror{'\n'}ismo
+              Declaro que los fondos acreditados en mi cuenta{'\n'}
+              no provienen ni seran utilizados para actividades{'\n'}
+              ilisitas, lavado de dinero o financiamiento al terror{'\n'}ismo
             </Text>
           </View>
 
@@ -85,36 +131,21 @@ export default function AfidavetVerificationScreen({navigation}) {
               onValueChange={newValue => setTerm3(newValue)}
             />
             <Text style={styles.termText}>
-            Declaro que la informacion proporsionada es co{'\n'}
-            rrecta y actualizada. Autorizo a Andean Wide ya{'\n'}
-verificar y recabar informacion.
+              Declaro que la informacion proporsionada es co{'\n'}
+              rrecta y actualizada. Autorizo a Andean Wide ya{'\n'}
+              verificar y recabar informacion.
             </Text>
           </View>
         </View>
       </View>
 
       <View style={styles.footerButtonContainer}>
-        <TouchableOpacity
-        
-        >
+        <TouchableOpacity onPress={handleSubmit}>
           <LinearGradient
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
             colors={['#119438', '#1A9B36', '#1B9D36']}
             style={styles.continueButton}>
-            <View
-              style={{
-                width: 70,
-                height: 40,
-                right: -5,
-                bottom: 15,
-                transform: [{scaleX: 2}],
-                overflow: 'hidden',
-                position: 'absolute',
-                borderRadius: 80,
-                backgroundColor: '#1A8D35',
-              }}
-            />
             <Text style={styles.buttonText}>Enviar</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -123,6 +154,11 @@ verificar y recabar informacion.
   );
 }
 
+const mapStateToProps = state => ({
+  token: state.root.token.value,
+});
+
+export default connect(mapStateToProps)(AfidavetVerificationScreen);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -201,5 +237,8 @@ const styles = StyleSheet.create({
   termsubContainer: {
     flexDirection: 'row',
     marginTop: hp('3%'),
+  },
+  spinnerTextStyle: {
+    color: '#FFF',
   },
 });

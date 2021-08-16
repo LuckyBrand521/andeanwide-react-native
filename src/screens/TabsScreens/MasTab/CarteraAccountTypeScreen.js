@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useState} from 'react';
+import {connect} from 'react-redux';
 import {
   SafeAreaView,
   StyleSheet,
@@ -16,8 +17,46 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {TouchableOpacity} from 'react-native';
+import Toast from 'react-native-simple-toast';
+import Spinner from 'react-native-loading-spinner-overlay';
+import {setAccountType} from '../../../../actions';
 
-export default function CarteraAccountTypeScreen({navigation}) {
+function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
+  const [isLoading, setLoading] = useState(false);
+  // submits the account type to /api/users/set-account-type
+  const accTypeSubmit = value => {
+    const values = {acount_Type: value};
+    setLoading(true);
+    setAccountType(values)
+      .then(() => {
+        if (value == 'personal') {
+          navigation.navigate('CarteraAddPersonnelDetails');
+        } else if (value == 'corporative') {
+          navigation.navigate('CarteraAddEmpressa');
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
+      })
+      .finally(() => {
+        setLoading(false);
+        // navigation.navigate('CarteraAddPersonnelDetails');
+      });
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Spinner
+          visible={isLoading}
+          textContent={'Submitting...'}
+          textStyle={styles.spinnerTextStyle}
+        />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -37,8 +76,7 @@ export default function CarteraAccountTypeScreen({navigation}) {
       </View>
 
       <View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('CarteraAddPersonnelDetails')}>
+        <TouchableOpacity onPress={() => accTypeSubmit('personal')}>
           <View style={styles.listContainer}>
             <LinearGradient
               start={{x: 0, y: 0}}
@@ -55,8 +93,7 @@ export default function CarteraAccountTypeScreen({navigation}) {
             </View>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('CarteraAddEmpresa')}>
+        <TouchableOpacity onPress={() => accTypeSubmit('corporative')}>
           <View style={styles.listContainer}>
             <LinearGradient
               start={{x: 0, y: 0}}
@@ -77,6 +114,19 @@ export default function CarteraAccountTypeScreen({navigation}) {
     </SafeAreaView>
   );
 }
+
+const mapStateToProps = state => ({
+  userinfo: state.root.userinfo,
+});
+
+const mapDispatchToProps = dispatch => ({
+  setAccountType: values => dispatch(setAccountType(values)),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(CarteraAccountTypeScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -134,7 +184,9 @@ const styles = StyleSheet.create({
     alignSelf: 'auto',
     textAlign: 'auto',
   },
-
+  spinnerTextStyle: {
+    color: '#FFF',
+  },
   listSubtitle: {
     textAlign: 'auto',
     marginTop: 0,

@@ -1,4 +1,5 @@
 import React, {useState, useRef} from 'react';
+import {connect} from 'react-redux';
 import {
   SafeAreaView,
   StyleSheet,
@@ -19,241 +20,258 @@ import Carousel from 'react-native-looped-carousel';
 import Octicons from 'react-native-vector-icons/Octicons';
 import LinearGradient from 'react-native-linear-gradient';
 
-export default function BalanceScreen({navigation}) {
+import {numberWithCommas} from '../../../data/helpers';
+
+function BalanceScreen({navigation, userinfo}) {
   return (
     <SafeAreaView style={styles.container}>
-        <StatusBar
-            barStyle="light-content"
-            hidden={false}
-            backgroundColor="#18222E"
-            translucent={true}
-        />
-        <View style={styles.header}>
-            <Text
-            style={{...styles.headerText, fontWeight: 'normal', fontSize: 15}}>
-            Historia
-            </Text>
-            <Text style={styles.headerText}>Cartera    </Text>
-            <Octicons name="person" size={24} color="#fff" />
-        </View>
+      <StatusBar
+        barStyle="light-content"
+        hidden={false}
+        backgroundColor="#18222E"
+        translucent={true}
+      />
+      <View style={styles.header}>
+        <Text
+          style={{...styles.headerText, fontWeight: 'normal', fontSize: 15}}>
+          Historia
+        </Text>
+        <Text style={styles.headerText}>Cartera</Text>
+        <Octicons name="person" size={24} color="#fff" />
+      </View>
 
-        <View style={styles.middleInputsContainer}>
-            <Carousel
-            delay={2000}
-            style={{width: wp('85%'), height: 180, alignSelf: 'center'}}
-            autoplay={false}
-            pageInfo={false}
-            bullets={true}
-            bulletsContainerStyle={{position: 'absolute', bottom: -30}}
-            chosenBulletStyle={{
-                width: 23,
-                height: 6,
-                borderRadius: 0,
+      <View style={styles.middleInputsContainer}>
+        <Carousel
+          delay={2000}
+          style={{width: wp('85%'), height: 180, alignSelf: 'center'}}
+          autoplay={false}
+          pageInfo={false}
+          bullets={true}
+          bulletsContainerStyle={{position: 'absolute', bottom: -30}}
+          chosenBulletStyle={{
+            width: 23,
+            height: 6,
+            borderRadius: 0,
 
-                borderRadius: 2,
-            }}
-            bulletStyle={{
-                width: 23,
-                height: 6,
+            borderRadius: 2,
+          }}
+          bulletStyle={{
+            width: 23,
+            height: 6,
 
-                borderWidth: 0,
-                backgroundColor: '#2C3240',
-            }}
-            onAnimateNextPage={p => console.log(p)}>
-                <LinearGradient
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 0}}
-                    colors={['#027532', '#0FB658', '#1CFA7F']}
-                    style={styles.card}>
-                    <LinearGradient
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 0}}
-                    colors={['#15BC63', '#1CFA7F']}
-                    style={{
-                        width: 150,
-                        height: 150,
-                        right: -20,
-                        top: -40,
+            borderWidth: 0,
+            backgroundColor: '#2C3240',
+          }}
+          onAnimateNextPage={p => console.log(p)}>
+          <LinearGradient
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            colors={['#027532', '#0FB658', '#1CFA7F']}
+            style={styles.card}>
+            <LinearGradient
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}
+              colors={['#15BC63', '#1CFA7F']}
+              style={{
+                width: 150,
+                height: 150,
+                right: -20,
+                top: -40,
 
-                        overflow: 'hidden',
-                        position: 'absolute',
-                        borderRadius: 75,
-                        backgroundColor: '#1CFA7F',
-                    }}
-                    />
+                overflow: 'hidden',
+                position: 'absolute',
+                borderRadius: 75,
+                backgroundColor: '#1CFA7F',
+              }}
+            />
 
-                    <View style={styles.cardTextContainer}>
-                        <Text style={styles.cardText}>CLP Balance</Text>
-                        <Text style={{...styles.cardText, fontSize: 34}}>$ 0.00</Text>
-                        <Text style={styles.cardText}>$ 0.00 Disponible</Text>
-                    </View>
-
-                    <View style={styles.cardButtonContainer}>
-                        <TouchableOpacity>
-                            <View style={styles.button}>
-                            <Text style={styles.btnText}>Deposito</Text>
-                            </View>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity>
-                            <View style={styles.button}>
-                            <Text style={styles.btnText}>Retiro</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </LinearGradient>
-
-                <LinearGradient
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 0}}
-                    colors={['#283B50', '#41627E', '#537EA1']}
-                    style={styles.card}>
-                    <LinearGradient
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 0}}
-                    colors={['#466A89', '#4C7494']}
-                    style={{
-                        width: 150,
-                        height: 150,
-                        right: -20,
-                        top: -40,
-
-                        overflow: 'hidden',
-                        position: 'absolute',
-                        borderRadius: 75,
-                    }}
-                    />
-
-                    <View style={styles.cardTextContainer}>
-                        <Text style={styles.cardText}>USD Balance</Text>
-                        <Text style={{...styles.cardText, fontSize: 34}}>$ 0.00</Text>
-                        <Text style={styles.cardText}>$ 0.00 Disponible</Text>
-                    </View>
-
-                    <View style={styles.cardButtonContainer}>
-                        <TouchableOpacity>
-                            <View style={{...styles.button, backgroundColor: '#617E96'}}>
-                            <Text style={styles.btnText}>Deposito</Text>
-                            </View>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity>
-                            <View style={{...styles.button, backgroundColor: '#617E96'}}>
-                            <Text style={styles.btnText}>Retiro</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </LinearGradient>
-
-                <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#696972', '#9A9B9D', '#9A9B9D']}
-                style={styles.card}>
-                <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#7F8086', '#9A9B9D']}
-                style={{
-                    width: 150,
-                    height: 150,
-                    right: -20,
-                    top: -40,
-
-                    overflow: 'hidden',
-                    position: 'absolute',
-                    borderRadius: 75,
-                    backgroundColor: '#1CFA7F',
-                }}
-                />
-
-                <View style={styles.cardTextContainer}>
-                    <Text style={styles.cardText}>EUR Balance</Text>
-                    <Text style={{...styles.cardText, fontSize: 34}}>€ 0.00</Text>
-                    <Text style={styles.cardText}>$ 0.00 Disponible</Text>
-                </View>
-
-                <View style={styles.cardButtonContainer}>
-                    <TouchableOpacity>
-                        <View style={{...styles.button, backgroundColor: '#ACACAE'}}>
-                        <Text style={styles.btnText}>Deposito</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity>
-                        <View style={{...styles.button, backgroundColor: '#ACACAE'}}>
-                        <Text style={styles.btnText}>Retiro</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            </LinearGradient>
-            </Carousel>
-            <Text style={{...styles.headerText, paddingTop: 35}}>
-            Transacciones
-            </Text>
-
-            <View style={styles.trasactionsTitle}>
-                <Text style={{...styles.btnText, color: '#707A81', fontSize: 18}}>
-                    Cantidad
-                </Text>
-
-                <View
-                    style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    width: wp('40%'),
-                    }}>
-                    <Text style={{...styles.btnText, color: '#707A81', fontSize: 18}}>
-                    Fecha{' '}
-                    </Text>
-                    <Text style={{...styles.btnText, color: '#707A81', fontSize: 18}}>
-                    Estatus
-                    </Text>
-                </View>
+            <View style={styles.cardTextContainer}>
+              <Text style={styles.cardText}>CLP Balance</Text>
+              <Text style={{...styles.cardText, fontSize: 34}}>
+                CLP {numberWithCommas(userinfo.balance)}
+              </Text>
+              <Text style={styles.cardText}>
+                CLP {numberWithCommas(userinfo.available_amount)}
+              </Text>
             </View>
-        </View>
-        <ScrollView>
-            <View style={styles.transactionsList}>
-                <Text style={{color: '#fff', fontSize: 18}}>100.0000</Text>
 
-                <View
-                style={{
-                    flexDirection: 'row',
-                    position: 'absolute',
-                    right: wp('10%'),
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    width: wp('40%'),
-                }}>
-                <View>
-                    <Text style={{color: '#fff', fontSize: 18}}>09/17/2020</Text>
-                    <Text style={{...styles.btnText, color: '#707A81', fontSize: 10}}>
-                    11:22pm
-                    </Text>
+            <View style={styles.cardButtonContainer}>
+              <TouchableOpacity>
+                <View style={styles.button}>
+                  <Text style={styles.btnText}>Deposito</Text>
                 </View>
+              </TouchableOpacity>
 
-                <Text style={{...styles.btnText}}>--</Text>
+              <TouchableOpacity>
+                <View style={styles.button}>
+                  <Text style={styles.btnText}>Retiro</Text>
                 </View>
-
-                <View></View>
+              </TouchableOpacity>
             </View>
-            
-        </ScrollView>
-        <View style={styles.footerButtonContainer}>
-            <TouchableOpacity>
-                <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#119438', '#1A9B36', '#1B9D36']}
-                style={styles.continueButton}>
-                    <Text style={styles.buttonText}>Convertir</Text>
-                </LinearGradient>
-            </TouchableOpacity>
+          </LinearGradient>
+
+          <LinearGradient
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            colors={['#283B50', '#41627E', '#537EA1']}
+            style={styles.card}>
+            <LinearGradient
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}
+              colors={['#466A89', '#4C7494']}
+              style={{
+                width: 150,
+                height: 150,
+                right: -20,
+                top: -40,
+
+                overflow: 'hidden',
+                position: 'absolute',
+                borderRadius: 75,
+              }}
+            />
+
+            <View style={styles.cardTextContainer}>
+              <Text style={styles.cardText}>USD Balance</Text>
+              <Text style={{...styles.cardText, fontSize: 34}}>$ 0.00</Text>
+              <Text style={styles.cardText}>$ 0.00 Disponible</Text>
+            </View>
+
+            <View style={styles.cardButtonContainer}>
+              <TouchableOpacity>
+                <View style={{...styles.button, backgroundColor: '#617E96'}}>
+                  <Text style={styles.btnText}>Deposito</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity>
+                <View style={{...styles.button, backgroundColor: '#617E96'}}>
+                  <Text style={styles.btnText}>Retiro</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+
+          <LinearGradient
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            colors={['#696972', '#9A9B9D', '#9A9B9D']}
+            style={styles.card}>
+            <LinearGradient
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}
+              colors={['#7F8086', '#9A9B9D']}
+              style={{
+                width: 150,
+                height: 150,
+                right: -20,
+                top: -40,
+
+                overflow: 'hidden',
+                position: 'absolute',
+                borderRadius: 75,
+                backgroundColor: '#1CFA7F',
+              }}
+            />
+
+            <View style={styles.cardTextContainer}>
+              <Text style={styles.cardText}>EUR Balance</Text>
+              <Text style={{...styles.cardText, fontSize: 34}}>€ 0.00</Text>
+              <Text style={styles.cardText}>$ 0.00 Disponible</Text>
+            </View>
+
+            <View style={styles.cardButtonContainer}>
+              <TouchableOpacity>
+                <View style={{...styles.button, backgroundColor: '#ACACAE'}}>
+                  <Text style={styles.btnText}>Deposito</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity>
+                <View style={{...styles.button, backgroundColor: '#ACACAE'}}>
+                  <Text style={styles.btnText}>Retiro</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+        </Carousel>
+        <Text style={{...styles.headerText, paddingTop: 35}}>
+          Transacciones
+        </Text>
+
+        <View style={styles.trasactionsTitle}>
+          <Text style={{...styles.btnText, color: '#707A81', fontSize: 18}}>
+            Cantidad
+          </Text>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: wp('40%'),
+            }}>
+            <Text style={{...styles.btnText, color: '#707A81', fontSize: 18}}>
+              Fecha{' '}
+            </Text>
+            <Text style={{...styles.btnText, color: '#707A81', fontSize: 18}}>
+              Estatus
+            </Text>
+          </View>
         </View>
+      </View>
+      <ScrollView>
+        <View style={styles.transactionsList}>
+          <Text style={{color: '#fff', fontSize: 18}}>100.0000</Text>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              position: 'absolute',
+              right: wp('10%'),
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: wp('40%'),
+            }}>
+            <View>
+              <Text style={{color: '#fff', fontSize: 18}}>09/17/2020</Text>
+              <Text style={{...styles.btnText, color: '#707A81', fontSize: 10}}>
+                11:22pm
+              </Text>
+            </View>
+
+            <Text style={{...styles.btnText}}>--</Text>
+          </View>
+
+          <View />
+        </View>
+      </ScrollView>
+      <View style={styles.footerButtonContainer}>
+        <TouchableOpacity>
+          <LinearGradient
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            colors={['#119438', '#1A9B36', '#1B9D36']}
+            style={styles.continueButton}>
+            <Text style={styles.buttonText}>Convertir</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
+const mapStateToProps = state => ({
+  userinfo: state.root.userinfo,
+});
+
+// const mapDispatchToProps = dispatch => ({
+//   setAccountType: values => dispatch(setAccountType(values)),
+// });
+
+export default connect(
+  mapStateToProps,
+  // mapDispatchToProps,
+)(BalanceScreen);
 
 const styles = StyleSheet.create({
   container: {
