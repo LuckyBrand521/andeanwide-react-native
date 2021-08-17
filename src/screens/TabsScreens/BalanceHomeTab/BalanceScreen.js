@@ -22,7 +22,8 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import {numberWithCommas} from '../../../data/helpers';
 
-function BalanceScreen({navigation, userinfo}) {
+function BalanceScreen({navigation, userinfo, orders}) {
+  console.log(orders.length);
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -200,53 +201,60 @@ function BalanceScreen({navigation, userinfo}) {
         </Text>
 
         <View style={styles.trasactionsTitle}>
-          <Text style={{...styles.btnText, color: '#707A81', fontSize: 18}}>
+          <Text
+            style={{
+              ...styles.btnText,
+              color: '#707A81',
+              fontSize: 18,
+              flex: 2,
+            }}>
             Cantidad
           </Text>
-
-          <View
+          <Text
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: wp('40%'),
+              ...styles.btnText,
+              color: '#707A81',
+              fontSize: 18,
+              flex: 2,
             }}>
-            <Text style={{...styles.btnText, color: '#707A81', fontSize: 18}}>
-              Fecha{' '}
-            </Text>
-            <Text style={{...styles.btnText, color: '#707A81', fontSize: 18}}>
-              Estatus
-            </Text>
-          </View>
+            Fecha{' '}
+          </Text>
+          <Text
+            style={{
+              ...styles.btnText,
+              color: '#707A81',
+              fontSize: 18,
+              flex: 1,
+            }}>
+            Estatus
+          </Text>
         </View>
       </View>
       <ScrollView>
-        <View style={styles.transactionsList}>
-          <Text style={{color: '#fff', fontSize: 18}}>100.0000</Text>
+        {orders.length > 0 &&
+          orders.map(item => {
+            return (
+              <TouchableOpacity style={styles.transactionsList} key={item.id}>
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontSize: 18,
+                    flex: 2,
+                  }}>
+                  {numberWithCommas(item.payment_amount)}
+                </Text>
+                <Text style={{color: '#fff', fontSize: 18, flex: 2}}>
+                  {item.payed_at}
+                </Text>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              position: 'absolute',
-              right: wp('10%'),
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: wp('40%'),
-            }}>
-            <View>
-              <Text style={{color: '#fff', fontSize: 18}}>09/17/2020</Text>
-              <Text style={{...styles.btnText, color: '#707A81', fontSize: 10}}>
-                11:22pm
-              </Text>
-            </View>
-
-            <Text style={{...styles.btnText}}>--</Text>
-          </View>
-
-          <View />
-        </View>
+                <Text style={{...styles.btnText, fontSize: 14, flex: 1}}>
+                  {item.payout_status}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
       </ScrollView>
-      <View style={styles.footerButtonContainer}>
+      {/* <View style={styles.footerButtonContainer}>
         <TouchableOpacity>
           <LinearGradient
             start={{x: 0, y: 0}}
@@ -256,12 +264,13 @@ function BalanceScreen({navigation, userinfo}) {
             <Text style={styles.buttonText}>Convertir</Text>
           </LinearGradient>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 }
 const mapStateToProps = state => ({
   userinfo: state.root.userinfo,
+  orders: state.root.orders,
 });
 
 // const mapDispatchToProps = dispatch => ({
@@ -382,7 +391,7 @@ const styles = StyleSheet.create({
 
   btnText: {
     color: '#fff',
-    fontSize: 15,
+    fontSize: 20,
   },
 
   cardButtonContainer: {
@@ -399,13 +408,12 @@ const styles = StyleSheet.create({
   },
 
   transactionsList: {
-    width: wp('100%'),
     height: hp('11%'),
     backgroundColor: '#18222E',
-    marginTop: 8,
-    paddingHorizontal: 20,
+    marginTop: 3,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingLeft: 10,
   },
 });

@@ -18,7 +18,6 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-
 const options = ['CLP', 'COP', 'PEN', 'USD'];
 const options2 = ['CLP', 'COP', 'PEN', 'USD'];
 
@@ -149,7 +148,11 @@ export default function EnviarScreen({navigation}) {
                   placeholderStyle={{color: '#fff'}}
                   style={{right: wp('1%')}}
                   placeholder="CLP"
-                  onSelectedStyle={{color: '#fff'}}
+                  onSelectedStyle={{
+                    color: '#fff',
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                  }}
                   onValueChange={value => {
                     // Do anything you want with the value.
                     // For example, save in state.
@@ -224,7 +227,11 @@ export default function EnviarScreen({navigation}) {
                   placeholderStyle={{color: '#fff'}}
                   style={{right: wp('1%')}}
                   placeholder="CLP"
-                  onSelectedStyle={{color: '#fff'}}
+                  onSelectedStyle={{
+                    color: '#fff',
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                  }}
                   onValueChange={value => {
                     // Do anything you want with the value.
                     // For example, save in state.
@@ -247,26 +254,16 @@ export default function EnviarScreen({navigation}) {
               </View>
             </View>
 
-            <TouchableOpacity onPress={() => navigation.navigate('PriorityScreen')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('PriorityScreen')}>
               <LinearGradient
                 start={{x: 0, y: 0}}
                 end={{x: 1, y: 0}}
                 colors={['#0D5734', '#0D5734', '#1B975B']}
-                style={styles.continueButton}>
-                <View
-                  style={{
-                    width: 70,
-                    height: 40,
-                    right: -5,
-                    bottom: 15,
-                    transform: [{scaleX: 2}],
-                    overflow: 'hidden',
-                    position: 'absolute',
-                    borderRadius: 80,
-                    backgroundColor: '#198352',
-                  }}
-                />
-                <Text style={styles.buttonText}>Prioridad</Text>
+                style={{...styles.continueButton, width: wp('80%')}}>
+                <Text style={{...styles.buttonText, fontSize: 18}}>
+                  Prioridad
+                </Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -308,7 +305,11 @@ export default function EnviarScreen({navigation}) {
                   placeholderStyle={{color: '#fff'}}
                   style={{right: wp('1%')}}
                   placeholder="CLP"
-                  onSelectedStyle={{color: '#fff'}}
+                  onSelectedStyle={{
+                    color: '#fff',
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                  }}
                   onValueChange={value => {
                     // Do anything you want with the value.
                     // For example, save in state.
@@ -383,7 +384,11 @@ export default function EnviarScreen({navigation}) {
                   placeholderStyle={{color: '#fff'}}
                   style={{right: wp('1%')}}
                   placeholder="CLP"
-                  onSelectedStyle={{color: '#fff'}}
+                  onSelectedStyle={{
+                    color: '#fff',
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                  }}
                   onValueChange={value => {
                     // Do anything you want with the value.
                     // For example, save in state.
@@ -406,26 +411,16 @@ export default function EnviarScreen({navigation}) {
               </View>
             </View>
 
-            <TouchableOpacity onPress={() => navigation.navigate('PriorityScreen')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('PriorityScreen')}>
               <LinearGradient
                 start={{x: 0, y: 0}}
                 end={{x: 1, y: 0}}
                 colors={['#0D5734', '#0D5734', '#1B975B']}
-                style={styles.continueButton}>
-                <View
-                  style={{
-                    width: 70,
-                    height: 40,
-                    right: -5,
-                    bottom: 15,
-                    transform: [{scaleX: 2}],
-                    overflow: 'hidden',
-                    position: 'absolute',
-                    borderRadius: 80,
-                    backgroundColor: '#198352',
-                  }}
-                />
-                <Text style={styles.buttonText}>Prioridad</Text>
+                style={{...styles.continueButton, width: wp('80%')}}>
+                <Text style={{...styles.buttonText, fontSize: 18}}>
+                  Prioridad
+                </Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -433,26 +428,14 @@ export default function EnviarScreen({navigation}) {
       </View>
 
       <View style={styles.footerButtonContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('ReviewEnviarScreen')}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('ReviewEnviarScreen')}>
           <LinearGradient
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
             colors={['#0D9239', '#199B37']}
             style={{...styles.continueButton, marginTop: 0}}>
-            <View
-              style={{
-                width: 70,
-                height: 40,
-                right: -5,
-                bottom: 15,
-                transform: [{scaleX: 2}],
-                overflow: 'hidden',
-                position: 'absolute',
-                borderRadius: 80,
-                backgroundColor: '#1B8D36',
-              }}
-            />
-            <Text style={styles.buttonText}>Continuar</Text>
+            <Text style={{...styles.buttonText, fontSize: 18}}>Continuar</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -469,6 +452,7 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color: '#fff',
+    fontSize: 18,
   },
 
   welcome: {
@@ -536,7 +520,7 @@ const styles = StyleSheet.create({
   },
 
   continueButton: {
-    width: wp('80%'),
+    width: wp('90%'),
     height: 45,
     borderRadius: 15,
     backgroundColor: '#1A8D35',

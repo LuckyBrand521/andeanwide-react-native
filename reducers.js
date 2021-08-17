@@ -5,6 +5,8 @@ const initial_state = {
   error: null,
   userinfo: {},
   balance: {},
+  orders: [],
+  recipients: [],
 };
 const rootReducer = (state = initial_state, action) => {
   switch (action.type) {
@@ -22,6 +24,10 @@ const rootReducer = (state = initial_state, action) => {
       return {...state, userinfo: action.value};
     case 'SAVE_BALANCE_INFO':
       return {...state, balance: action.value};
+    case 'SAVE_ORDER_HISTORY':
+      return {...state, orders: action.value};
+    case 'SAVE_RECIPIENT_LIST':
+      return {...state, recipients: action.value};
     case 'ERROR':
       return {...state, error: action.error};
     default:

@@ -41,6 +41,16 @@ export const saveBalanceInfo = value => ({
   value,
 });
 
+export const saveOrderInfo = value => ({
+  type: 'SAVE_ORDER_HISTORY',
+  value,
+});
+
+export const saveRecipients = value => ({
+  type: 'SAVE_RECIPIENT_LIST',
+  value,
+});
+
 export const loginAction = values => dispatch => {
   //login with the user value to API
   return axios
@@ -83,6 +93,49 @@ export const getMyInfo = () => dispatch => {
       return Promise.reject(err);
     });
 };
+
+export const getOrderHistory = () => dispatch => {
+  //gets user data from server
+  const accessToken = store.getState().root.token.value;
+  return axios
+    .get(APP.APP_URL + 'api/orders', {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(res => {
+      dispatch(saveOrderInfo(res.data.data));
+      return Promise.resolve();
+    })
+    .catch(err => {
+      dispatch(error(err.message || 'ERROR'));
+      return Promise.reject(err);
+    });
+};
+
+export const getRecipientList = () => dispatch => {
+  //gets user data from server
+  const accessToken = store.getState().root.token.value;
+  return axios
+    .get(APP.APP_URL + 'api/recipients', {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(res => {
+      dispatch(saveRecipients(res.data.data));
+      return Promise.resolve();
+    })
+    .catch(err => {
+      dispatch(error(err.message || 'ERROR'));
+      return Promise.reject(err);
+    });
+};
+
 export const setAccountType = values => dispatch => {
   const accessToken = store.getState().root.token.value;
   return axios

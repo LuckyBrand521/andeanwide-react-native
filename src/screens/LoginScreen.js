@@ -24,7 +24,7 @@ import {
 } from 'react-native-responsive-screen';
 import * as yup from 'yup';
 
-import {loginAction, getMyInfo} from '../../actions';
+import {loginAction, getMyInfo, getOrderHistory} from '../../actions';
 
 const loginFormSchema = yup.object().shape({
   email: yup
@@ -38,7 +38,13 @@ const loginFormSchema = yup.object().shape({
     .required('Password is required'),
 });
 
-function LoginScreen({navigation, loginAction, getMyInfo, token}) {
+function LoginScreen({
+  navigation,
+  loginAction,
+  getMyInfo,
+  getOrderHistory,
+  token,
+}) {
   const [isLoading, setLoading] = useState(false);
   const loginSubmitAPI = values => {
     setLoading(true);
@@ -47,22 +53,33 @@ function LoginScreen({navigation, loginAction, getMyInfo, token}) {
         //navigation.navigate('FaceConfigurationScreen');
         getMyInfo()
           .then(() => {
-            Toast.show('Welcome!', Toast.LONG, ['UIAlertController']);
-            navigation.navigate('tabs');
+            getOrderHistory()
+              .then(() => {
+                setLoading(false);
+                Toast.show('Welcome!', Toast.LONG, ['UIAlertController']);
+                navigation.navigate('tabs');
+              })
+              .catch(err => {
+                setLoading(false);
+                Toast.show('An error occured!', Toast.LONG, [
+                  'UIAlertController',
+                ]);
+              });
           })
           .catch(err => {
-            console.error(err);
+            setLoading(false);
+            Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
           })
           .finally(() => {
-            setLoading(false);
+            // setLoading(false);
           });
       })
       .catch(err => {
-        console.error(err);
+        setLoading(false);
         Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
       })
       .finally(() => {
-        setLoading(false);
+        // setLoading(false);
       });
   };
 
@@ -183,7 +200,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   loginAction: values => dispatch(loginAction(values)),
-  getMyInfo: values => dispatch(getMyInfo(values)),
+  getMyInfo: () => dispatch(getMyInfo()),
+  getOrderHistory: () => dispatch(getOrderHistory()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);

@@ -335,11 +335,6 @@ function MasStack() {
   );
 }
 
-const Stack1 = createStackNavigator();
-const Stack2 = createStackNavigator();
-const Stack3 = createStackNavigator();
-const Stack4 = createStackNavigator();
-
 function BalanceStack() {
   return (
     <NavigationContainer independent={true} headerMode>
@@ -355,11 +350,11 @@ function EnviarStack() {
     <NavigationContainer independent={true} headerMode>
       <Stack3.Navigator headerMode="none" initialRouteName={EnviarScreen}>
         <Stack3.Screen name="EnviarScreen" component={EnviarScreen} />
+        <Stack3.Screen name="PriorityScreen" component={PriorityScreen} />
         <Stack3.Screen
           name="ReviewEnviarScreen"
           component={ReviewEnviarScreen}
         />
-        <Stack3.Screen name="PriorityScreen" component={PriorityScreen} />
       </Stack3.Navigator>
     </NavigationContainer>
   );
@@ -383,3 +378,8 @@ function BeneficiariosStack() {
     </NavigationContainer>
   );
 }
+
+const Stack1 = createStackNavigator();
+const Stack2 = createStackNavigator();
+const Stack3 = createStackNavigator();
+const Stack4 = createStackNavigator();

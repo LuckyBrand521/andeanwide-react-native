@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import {connect} from 'react-redux';
+import APP from '../../../../app.json';
+import axios from 'axios';
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,7 +11,7 @@ import {
   StatusBar,
   TouchableOpacity,
   FlatList,
-  Image
+  Image,
 } from 'react-native';
 
 import {
@@ -18,26 +21,79 @@ import {
 
 //icons
 
+import Spinner from 'react-native-loading-spinner-overlay';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {getRecipientList} from '../../../../actions';
 
+function BeneficiariosScreen({
+  navigation,
+  recipients,
+  token,
+  getRecipientList,
+}) {
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    getRecipientList()
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch(err => {
+        setIsLoading(false);
+        Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
+      });
+  }, []);
 
-export default function BeneficiariosScreen({navigation}) {
-  const [gallery, useGallery] = React.useState([
-    {
-      id: '1',
-      name: 'NC',
-      country: require('../../../images/country.png'),
-      title: 'NELVINSO JOSE CHAVEZ CUBA',
-      subtitle: 'BANCOLOMBIA / 612000000155',
-    },
-    {
-      id: '2',
-      name: 'MT',
-      country: require('../../../images/country.png'),
-      title: 'MIGUEL ÀNGEL TORRES COL',
-      subtitle: 'BANCOLOMBIA / 235000001016',
-    },
-  ]);
+  const detailView = id => {
+    axios
+      .get(
+        APP.APP_URL + `api/recipients/${id}`,
+        {},
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      .then(res => {
+        const val = res.data.data;
+        let userinfo = {
+          name: val.name,
+          lastname: val.lastname,
+          dni: val.dni,
+          country_id: val.country.id,
+          bank_id: val.bank.id,
+          phone: val.phone,
+          email: val.email,
+          bank_account: val.bank_account,
+          account_type: val.account_type,
+          address: val.address,
+          document_type: val.document_type,
+        };
+        navigation.navigate('CrearBeneficiarioScreen', {
+          isNew: false,
+          userinfo: userinfo,
+          token: token,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Spinner
+          visible={isLoading}
+          textContent={'Colecting data...'}
+          textStyle={{color: '#fff'}}
+        />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -50,9 +106,8 @@ export default function BeneficiariosScreen({navigation}) {
         <Text style={styles.headerText}>Destinatario</Text>
       </View>
 
-      <View>
-        <TouchableOpacity
-          >
+      <View style={{flex: 1}}>
+        <TouchableOpacity>
           <View style={styles.listContainer}>
             <View style={styles.listdataContainer}>
               <MaterialIcons name="search" size={30} color="#fff" />
@@ -69,7 +124,14 @@ export default function BeneficiariosScreen({navigation}) {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('CrearBeneficiarioScreen')}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('CrearBeneficiarioScreen', {
+              isNew: true,
+              userinfo: null,
+              token: token,
+            })
+          }>
           <View style={styles.listContainer}>
             <View style={styles.listdataContainer}>
               <MaterialIcons name="person-add" size={30} color="#fff" />
@@ -86,57 +148,69 @@ export default function BeneficiariosScreen({navigation}) {
           </View>
         </TouchableOpacity>
 
-        <View>
-          <Text style={{...styles.verifyText}}>Cuentas Vinculadas</Text>
-
-          <View style={styles.mainWrapper}>
-            <FlatList
-              keyExtractor={item => item.id}
-              data={gallery}
-              renderItem={({item}) => {
-                return (
-                  <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate('CarteraAccountTypeScreen')
-                    }>
-                    <View
-                      style={{
-                        ...styles.listContainer,
-                        backgroundColor: '#185341',
-                      }}>
-                      <View style={styles.plusCircle}>
-                        <Text
-                          style={{...styles.headerText, ...styles.listTitle}}>
-                          {item.name}
-                        </Text>
-                      </View>
-
-                      <View>
-                        <Text
-                          style={{...styles.headerText, ...styles.listTitle}}>
-                          {item.title}
-                        </Text>
-                        <Text
-                          style={{
-                            ...styles.verifyText,
-                            ...styles.listSubtitle,
-                          }}>
-                          {item.subtitle}
-                        </Text>
-                      </View>
-
-                      <Image source={item.country} style={styles.country} />
+        <Text style={{...styles.verifyText}}>Cuentas Vinculadas</Text>
+        <View style={{flex: 1}}>
+          <FlatList
+            keyExtractor={item => item.id}
+            data={recipients}
+            renderItem={({item}) => {
+              return (
+                <TouchableOpacity
+                // onPress={() =>
+                //   // navigation.navigate('CarteraAccountTypeScreen')
+                // }>
+                >
+                  <View
+                    style={{
+                      ...styles.listContainer,
+                      backgroundColor: '#185341',
+                      flex: 1,
+                    }}>
+                    <View style={{...styles.plusCircle, flex: 1}}>
+                      <Text style={{...styles.headerText, ...styles.listTitle}}>
+                        {item.name[0] + ' ' + item.lastname[0]}
+                      </Text>
                     </View>
-                  </TouchableOpacity>
-                );
-              }}
-            />
-          </View>
+
+                    <View style={{flex: 4}}>
+                      <Text style={{...styles.headerText, ...styles.listTitle}}>
+                        {item.name}
+                      </Text>
+                      <Text
+                        style={{
+                          ...styles.verifyText,
+                          ...styles.listSubtitle,
+                        }}>
+                        {item.type + ' ' + item.phone}
+                      </Text>
+                    </View>
+                    <View style={{flex: 1}} />
+
+                    {/* <Image source={item.country} style={styles.country} /> */}
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
+          />
         </View>
       </View>
     </SafeAreaView>
   );
 }
+
+const mapStateToProps = state => ({
+  recipients: state.root.recipients,
+  token: state.root.token,
+});
+
+const mapDispatchToProps = dispatch => ({
+  getRecipientList: values => dispatch(getRecipientList(values)),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(BeneficiariosScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -167,16 +241,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     marginTop: hp('1%'),
+    marginBottom: hp('1%'),
   },
 
   listContainer: {
     width: wp('100%'),
-    height: hp('13%'),
+    height: hp('12%'),
     backgroundColor: '#18222E',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: wp('10%'),
-    marginTop: hp('.8%'),
+    marginTop: 3,
+    justifyContent: 'space-between',
   },
 
   plusCircle: {
