@@ -38,7 +38,7 @@ const infoFormSchema = yup.object().shape({
   lastname: yup.string().required('This field is required'),
   dni: yup.string().required('This field is requried'),
   country_id: yup.number().required('This field is requried'),
-  bank_id: yup.string().required('This field is requried'),
+  bank_id: yup.number().required('This field is requried'),
   phone: yup.number().required('This field is requried'),
   email: yup
     .string()
@@ -55,7 +55,7 @@ let initial_form_data = {
   lastname: '',
   dni: '',
   country_id: 0,
-  bank_id: '',
+  bank_id: 0,
   phone: 0,
   email: '',
   bank_account: '',
@@ -65,17 +65,16 @@ let initial_form_data = {
 };
 
 const accountTypes = [
-  {id: 'S', label: 'Persona Natural'},
-  {id: 'C', label: 'Persona Juridica'},
+  {name: 'S', label: 'Persona Natural'},
+  {name: 'C', label: 'Persona Juridica'},
 ];
 const dniOptions = ['DNI', 'RUC', 'Carnet Extranjeria', 'Paraporte'];
 export default function CrearBeneficiarioScreen({route, navigation}) {
-  const {isNew, userinfo, token} = route.params;
+  const {isNew, userinfo, token, user_id} = route.params;
   const [isLoading, setLoading] = useState(false);
-  const [country, setCountry] = useState(0);
+  const [country, setCountry] = useState(userinfo ? userinfo.country_id : 0);
   const [banks, setBanks] = useState([]);
   useEffect(() => {
-    console.log('country:::::', country);
     axios
       .get(
         APP.APP_URL + `api/countries/${country}/banks`,
@@ -84,23 +83,82 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.value}`,
           },
         },
       )
       .then(res => {
-        console.log(res.data.data);
         setBanks(res.data.data);
       });
   }, [country]);
   //inputs are in the same pattern as UI
-  const formSubmit = values => {};
+  //submits the form with new beneficiary insertion
+  const formSubmit = values => {
+    console.log(values);
+    axios
+      .post(APP.APP_URL + 'api/recipients', values, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.value}`,
+        },
+      })
+      .then(res => {
+        Toast.show('Successfully created!', Toast.LONG, ['UIAlertController']);
+        navigation.navigate('BeneficiariosScreen');
+      })
+      .catch(err => {
+        console.log(err);
+        Toast.show('An error occurred, Try again!', Toast.LONG, [
+          'UIAlertController',
+        ]);
+      });
+  };
+
+  //deletes the current beneficiary
+  const deleteUser = () => {
+    axios
+      .del(
+        APP.APP_URL + `api/recipients/${user_id}`,
+        {},
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.value}`,
+          },
+        },
+      )
+      .then(res => {
+        Toast.show('Successfully deleted!', Toast.LONG, ['UIAlertController']);
+        navigation.goBack();
+      });
+  };
+
+  //updates detail data of a recipient
+  const updateUser = values => {
+    axios
+      .del(APP.APP_URL + `api/recipients/${user_id}`, values, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.value}`,
+        },
+      })
+      .then(res => {
+        Toast.show('Successfully saved!', Toast.LONG, ['UIAlertController']);
+        navigation.goBack();
+      });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Formik
         validationSchema={infoFormSchema}
         initialValues={!userinfo ? initial_form_data : userinfo}
-        onSubmit={values => formSubmit(values)}>
+        onSubmit={values => {
+          user_id > 0 ? updateUser(values) : formSubmit(values);
+        }}>
         {({
           handleChange,
           handleBlur,
@@ -145,14 +203,14 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
                     onValueChange={value => {
                       // Do anything you want with the value.
                       // For example, save in state.
-                      handleChange('account_type');
+                      values.account_type = value;
                     }}
                     selected={values.account_type}>
-                    {Object.values(accountTypes).map(item => (
+                    {Object.values(accountTypes).map((item, index) => (
                       <SelectPicker.Item
                         label={item.label}
-                        value={item.id}
-                        key={item.id}
+                        value={item.name}
+                        key={item.index}
                       />
                     ))}
                   </SelectPicker>
@@ -203,10 +261,10 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
                     borderColor="#919191"
                     alignSelf="center"
                     placeholder="País"
-                    selectedValue={country}
+                    selectedValue={values.country_id}
                     onValueChange={id => {
                       setCountry(id);
-                      handleChange('country_id', id);
+                      values.country_id = id;
                     }}
                     _selectedItem={{
                       bg: 'cyan.600',
@@ -262,7 +320,9 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
                     style={{right: wp('1%')}}
                     placeholder="Tipo de Documento"
                     onSelectedStyle={{color: '#999999'}}
-                    onValueChange={handleChange('document_type')}
+                    onValueChange={res => {
+                      values.document_type = res;
+                    }}
                     onBlur={handleBlur('document_type')}
                     selected={values.document_type}>
                     {Object.values(dniOptions).map((item, index) => (
@@ -291,7 +351,10 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
                     style={{right: wp('1%')}}
                     placeholder="Banco"
                     onSelectedStyle={{color: '#999999'}}
-                    onValueChange={handleChange('bank_id')}
+                    onValueChange={res => {
+                      values.bank_id = res ? res : 0;
+                      console.log(values.bank_id);
+                    }}
                     onBlur={handleBlur('bank_id')}
                     selected={values.bank_id}>
                     {Object.values(banks).map(item => (
@@ -326,6 +389,7 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
                 <>
                   <TouchableOpacity
                     onPress={() => {
+                      console.log(values);
                       handleSubmit;
                     }}>
                     <LinearGradient
@@ -343,7 +407,10 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
                     flexDirection: 'row',
                     justifyContent: 'space-around',
                   }}>
-                  <TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      deleteUser();
+                    }}>
                     <LinearGradient
                       start={{x: 0, y: 0}}
                       end={{x: 1, y: 0}}
@@ -352,7 +419,10 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
                       <Text style={styles.buttonText}>Borrar</Text>
                     </LinearGradient>
                   </TouchableOpacity>
-                  <TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleSubmit;
+                    }}>
                     <LinearGradient
                       start={{x: 0, y: 0}}
                       end={{x: 1, y: 0}}

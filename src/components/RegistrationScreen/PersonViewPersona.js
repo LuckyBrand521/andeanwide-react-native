@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import APP from '../../../app.json';
 import {
   StyleSheet,
   Text,
@@ -15,7 +16,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {useForm, Controller} from 'react-hook-form';
 import * as yup from 'yup';
 import CheckBox from '@react-native-community/checkbox';
 import {useNavigation} from '@react-navigation/core';
@@ -29,8 +29,16 @@ const validationSchema = yup.object().shape({
     .string()
     .oneOf([yup.ref('password'), null])
     .required(),
-  // acceptTerms: yup.boolean().oneOf([true, false], 'Please check this item.')
+  acceptTerms: yup.boolean().oneOf([true], 'Please check this item.'),
 });
+
+const initial_values = {
+  name: '',
+  email: '',
+  password: '',
+  passwordConfirmation: '',
+  acceptTerms: false,
+};
 
 export default function PersonViewPersona() {
   const navigation = useNavigation();
@@ -40,10 +48,16 @@ export default function PersonViewPersona() {
   const [checkTerms, setCheckTerms] = useState(false);
   const registerSubmitAPI = values => {
     setLoading(true);
-    if (checkTerms) {
+    if (values.acceptTerms) {
       axios
-        .post(APP.APP_URL + 'api/users/register', values)
+        .post(APP.APP_URL + 'api/users/register', values, {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        })
         .then(res => {
+          setLoading(false);
           const message = res.data.message;
           console.log(res.data);
           Toast.show(
@@ -52,10 +66,12 @@ export default function PersonViewPersona() {
             ['UIAlertController'],
           );
           setTimeout(function () {
-            navigation.navigate('LoginScreen');
+            navigation.navigate('SignupCompleted');
           }, 3000);
         })
         .catch(err => {
+          console.log(err);
+          setLoading(false);
           Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
         });
     }
@@ -87,14 +103,10 @@ export default function PersonViewPersona() {
       <View>
         <Formik
           validationSchema={validationSchema}
-          initialValues={{
-            name: '',
-            email: '',
-            password: '',
-            password_confirmation: '',
-            acceptTerms: false,
-          }}
-          onSubmit={values => registerSubmitAPI(values)}>
+          initialValues={initial_values}
+          onSubmit={values => {
+            registerSubmitAPI(values);
+          }}>
           {({
             handleChange,
             handleBlur,
@@ -104,6 +116,11 @@ export default function PersonViewPersona() {
             isValid,
           }) => (
             <>
+              {!isValid && (
+                <Text style={{fontSize: 14, color: 'red', textAlign: 'center'}}>
+                  Please fill the form correctly
+                </Text>
+              )}
               <TextInput
                 placeholder="Username"
                 placeholderTextColor="#919191"
@@ -171,6 +188,9 @@ export default function PersonViewPersona() {
                 placeholder="Contraseña confirmada"
                 placeholderTextColor="#919191"
                 style={styles.input}
+                onChangeText={handleChange('password_confirmation')}
+                onBlue={handleBlur('password_confirmation')}
+                key="password_confirmation"
                 value={values.password_confirmation}
               />
 
@@ -178,7 +198,11 @@ export default function PersonViewPersona() {
                 <CheckBox
                   tintColor="#aaaaaa"
                   onFillColor="#09A04E"
-                  onValueChange={newValue => setCheckTerms(newValue)}
+                  onValueChange={value => {
+                    setCheckTerms(value);
+                    values.acceptTerms = value;
+                  }}
+                  onBlur={handleBlur('acceptTerms')}
                   tintColors
                   disabled={false}
                   key="acceptTerms"
@@ -203,7 +227,9 @@ export default function PersonViewPersona() {
               <View>
                 <TouchableOpacity
                   disabled={!isValid}
-                  onPress={handleSubmit}
+                  onPress={() => {
+                    handleSubmit();
+                  }}
                   style={{
                     ...styles.buttonContainer,
                   }}>
@@ -211,7 +237,7 @@ export default function PersonViewPersona() {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  onPress={navigation.navigate('LoginScreen')}
+                  onPress={() => navigation.navigate('LoginScreen')}
                   style={{
                     ...styles.buttonContainer,
                   }}>
@@ -262,5 +288,8 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color: '#fff',
+  },
+  spinnerTextStyle: {
+    color: '#FFF',
   },
 });

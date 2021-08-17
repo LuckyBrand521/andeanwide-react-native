@@ -45,17 +45,13 @@ function BeneficiariosScreen({
 
   const detailView = id => {
     axios
-      .get(
-        APP.APP_URL + `api/recipients/${id}`,
-        {},
-        {
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
+      .get(APP.APP_URL + `api/recipients/${id}`, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.value}`,
         },
-      )
+      })
       .then(res => {
         const val = res.data.data;
         let userinfo = {
@@ -75,6 +71,7 @@ function BeneficiariosScreen({
           isNew: false,
           userinfo: userinfo,
           token: token,
+          user_id: id,
         });
       })
       .catch(err => {
@@ -130,6 +127,7 @@ function BeneficiariosScreen({
               isNew: true,
               userinfo: null,
               token: token,
+              user_id: null,
             })
           }>
           <View style={styles.listContainer}>
@@ -155,11 +153,7 @@ function BeneficiariosScreen({
             data={recipients}
             renderItem={({item}) => {
               return (
-                <TouchableOpacity
-                // onPress={() =>
-                //   // navigation.navigate('CarteraAccountTypeScreen')
-                // }>
-                >
+                <TouchableOpacity onPress={() => detailView(item.id)}>
                   <View
                     style={{
                       ...styles.listContainer,

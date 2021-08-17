@@ -19,13 +19,12 @@ import {
 import BusinessViewEmpressa from '../components/RegistrationScreen/BusinessViewEmpressa';
 import PersonViewPersona from '../components/RegistrationScreen/PersonViewPersona';
 
-export default function RegistrationScreen() {
+export default function RegistrationScreen({navigation}) {
   const [bgColorP, setbgColorP] = useState('#09A04E');
   const [bgColorE, setbgColorE] = useState('#fff');
   const [colorP, setColorP] = useState('#fff');
   const [colorE, setColorE] = useState('gray');
   const [isindividual, setIsindividual] = useState(1);
-
 
   const onpresstab1 = () => {
     setIsindividual(1);
@@ -93,11 +92,7 @@ export default function RegistrationScreen() {
             </View>
           </TouchableWithoutFeedback>
         </View>
-        {isindividual === 1 ? (
-        <PersonViewPersona />
-        ) : (
-          <BusinessViewEmpressa />
-        )}
+        {isindividual === 1 ? <PersonViewPersona /> : <BusinessViewEmpressa />}
       </View>
     </SafeAreaView>
   );

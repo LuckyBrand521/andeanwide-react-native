@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useState} from 'react';
+import APP from '../../../app.json';
 import {
   StyleSheet,
   Text,
@@ -6,13 +7,18 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+
+import {Formik} from 'formik';
+import Spinner from 'react-native-loading-spinner-overlay';
+import Toast from 'react-native-simple-toast';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
+import * as yup from 'yup';
 import CheckBox from '@react-native-community/checkbox';
 import {useNavigation} from '@react-navigation/core';
+import axios from 'axios';
 
 export default function BusinessViewEmpressa() {
   const navigation = useNavigation();
@@ -20,7 +26,7 @@ export default function BusinessViewEmpressa() {
   const [mail, onChangemail] = React.useState('');
   const [pass, onChangePass] = React.useState('');
   const [pass_confirmation, onChangePassConfirmation] = React.useState('');
-  
+
   const [toggleCheckBox, setToggleCheckBox] = React.useState(false);
 
   const [emailerror, setEmailError] = React.useState('');
@@ -70,7 +76,7 @@ export default function BusinessViewEmpressa() {
           style={styles.input}
           onChangeText={onChangePassConfirmation}
           value={pass_confirmation}
-        /> 
+        />
       </View>
 
       <View style={styles.termsContainer}>

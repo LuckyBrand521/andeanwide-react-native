@@ -23,7 +23,7 @@ export default function SignupCompleted({navigation}) {
         backgroundColor="#18222E"
         translucent={true}
       />
-      <View style={styles.header}></View>
+      <View style={styles.header} />
 
       <View style={styles.subContainer}>
         <Image
