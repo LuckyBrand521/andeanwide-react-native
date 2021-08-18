@@ -18,6 +18,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 //Pickers
 import DatePicker from 'react-native-datepicker';
 import SelectPicker from 'react-native-form-select-picker';
+import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
 import {Formik} from 'formik';
 import * as yup from 'yup';
@@ -94,7 +95,7 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
   //inputs are in the same pattern as UI
   //submits the form with new beneficiary insertion
   const formSubmit = values => {
-    console.log(values);
+    setLoading(true);
     axios
       .post(APP.APP_URL + 'api/recipients', values, {
         headers: {
@@ -104,21 +105,26 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
         },
       })
       .then(res => {
-        Toast.show('Successfully created!', Toast.LONG, ['UIAlertController']);
+        setLoading(false);
+        Toast.show('Successfully created!', Toast.LONG);
         navigation.navigate('BeneficiariosScreen');
       })
       .catch(err => {
+        setLoading(false);
         console.log(err);
-        Toast.show('An error occurred, Try again!', Toast.LONG, [
-          'UIAlertController',
-        ]);
+        Toast.show('An error occurred, Try again!', Toast.LONG);
       });
   };
 
   //deletes the current beneficiary
   const deleteUser = () => {
+    console.log(
+      'deleted requested',
+      APP.APP_URL + `api/recipients/${user_id}`,
+      token.value,
+    );
     axios
-      .del(
+      .delete(
         APP.APP_URL + `api/recipients/${user_id}`,
         {},
         {
@@ -130,15 +136,19 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
         },
       )
       .then(res => {
-        Toast.show('Successfully deleted!', Toast.LONG, ['UIAlertController']);
-        navigation.goBack();
+        Toast.show('Successfully deleted!', Toast.LONG);
+        navigation.navigate('BeneficiariosScreen');
+      })
+      .catch(err => {
+        console.log(err);
+        Toast.show('An error occurred!', Toast.LONG);
       });
   };
 
   //updates detail data of a recipient
   const updateUser = values => {
     axios
-      .del(APP.APP_URL + `api/recipients/${user_id}`, values, {
+      .put(APP.APP_URL + `api/recipients/${user_id}`, values, {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
@@ -146,10 +156,22 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
         },
       })
       .then(res => {
-        Toast.show('Successfully saved!', Toast.LONG, ['UIAlertController']);
+        Toast.show('Successfully saved!', Toast.LONG);
         navigation.goBack();
       });
   };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Spinner
+          visible={isLoading}
+          textContent={'Submitting data...'}
+          textStyle={{color: '#fff'}}
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -387,11 +409,7 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
             <View style={styles.footerButtonContainer}>
               {isNew ? (
                 <>
-                  <TouchableOpacity
-                    onPress={() => {
-                      console.log(values);
-                      handleSubmit;
-                    }}>
+                  <TouchableOpacity onPress={handleSubmit}>
                     <LinearGradient
                       start={{x: 0, y: 0}}
                       end={{x: 1, y: 0}}
@@ -419,10 +437,7 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
                       <Text style={styles.buttonText}>Borrar</Text>
                     </LinearGradient>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      handleSubmit;
-                    }}>
+                  <TouchableOpacity onPress={handleSubmit}>
                     <LinearGradient
                       start={{x: 0, y: 0}}
                       end={{x: 1, y: 0}}

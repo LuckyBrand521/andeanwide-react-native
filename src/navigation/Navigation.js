@@ -37,8 +37,8 @@ const Stack = createStackNavigator();
 function Navigation() {
   return (
     <NavigationContainer>
-      {/* <Stack.Navigator headerMode="none" initialRouteName={SplashScreen}> */}
-      <Stack.Navigator headerMode="none" initialRouteName={MyTabs}>
+      <Stack.Navigator headerMode="none" initialRouteName={SplashScreen}>
+        {/* <Stack.Navigator headerMode="none" initialRouteName={MyTabs}> */}
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="tabs" component={MyTabs} />
         <Stack.Screen name="onBoardingScreens" component={onBoardingScreens} />
@@ -276,106 +276,101 @@ function MyTabs() {
 
 function MasStack() {
   return (
-    <NavigationContainer independent={true} headerMode>
-      <Stack1.Navigator
-        headerMode="none"
-        // initialRouteName={CarteraVerifyAccountScreen}
-        initialRouteName={CarteraAccountTypeScreen}>
-        {/* <Stack1.Screen
+    // <NavigationContainer independent={true} headerMode>
+    <Stack1.Navigator
+      headerMode="none"
+      // initialRouteName={CarteraVerifyAccountScreen}
+      initialRouteName={CarteraAccountTypeScreen}>
+      {/* <Stack1.Screen
           name="CarteraVerifyAccountScreen"
           component={CarteraVerifyAccountScreen}
         /> */}
-        <Stack1.Screen
-          name="CarteraAccountTypeScreen"
-          component={CarteraAccountTypeScreen}
-        />
-        <Stack1.Screen
-          name="CarteraDocumentTypeSCreen"
-          component={CarteraDocumentTypeSCreen}
-        />
+      <Stack1.Screen
+        name="CarteraAccountTypeScreen"
+        component={CarteraAccountTypeScreen}
+      />
+      <Stack1.Screen
+        name="CarteraDocumentTypeSCreen"
+        component={CarteraDocumentTypeSCreen}
+      />
 
-        <Stack1.Screen
-          name="CarteraAddPersonnelDetails"
-          component={CarteraAddPersonnelDetails}
-        />
+      <Stack1.Screen
+        name="CarteraAddPersonnelDetails"
+        component={CarteraAddPersonnelDetails}
+      />
 
-        <Stack1.Screen
-          name="BusinessViewEmpressa"
-          component={BusinessViewEmpressa}
-        />
+      <Stack1.Screen
+        name="BusinessViewEmpressa"
+        component={BusinessViewEmpressa}
+      />
 
-        <Stack1.Screen
-          name="DocumentVerificationScreen"
-          component={DocumentVerificationScreen}
-        />
+      <Stack1.Screen
+        name="DocumentVerificationScreen"
+        component={DocumentVerificationScreen}
+      />
 
-        <Stack1.Screen
-          name="PassportVerificationScreen"
-          component={PassportVerificationScreen}
-        />
+      <Stack1.Screen
+        name="PassportVerificationScreen"
+        component={PassportVerificationScreen}
+      />
 
-        <Stack1.Screen
-          name="AfidavetVerificationScreen"
-          component={AfidavetVerificationScreen}
-        />
+      <Stack1.Screen
+        name="AfidavetVerificationScreen"
+        component={AfidavetVerificationScreen}
+      />
 
-        <Stack1.Screen name="CarteraAddEmpresa" component={CarteraAddEmpresa} />
+      <Stack1.Screen name="CarteraAddEmpresa" component={CarteraAddEmpresa} />
 
-        <Stack1.Screen
-          name="EmpresaVerficationMenuScreen"
-          component={EmpresaVerficationMenuScreen}
-        />
+      <Stack1.Screen
+        name="EmpresaVerficationMenuScreen"
+        component={EmpresaVerficationMenuScreen}
+      />
 
-        <Stack1.Screen
-          name="ResidanceVerificationScreen"
-          component={ResidanceVerificationScreen}
-        />
-      </Stack1.Navigator>
-    </NavigationContainer>
+      <Stack1.Screen
+        name="ResidanceVerificationScreen"
+        component={ResidanceVerificationScreen}
+      />
+    </Stack1.Navigator>
+    // </NavigationContainer>
   );
 }
 
 function BalanceStack() {
   return (
-    <NavigationContainer independent={true} headerMode>
-      <Stack2.Navigator headerMode="none" initialRouteName={BalanceScreen}>
-        <Stack2.Screen name="BalanceScreen" component={BalanceScreen} />
-      </Stack2.Navigator>
-    </NavigationContainer>
+    // <NavigationContainer independent={true} headerMode>
+    <Stack2.Navigator headerMode="none" initialRouteName={BalanceScreen}>
+      <Stack2.Screen name="BalanceScreen" component={BalanceScreen} />
+    </Stack2.Navigator>
+    // </NavigationContainer>
   );
 }
 
 function EnviarStack() {
   return (
-    <NavigationContainer independent={true} headerMode>
-      <Stack3.Navigator headerMode="none" initialRouteName={EnviarScreen}>
-        <Stack3.Screen name="EnviarScreen" component={EnviarScreen} />
-        <Stack3.Screen name="PriorityScreen" component={PriorityScreen} />
-        <Stack3.Screen
-          name="ReviewEnviarScreen"
-          component={ReviewEnviarScreen}
-        />
-      </Stack3.Navigator>
-    </NavigationContainer>
+    // <NavigationContainer independent={true} headerMode>
+    <Stack3.Navigator headerMode="none" initialRouteName={EnviarScreen}>
+      <Stack3.Screen name="EnviarScreen" component={EnviarScreen} />
+      <Stack3.Screen name="PriorityScreen" component={PriorityScreen} />
+      <Stack3.Screen name="ReviewEnviarScreen" component={ReviewEnviarScreen} />
+    </Stack3.Navigator>
+    // </NavigationContainer>
   );
 }
 
 function BeneficiariosStack() {
   return (
-    <NavigationContainer independent={true} headerMode>
-      <Stack4.Navigator
-        headerMode="none"
-        initialRouteName={BeneficiariosScreen}>
-        <Stack4.Screen
-          name="BeneficiariosScreen"
-          component={BeneficiariosScreen}
-        />
-        <Stack4.Screen
-          name="CrearBeneficiarioScreen"
-          component={CrearBeneficiarioScreen}
-        />
-      </Stack4.Navigator>
-    </NavigationContainer>
+    // <NavigationContainer independent={true} headerMode>
+    <Stack4.Navigator headerMode="none" initialRouteName={BeneficiariosScreen}>
+      <Stack4.Screen
+        name="BeneficiariosScreen"
+        component={BeneficiariosScreen}
+      />
+      <Stack4.Screen
+        name="CrearBeneficiarioScreen"
+        component={CrearBeneficiarioScreen}
+      />
+    </Stack4.Navigator>
+    // </NavigationContainer>
   );
 }
 

@@ -1,5 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {TouchableWithoutFeedback} from 'react-native';
+import {connect} from 'react-redux';
+import APP from '../../../../app.json';
+import axios from 'axios';
 import {
   SafeAreaView,
   StyleSheet,
@@ -10,21 +13,36 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import {Switch} from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
 import SelectPicker from 'react-native-form-select-picker';
+import Spinner from 'react-native-loading-spinner-overlay';
+import Toast from 'react-native-simple-toast';
 
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {getPairs, saveNewOrder} from '../../../../actions';
 
-const options = ['CLP', 'COP', 'PEN', 'USD'];
-const options2 = ['CLP', 'COP', 'PEN', 'USD'];
+const options = ['CLP', 'USD', 'PEN', 'COP'];
 
-export default function EnviarScreen({navigation}) {
-  const [currency1, setCurrecny1] = useState('');
-  const [currency2, setCurrecny2] = useState('');
+function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
+  const [cost, setCost] = useState(1.19);
+  const [rate, setRate] = useState(1.0);
+  const [sendOptions, setSendOptions] = useState(['CLP', 'USD', 'PEN', 'COP']);
+  const [recvOptions, setRecvOptions] = useState([
+    'COP',
+    'USD',
+    'PEN',
+    'MXN',
+    'VES',
+  ]);
+  const [isLoading, setLoading] = useState(false);
 
+  const [currency1, setCurrency1] = useState('');
+  const [currency2, setCurrency2] = useState('');
+  //states for color tab change
   const [colorP, setColorP] = useState('#fff');
   const [colorE, setColorE] = useState('gray');
 
@@ -34,8 +52,12 @@ export default function EnviarScreen({navigation}) {
   const [selected, setSelected] = useState(0);
 
   //Textinputs for curreny
-  const [number1, onChangeNumber1] = React.useState(null);
-  const [number2, onChangeNumber2] = React.useState(null);
+  const [number1, setNumber1] = useState(null);
+  const [number2, setNumber2] = useState(null);
+
+  //priority toggle
+  const [intPriority, setIntPriority] = useState(false);
+  const [andPriority, setAndPriority] = useState(false);
 
   const onpresstab1 = () => {
     setSelected(0);
@@ -63,6 +85,129 @@ export default function EnviarScreen({navigation}) {
     setColorE('#fff');
     setbgColorE('#09A04E');
   };
+
+  const handleNumber1Change = val => {
+    setNumber1(val);
+    setNumber2((val * rate * (intPriority ? 0.95 : 0.9881)).toFixed(3));
+  };
+
+  const handleNumber2Change = val => {
+    setNumber2(val);
+    setNumber1((val / rate / (intPriority ? 0.95 : 0.9881)).toFixed(3));
+  };
+
+  const handleSwitchChange = res => {
+    setIntPriority(!intPriority);
+    setNumber2((number1 * rate * (!intPriority ? 0.95 : 0.9881)).toFixed(3));
+  };
+
+  const handleCurrency1Change = res => {
+    setCurrency1(res);
+    if (pairs.length > 0) {
+      let seconds = [];
+      pairs.map(item => {
+        if (item.base.name == res) {
+          seconds.push(item.quote.name);
+        }
+      });
+      setRecvOptions(seconds);
+      if (seconds.indexOf(currency2) == -1) {
+        setCurrency2(seconds[0]);
+        axios
+          .get(
+            `https://api.andeanwide.com/api/exchange-rate/${res}/${seconds[0]}`,
+          )
+          .then(res => {
+            const new_rate = parseFloat(res.data.data.bid);
+            setRate(new_rate);
+            setNumber2(
+              (number1 * new_rate * (intPriority ? 0.95 : 0.9881)).toFixed(3),
+            );
+          });
+      } else {
+        axios
+          .get(
+            `https://api.andeanwide.com/api/exchange-rate/${res}/${currency2}`,
+          )
+          .then(res => {
+            const new_rate = parseFloat(res.data.data.bid);
+            setRate(new_rate);
+            setNumber2(
+              (number1 * new_rate * (intPriority ? 0.95 : 0.9881)).toFixed(3),
+            );
+          });
+      }
+    }
+  };
+
+  const handleCurrency2Change = res => {
+    setCurrency2(res);
+    axios
+      .get(`https://api.andeanwide.com/api/exchange-rate/${currency1}/${res}`)
+      .then(res => {
+        const new_rate = parseFloat(res.data.data.bid);
+        setRate(new_rate);
+        setNumber1(
+          (number2 / new_rate / (intPriority ? 0.95 : 0.9881)).toFixed(3),
+        );
+      });
+  };
+
+  /**
+   * useEffect called as componentdidmount once
+   * updates the currency pairs according to the values passed in from API
+   */
+  useEffect(() => {
+    setLoading(true);
+    getPairs()
+      .then(res => {
+        setLoading(false);
+        setCurrency1(res.base.name);
+        setCurrency2(res.quote.name);
+      })
+      .catch(err => {
+        setLoading(false);
+        console.log(err);
+      });
+  }, []);
+
+  const continueOrder = () => {
+    let pair_id = 0;
+    for (let i = 0; i < pairs.length; i++) {
+      if (pairs[i].base.name == currency1 && pairs[i].quote.name == currency2) {
+        pair_id = pairs[i].id;
+      }
+    }
+    let data = {
+      recipient_id: 0,
+      remitter_id: 0,
+      priority_id: intPriority ? 2 : 1,
+      payment_amount: number1,
+      rate: rate,
+      pair_id: pair_id,
+    };
+    console.log(data);
+    saveNewOrder(data);
+    // navigation.navigate('BeneficiariosStack', {screen: 'BeneficiariosScreen'});
+    navigation.navigate('tabs', {
+      screen: 'BeneficiariosStack',
+      params: {
+        screen: 'BeneficiariosScreen',
+        ordering: true,
+      },
+    });
+  };
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Spinner
+          visible={isLoading}
+          textContent={'Collecting data...'}
+          textStyle={{color: '#fff'}}
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -125,9 +270,11 @@ export default function EnviarScreen({navigation}) {
                 </Text>
                 <TextInput
                   style={styles.input}
-                  onChangeText={onChangeNumber1}
+                  onChangeText={res => {
+                    handleNumber1Change(res);
+                  }}
                   value={number1}
-                  placeholder="100.000 $"
+                  placeholder="100.000"
                   placeholderTextColor="#fff"
                   keyboardType="numeric"
                 />
@@ -145,9 +292,13 @@ export default function EnviarScreen({navigation}) {
                   alignItems: 'center',
                 }}>
                 <SelectPicker
-                  placeholderStyle={{color: '#fff'}}
+                  placeholder="Currency"
+                  placeholderStyle={{
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    fontSize: 20,
+                  }}
                   style={{right: wp('1%')}}
-                  placeholder="CLP"
                   onSelectedStyle={{
                     color: '#fff',
                     fontSize: 20,
@@ -156,10 +307,10 @@ export default function EnviarScreen({navigation}) {
                   onValueChange={value => {
                     // Do anything you want with the value.
                     // For example, save in state.
-                    setCurrecny1(value);
+                    handleCurrency1Change(value);
                   }}
                   selected={currency1}>
-                  {Object.values(options).map((val, index) => (
+                  {Object.values(sendOptions).map((val, index) => (
                     <SelectPicker.Item label={val} value={val} key={index} />
                   ))}
                 </SelectPicker>
@@ -169,7 +320,8 @@ export default function EnviarScreen({navigation}) {
               <View style={styles.textContainer}>
                 <Text
                   style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  3,95 CLP
+                  {(number1 * (intPriority ? 0.05 : 0.0119)).toFixed(3)}{' '}
+                  {currency1}
                 </Text>
                 <Text style={styles.text}>Transferencia de bajo costo</Text>
               </View>
@@ -177,17 +329,21 @@ export default function EnviarScreen({navigation}) {
               <View style={styles.textContainer}>
                 <Text
                   style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  96.05
+                  {(number1 * (intPriority ? 0.95 : 0.9881)).toFixed(3)}
                 </Text>
-                <Text style={styles.text}>Importe de CLP convertido</Text>
+                <Text style={styles.text}>
+                  Importe de {currency1} convertido
+                </Text>
               </View>
 
               <View style={styles.textContainer}>
                 <Text
                   style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  775
+                  {rate.toFixed(3)}
                 </Text>
-                <Text style={styles.text}>Tipo de cambio</Text>
+                <Text style={styles.text}>
+                  Tipo de cambio {currency1}/{currency2}
+                </Text>
               </View>
             </View>
 
@@ -204,9 +360,11 @@ export default function EnviarScreen({navigation}) {
                 </Text>
                 <TextInput
                   style={styles.input}
-                  onChangeText={onChangeNumber2}
+                  onChangeText={res => {
+                    handleNumber2Change(res);
+                  }}
                   value={number2}
-                  placeholder="$ 75"
+                  placeholder=""
                   placeholderTextColor="#fff"
                   keyboardType="numeric"
                 />
@@ -224,9 +382,13 @@ export default function EnviarScreen({navigation}) {
                   alignItems: 'center',
                 }}>
                 <SelectPicker
-                  placeholderStyle={{color: '#fff'}}
+                  placeholderStyle={{
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    fontSize: 20,
+                  }}
+                  placeholder="Currency"
                   style={{right: wp('1%')}}
-                  placeholder="CLP"
                   onSelectedStyle={{
                     color: '#fff',
                     fontSize: 20,
@@ -235,10 +397,10 @@ export default function EnviarScreen({navigation}) {
                   onValueChange={value => {
                     // Do anything you want with the value.
                     // For example, save in state.
-                    setCurrecny2(value);
+                    handleCurrency2Change(value);
                   }}
                   selected={currency2}>
-                  {Object.values(options2).map((val, index) => (
+                  {Object.values(recvOptions).map((val, index) => (
                     <SelectPicker.Item label={val} value={val} key={index} />
                   ))}
                 </SelectPicker>
@@ -253,19 +415,24 @@ export default function EnviarScreen({navigation}) {
                 <Text style={styles.text}>12 de Mayo</Text>
               </View>
             </View>
-
-            <TouchableOpacity
-              onPress={() => navigation.navigate('PriorityScreen')}>
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#0D5734', '#0D5734', '#1B975B']}
-                style={{...styles.continueButton, width: wp('80%')}}>
-                <Text style={{...styles.buttonText, fontSize: 18}}>
-                  Prioridad
-                </Text>
-              </LinearGradient>
-            </TouchableOpacity>
+            <View style={styles.switchContainer}>
+              <Switch
+                isChecked={intPriority}
+                style={{textAlign: 'center', width: wp('30%')}}
+                onToggle={res => {
+                  handleSwitchChange();
+                }}
+              />
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontSize: 18,
+                  color: '#fff',
+                  width: wp('50%'),
+                }}>
+                Immediata Prioridad
+              </Text>
+            </View>
           </View>
         ) : (
           <View style={styles.mainContainer}>
@@ -282,8 +449,8 @@ export default function EnviarScreen({navigation}) {
                 </Text>
                 <TextInput
                   style={styles.input}
-                  onChangeText={onChangeNumber1}
-                  value={number1}
+                  // onChangeText={}
+                  // value={}
                   placeholder="1.000 $"
                   placeholderTextColor="#fff"
                   keyboardType="numeric"
@@ -302,7 +469,11 @@ export default function EnviarScreen({navigation}) {
                   alignItems: 'center',
                 }}>
                 <SelectPicker
-                  placeholderStyle={{color: '#fff'}}
+                  placeholderStyle={{
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    fontSize: 20,
+                  }}
                   style={{right: wp('1%')}}
                   placeholder="CLP"
                   onSelectedStyle={{
@@ -313,7 +484,7 @@ export default function EnviarScreen({navigation}) {
                   onValueChange={value => {
                     // Do anything you want with the value.
                     // For example, save in state.
-                    setCurrecny1(value);
+                    setCurrency1(value);
                   }}
                   selected={currency1}>
                   {Object.values(options).map((val, index) => (
@@ -361,8 +532,8 @@ export default function EnviarScreen({navigation}) {
                 </Text>
                 <TextInput
                   style={styles.input}
-                  onChangeText={onChangeNumber2}
-                  value={number2}
+                  // onChangeText={onChangeNumber2}
+                  // value={number2}
                   placeholder="$ 1,006.47"
                   placeholderTextColor="#fff"
                   keyboardType="numeric"
@@ -381,7 +552,11 @@ export default function EnviarScreen({navigation}) {
                   alignItems: 'center',
                 }}>
                 <SelectPicker
-                  placeholderStyle={{color: '#fff'}}
+                  placeholderStyle={{
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    fontSize: 20,
+                  }}
                   style={{right: wp('1%')}}
                   placeholder="CLP"
                   onSelectedStyle={{
@@ -392,10 +567,10 @@ export default function EnviarScreen({navigation}) {
                   onValueChange={value => {
                     // Do anything you want with the value.
                     // For example, save in state.
-                    setCurrecny2(value);
+                    setCurrency2(value);
                   }}
                   selected={currency2}>
-                  {Object.values(options2).map((val, index) => (
+                  {Object.values(recvOptions).map((val, index) => (
                     <SelectPicker.Item label={val} value={val} key={index} />
                   ))}
                 </SelectPicker>
@@ -410,26 +585,31 @@ export default function EnviarScreen({navigation}) {
                 <Text style={styles.text}>12 de Mayo</Text>
               </View>
             </View>
-
-            <TouchableOpacity
-              onPress={() => navigation.navigate('PriorityScreen')}>
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#0D5734', '#0D5734', '#1B975B']}
-                style={{...styles.continueButton, width: wp('80%')}}>
-                <Text style={{...styles.buttonText, fontSize: 18}}>
-                  Prioridad
-                </Text>
-              </LinearGradient>
-            </TouchableOpacity>
+            <View style={styles.switchContainer}>
+              <Switch
+                isChecked={andPriority}
+                style={{textAlign: 'center', width: wp('30%')}}
+                onToggle={setAndPriority}
+              />
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontSize: 18,
+                  color: '#fff',
+                  width: wp('50%'),
+                }}>
+                Immediata Prioridad
+              </Text>
+            </View>
           </View>
         )}
       </View>
 
       <View style={styles.footerButtonContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('ReviewEnviarScreen')}>
+          onPress={() => {
+            continueOrder();
+          }}>
           <LinearGradient
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
@@ -442,6 +622,18 @@ export default function EnviarScreen({navigation}) {
     </SafeAreaView>
   );
 }
+
+const mapStateToProps = state => ({
+  userinfo: state.root.userinfo,
+  pairs: state.root.pairs,
+});
+
+const mapDispatchToProps = dispatch => ({
+  getPairs: values => dispatch(getPairs(values)),
+  saveNewOrder: value => dispatch(saveNewOrder(value)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(EnviarScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -471,7 +663,7 @@ const styles = StyleSheet.create({
   },
   header: {
     width: wp('100%'),
-    height: hp('10%'),
+    height: hp('6%'),
     backgroundColor: '#18222E',
     justifyContent: 'flex-end',
     paddingBottom: 10,
@@ -496,6 +688,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     overflow: 'hidden',
+  },
+
+  switchContainer: {
+    marginTop: 10,
+    width: wp('80%'),
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
 
   input: {

@@ -23,14 +23,18 @@ import {
 
 import Spinner from 'react-native-loading-spinner-overlay';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {getRecipientList} from '../../../../actions';
+import {getRecipientList, saveNewOrder} from '../../../../actions';
 
 function BeneficiariosScreen({
+  route,
   navigation,
   recipients,
   token,
+  new_order,
   getRecipientList,
+  saveNewOrder,
 }) {
+  const {screen, ordering} = route.params;
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     getRecipientList()
@@ -79,6 +83,18 @@ function BeneficiariosScreen({
       });
   };
 
+  const goOrderReviewPage = id => {
+    const order = {...new_order, recipient_id: id};
+    saveNewOrder(order);
+    navigation.navigate('ReviewEnviarScreen');
+    navigation.navigate('tabs', {
+      screen: 'EnviarStack',
+      params: {
+        screen: 'ReviewEnviarScreen',
+      },
+    });
+  };
+
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -114,6 +130,7 @@ function BeneficiariosScreen({
                   ...styles.headerText,
                   ...styles.listTitle,
                   marginLeft: 10,
+                  fontSize: 18,
                 }}>
                 Buscar Beneficiario
               </Text>
@@ -139,6 +156,7 @@ function BeneficiariosScreen({
                   ...styles.headerText,
                   ...styles.listTitle,
                   marginLeft: 10,
+                  fontSize: 18,
                 }}>
                 Crear Beneficiario
               </Text>
@@ -153,7 +171,10 @@ function BeneficiariosScreen({
             data={recipients}
             renderItem={({item}) => {
               return (
-                <TouchableOpacity onPress={() => detailView(item.id)}>
+                <TouchableOpacity
+                  onPress={() => {
+                    ordering ? goOrderReviewPage(item.id) : detailView(item.id);
+                  }}>
                   <View
                     style={{
                       ...styles.listContainer,
@@ -195,10 +216,12 @@ function BeneficiariosScreen({
 const mapStateToProps = state => ({
   recipients: state.root.recipients,
   token: state.root.token,
+  new_order: state.root.new_order,
 });
 
 const mapDispatchToProps = dispatch => ({
   getRecipientList: values => dispatch(getRecipientList(values)),
+  saveNewOrder: value => dispatch(saveNewOrder(value)),
 });
 
 export default connect(

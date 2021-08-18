@@ -414,6 +414,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingLeft: 10,
+    paddingHorizontal: 20,
   },
 });

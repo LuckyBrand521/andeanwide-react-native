@@ -56,7 +56,7 @@ function LoginScreen({
             getOrderHistory()
               .then(() => {
                 setLoading(false);
-                Toast.show('Welcome!', Toast.LONG, ['UIAlertController']);
+                Toast.show('Welcome!', Toast.LONG);
                 navigation.navigate('tabs');
               })
               .catch(err => {
@@ -68,7 +68,7 @@ function LoginScreen({
           })
           .catch(err => {
             setLoading(false);
-            Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
+            Toast.show('An error occured!', Toast.LONG);
           })
           .finally(() => {
             // setLoading(false);
@@ -76,7 +76,7 @@ function LoginScreen({
       })
       .catch(err => {
         setLoading(false);
-        Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
+        Toast.show('An error occured!', Toast.loginFormSchema);
       })
       .finally(() => {
         // setLoading(false);

@@ -51,6 +51,16 @@ export const saveRecipients = value => ({
   value,
 });
 
+export const saveCurrencyPairs = value => ({
+  type: 'SAVE_CURRENCY_PAIRS',
+  value,
+});
+
+export const saveNewOrder = value => ({
+  type: 'SAVE_NEW_ORDER',
+  value,
+});
+
 export const loginAction = values => dispatch => {
   //login with the user value to API
   return axios
@@ -192,6 +202,21 @@ export const addressVerify = values => dispatch => {
     .then(res => {
       dispatch(saveAccInfo(res.data.data));
       return Promise.resolve();
+    })
+    .catch(err => {
+      console.log(err);
+      dispatch(error(err.message || 'ERROR'));
+      return Promise.reject(err);
+    });
+};
+
+export const getPairs = () => dispatch => {
+  const accessToken = store.getState().root.token.value;
+  return axios
+    .get(APP.APP_URL + 'api/pairs')
+    .then(res => {
+      dispatch(saveCurrencyPairs(res.data.data));
+      return Promise.resolve(res.data.data[0]);
     })
     .catch(err => {
       console.log(err);

@@ -50,12 +50,7 @@ export default function PersonViewPersona() {
     setLoading(true);
     if (values.acceptTerms) {
       axios
-        .post(APP.APP_URL + 'api/users/register', values, {
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        })
+        .post(APP.APP_URL + 'api/users/register', values)
         .then(res => {
           setLoading(false);
           const message = res.data.message;
