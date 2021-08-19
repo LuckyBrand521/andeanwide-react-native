@@ -107,12 +107,12 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
       .then(res => {
         setLoading(false);
         Toast.show('Successfully created!', Toast.LONG);
-        navigation.navigate('BeneficiariosScreen');
+        navigation.navigate('BeneficiariosScreen', {ordering: false});
       })
       .catch(err => {
         setLoading(false);
         console.log(err);
-        Toast.show('An error occurred, Try again!', Toast.LONG);
+        Toast.show('Ocurrió un error, Try again!', Toast.LONG);
       });
   };
 
@@ -141,7 +141,7 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
       })
       .catch(err => {
         console.log(err);
-        Toast.show('An error occurred!', Toast.LONG);
+        Toast.show('Ocurrió un error!', Toast.LONG);
       });
   };
 
@@ -166,7 +166,7 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Submitting data...'}
+          textContent={'Envío de datos...'}
           textStyle={{color: '#fff'}}
         />
       </SafeAreaView>

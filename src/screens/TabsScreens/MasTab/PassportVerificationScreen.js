@@ -87,7 +87,7 @@ export default function PassportVerificationScreen({navigation}) {
         })
         .catch(error => {
           setLoading(false);
-          Toast.show('An error occurred while uploading!', Toast.LONG, [
+          Toast.show('Ocurrió un error while uploading!', Toast.LONG, [
             'UIAlertController',
           ]);
           console.log(error);
@@ -104,7 +104,7 @@ export default function PassportVerificationScreen({navigation}) {
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Submitting data...'}
+          textContent={'Envío de datos...'}
           textStyle={styles.spinnerTextStyle}
         />
       </SafeAreaView>

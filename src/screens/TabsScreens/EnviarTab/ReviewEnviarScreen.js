@@ -1,5 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {TouchableWithoutFeedback} from 'react-native';
+import {connect} from 'react-redux';
+import APP from '../../../../app.json';
+import axios from 'axios';
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,6 +16,7 @@ import {
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import LinearGradient from 'react-native-linear-gradient';
+import Toast from 'react-native-simple-toast';
 import SelectPicker from 'react-native-form-select-picker';
 
 import {
@@ -22,9 +26,50 @@ import {
 
 //import custom components
 import TwoTextView from '../../../components/subviews/TwoTextView';
+import {saveNewOrder} from '../../../../actions';
 
-export default function ReviewEnviarScreen({navigation}) {
+function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
+  const [recipientInfo, setRecipientInfo] = useState({});
   const [isSelected, setSelection] = useState(false);
+  //get the data of recipient
+  useEffect(() => {
+    console.log(token.value);
+    if (new_order.recipient_id) {
+      axios
+        .get(APP.APP_URL + 'api/recipients/' + new_order.recipient_id, {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.value}`,
+          },
+        })
+        .then(res => {
+          setRecipientInfo(res.data.data);
+        });
+    }
+  }, []);
+
+  const submitOrder = () => {
+    console.log(new_order);
+    if (isSelected) {
+      axios
+        .post(APP.APP_URL + 'api/orsers', new_order, {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.value}`,
+          },
+        })
+        .then(res => {
+          navigation.navigate('OrderRequestCompleted');
+        })
+        .catch(err => {
+          console.log(err);
+          Toast.show('Order request failed, try again!', Toast.LONG);
+          // navigation.navigate('OrderRequestCompleted');
+        });
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -54,27 +99,29 @@ export default function ReviewEnviarScreen({navigation}) {
             }}>
             <TwoTextView
               text_gray="Monto a pagar"
-              text_white="100.000 CLP"
+              text_white={`${new_order.payment_amount} ${new_order.currency1}`}
               styles={{width: wp('50%')}}
             />
             <TwoTextView
-              text_gray="Monto a pagar"
-              text_white="100.000 CLP"
+              text_gray="Tip de Cambio"
+              text_white={`${new_order.rate}`}
               styles={{width: wp('50%')}}
             />
             <TwoTextView
-              text_gray="Monto a pagar"
-              text_white="100.000 CLP"
+              text_gray="Costo Transaccion"
+              text_white={`${new_order.cost}`}
               styles={{width: wp('50%')}}
             />
             <TwoTextView
-              text_gray="Monto a pagar"
-              text_white="100.000 CLP"
+              text_gray="Monto a recibir"
+              text_white={`${new_order.receive_amount} ${new_order.currency2}`}
               styles={{width: wp('50%')}}
             />
             <TwoTextView
-              text_gray="Monto a pagar"
-              text_white="100.000 CLP"
+              text_gray="Importe Convertido"
+              text_white={`${new_order.payment_amount - new_order.cost} ${
+                new_order.currency1
+              }`}
               styles={{width: wp('50%')}}
             />
           </View>
@@ -118,19 +165,25 @@ export default function ReviewEnviarScreen({navigation}) {
               style={{
                 width: wp('100%'),
               }}>
-              <TwoTextView text_gray="Nombre" text_white="Miguel A Torres" />
               <TwoTextView
-                text_gray="Cuenta"
-                text_white="25300001050 BANCOLOMBIA"
+                text_gray="Nombre"
+                text_white={`${recipientInfo.name} ${recipientInfo.lastname}`}
               />
+              {/* <TwoTextView
+                text_gray="Cuenta"
+                text_white={`${recipientInfo.name} ${recipientInfo.lastname}`}
+              /> */}
               <TwoTextView
                 text_gray="Correo Electronico"
-                text_white="miguel_a_torres@gmail.com"
+                text_white={recipientInfo.email}
               />
-              <TwoTextView text_gray="Telefono" text_white="3127127465" />
+              <TwoTextView
+                text_gray="Telefono"
+                text_white={recipientInfo.phone}
+              />
               <TwoTextView
                 text_gray="Direccion"
-                text_white="Antioquia, Av 26 Nº52-2000"
+                text_white={recipientInfo.address}
               />
             </View>
           </View>
@@ -138,7 +191,9 @@ export default function ReviewEnviarScreen({navigation}) {
       </View>
       <View style={styles.footerButtonContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('ReviewEnviarScreen')}>
+          onPress={() => {
+            submitOrder();
+          }}>
           <LinearGradient
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
@@ -151,7 +206,16 @@ export default function ReviewEnviarScreen({navigation}) {
     </SafeAreaView>
   );
 }
+const mapStateToProps = state => ({
+  token: state.root.token,
+  new_order: state.root.new_order,
+});
 
+const mapDispatchToProps = dispatch => ({
+  saveNewOrder: value => dispatch(saveNewOrder(value)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ReviewEnviarScreen);
 const styles = StyleSheet.create({
   container: {
     flex: 1,

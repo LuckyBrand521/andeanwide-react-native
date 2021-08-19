@@ -13,11 +13,12 @@ import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import PinCodeScreen from '../screens/PinCodeScreen';
 import FaceConfigurationScreen from '../screens/FaceConfigurationScreen';
 import CarteraVerifyAccountScreen from '../screens/TabsScreens/MasTab/CarteraVerifyAccountScreen';
-import TarjetasScreen from '../screens/TabsScreens/TarjetasScreen';
+import HistoryScreen from '../screens/TabsScreens/HistoryScreen';
 import CarteraAccountTypeScreen from '../screens/TabsScreens/MasTab/CarteraAccountTypeScreen';
 import CarteraDocumentTypeSCreen from '../screens/TabsScreens/MasTab/CarteraDocumentTypeSCreen';
 import CarteraAddPersonnelDetails from '../screens/TabsScreens/MasTab/CarteraAddPersonnelDetails';
 import SignupCompleted from '../screens/SignupCompleted';
+import OrderRequestCompleted from '../screens/OrderRequestCompleted';
 import DocumentVerificationScreen from '../screens/TabsScreens/MasTab/DocumentVerificationScreen';
 import PassportVerificationScreen from '../screens/TabsScreens/MasTab/PassportVerificationScreen';
 import AfidavetVerificationScreen from '../screens/TabsScreens/MasTab/AfidavetVerificationScreen';
@@ -47,6 +48,10 @@ function Navigation() {
           component={RegistrationScreen}
         />
         <Stack.Screen name="SignupCompleted" component={SignupCompleted} />
+        <Stack.Screen
+          name="OrderRequestCompleted"
+          component={OrderRequestCompleted}
+        />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="PinCodeScreen" component={PinCodeScreen} />
         <Stack.Screen
@@ -159,8 +164,8 @@ function MyTabs() {
             }
           },
         }}
-        name="Tarjetas"
-        component={TarjetasScreen}
+        name="HistoryStack"
+        component={HistoryStack}
       />
 
       <Tab.Screen
@@ -331,6 +336,16 @@ function MasStack() {
         component={ResidanceVerificationScreen}
       />
     </Stack1.Navigator>
+    // </NavigationContainer>
+  );
+}
+
+function HistoryStack() {
+  return (
+    // <NavigationContainer independent={true} headerMode>
+    <Stack2.Navigator headerMode="none" initialRouteName={HistoryScreen}>
+      <Stack2.Screen name="HistoryScreen" component={HistoryScreen} />
+    </Stack2.Navigator>
     // </NavigationContainer>
   );
 }

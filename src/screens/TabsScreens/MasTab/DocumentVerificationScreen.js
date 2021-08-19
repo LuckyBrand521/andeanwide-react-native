@@ -165,7 +165,7 @@ function DocumentVerificationScreen({navigation, token}) {
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Submitting data...'}
+          textContent={'Envío de datos...'}
           textStyle={styles.spinnerTextStyle}
         />
       </SafeAreaView>

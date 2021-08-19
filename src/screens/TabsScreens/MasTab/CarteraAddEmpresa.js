@@ -88,13 +88,13 @@ export default function CarteraAddEmpresa({navigation}) {
           //   navigation.navigate('LoginScreen');
           // }, 2000);
         } else {
-          Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
+          Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
         }
       })
       .catch(err => {
         console.log(err);
         setLoading(false);
-        Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
+        Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
         // To be updated
         setTimeout(function () {
           navigation.navigate('EmpresaVerficationMenuScreen');
@@ -110,7 +110,7 @@ export default function CarteraAddEmpresa({navigation}) {
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Submitting data...'}
+          textContent={'Envío de datos...'}
           textStyle={styles.spinnerTextStyle}
         />
       </SafeAreaView>

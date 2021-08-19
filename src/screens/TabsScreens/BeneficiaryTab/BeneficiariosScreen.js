@@ -34,7 +34,7 @@ function BeneficiariosScreen({
   getRecipientList,
   saveNewOrder,
 }) {
-  const {screen, ordering} = route.params;
+  const ordering = route.params ? route.params.params.ordering : null;
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     getRecipientList()
@@ -43,7 +43,7 @@ function BeneficiariosScreen({
       })
       .catch(err => {
         setIsLoading(false);
-        Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
+        Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
       });
   }, []);
 
@@ -87,12 +87,6 @@ function BeneficiariosScreen({
     const order = {...new_order, recipient_id: id};
     saveNewOrder(order);
     navigation.navigate('ReviewEnviarScreen');
-    navigation.navigate('tabs', {
-      screen: 'EnviarStack',
-      params: {
-        screen: 'ReviewEnviarScreen',
-      },
-    });
   };
 
   if (isLoading) {
@@ -100,7 +94,7 @@ function BeneficiariosScreen({
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Colecting data...'}
+          textContent={'Recolectando datos...'}
           textStyle={{color: '#fff'}}
         />
       </SafeAreaView>

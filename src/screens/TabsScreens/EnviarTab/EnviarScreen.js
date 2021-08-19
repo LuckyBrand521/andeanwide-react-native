@@ -40,8 +40,8 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
   ]);
   const [isLoading, setLoading] = useState(false);
 
-  const [currency1, setCurrency1] = useState('');
-  const [currency2, setCurrency2] = useState('');
+  const [currency1, setCurrency1] = useState('CLP');
+  const [currency2, setCurrency2] = useState('COP');
   //states for color tab change
   const [colorP, setColorP] = useState('#fff');
   const [colorE, setColorE] = useState('gray');
@@ -172,37 +172,48 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
   }, []);
 
   const continueOrder = () => {
-    let pair_id = 0;
-    for (let i = 0; i < pairs.length; i++) {
-      if (pairs[i].base.name == currency1 && pairs[i].quote.name == currency2) {
-        pair_id = pairs[i].id;
+    //validate the currency and payment_amount
+    if (number1 <= 0 || number2 <= 0) {
+      Toast.show('Por favor complete el formulario correctamente', Toast.LONG);
+    } else {
+      let pair_id = 0;
+      for (let i = 0; i < pairs.length; i++) {
+        if (
+          pairs[i].base.name == currency1 &&
+          pairs[i].quote.name == currency2
+        ) {
+          pair_id = pairs[i].id;
+        }
       }
+      const cost = intPriority
+        ? 0.05 * Number(number1)
+        : 0.0119 * Number(number1);
+      let data = {
+        recipient_id: 0,
+        remitter_id: 0,
+        priority_id: intPriority ? 2 : 1,
+        payment_amount: Number(number1),
+        rate: Number(rate),
+        pair_id: pair_id,
+        currency1: currency1,
+        currency2: currency2,
+        cost: cost,
+        receive_amount: Number(number2),
+      };
+      console.log(data);
+      saveNewOrder(data);
+      // navigation.navigate('BeneficiariosStack', {screen: 'BeneficiariosScreen'});
+      navigation.navigate('BeneficiariosScreen', {
+        params: {ordering: 'yes'},
+      });
     }
-    let data = {
-      recipient_id: 0,
-      remitter_id: 0,
-      priority_id: intPriority ? 2 : 1,
-      payment_amount: number1,
-      rate: rate,
-      pair_id: pair_id,
-    };
-    console.log(data);
-    saveNewOrder(data);
-    // navigation.navigate('BeneficiariosStack', {screen: 'BeneficiariosScreen'});
-    navigation.navigate('tabs', {
-      screen: 'BeneficiariosStack',
-      params: {
-        screen: 'BeneficiariosScreen',
-        ordering: true,
-      },
-    });
   };
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Collecting data...'}
+          textContent={'Recolectando datos...'}
           textStyle={{color: '#fff'}}
         />
       </SafeAreaView>

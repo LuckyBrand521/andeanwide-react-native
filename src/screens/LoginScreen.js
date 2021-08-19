@@ -61,14 +61,14 @@ function LoginScreen({
               })
               .catch(err => {
                 setLoading(false);
-                Toast.show('An error occured!', Toast.LONG, [
+                Toast.show('Ocurrió un error!', Toast.LONG, [
                   'UIAlertController',
                 ]);
               });
           })
           .catch(err => {
             setLoading(false);
-            Toast.show('An error occured!', Toast.LONG);
+            Toast.show('Ocurrió un error!', Toast.LONG);
           })
           .finally(() => {
             // setLoading(false);
@@ -76,7 +76,7 @@ function LoginScreen({
       })
       .catch(err => {
         setLoading(false);
-        Toast.show('An error occured!', Toast.loginFormSchema);
+        Toast.show('Ocurrió un error!', Toast.loginFormSchema);
       })
       .finally(() => {
         // setLoading(false);

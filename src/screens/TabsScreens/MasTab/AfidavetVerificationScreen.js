@@ -52,7 +52,7 @@ function AfidavetVerificationScreen({navigation, token}) {
         .catch(error => {
           console.log(error);
           setLoading(false);
-          Toast.show('An error occurred!', Toast.LONG, ['UIAlertController']);
+          Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
 
           // To be removed after completion
           // navigation.navigate('CarteraAccountTypeScreen');
@@ -67,7 +67,7 @@ function AfidavetVerificationScreen({navigation, token}) {
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Submitting data...'}
+          textContent={'Envío de datos...'}
           textStyle={styles.spinnerTextStyle}
         />
       </SafeAreaView>

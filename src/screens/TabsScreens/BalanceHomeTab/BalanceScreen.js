@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState} from 'react';
 import {connect} from 'react-redux';
 import {
   SafeAreaView,
@@ -34,11 +34,24 @@ function BalanceScreen({navigation, userinfo, orders}) {
       />
       <View style={styles.header}>
         <Text
-          style={{...styles.headerText, fontWeight: 'normal', fontSize: 15}}>
+          style={{
+            ...styles.headerText,
+            fontWeight: 'normal',
+            fontSize: 15,
+            flex: 1,
+            textAlign: 'left',
+          }}>
           Historia
         </Text>
-        <Text style={styles.headerText}>Cartera</Text>
-        <Octicons name="person" size={24} color="#fff" />
+        <Text style={{...styles.headerText, flex: 1, textAlign: 'center'}}>
+          Cartera
+        </Text>
+        <Octicons
+          name="person"
+          style={{flex: 1, textAlign: 'right'}}
+          size={24}
+          color="#fff"
+        />
       </View>
 
       <View style={styles.middleInputsContainer}>
@@ -295,7 +308,7 @@ const styles = StyleSheet.create({
     marginTop: hp('2%'),
     backgroundColor: '#18222E',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'flex-end',
     paddingHorizontal: 20,
     paddingBottom: 10,

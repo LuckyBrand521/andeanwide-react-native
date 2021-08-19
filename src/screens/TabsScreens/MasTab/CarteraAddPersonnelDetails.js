@@ -115,7 +115,7 @@ function CarteraAddPersonnelDetails({
       })
       .catch(err => {
         console.log(err);
-        Toast.show('An error occured!', Toast.LONG, ['UIAlertController']);
+        Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
       })
       .finally(() => {
         setLoading(false);
@@ -128,7 +128,7 @@ function CarteraAddPersonnelDetails({
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Submitting data...'}
+          textContent={'Envío de datos...'}
           textStyle={styles.spinnerTextStyle}
         />
       </SafeAreaView>
