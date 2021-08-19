@@ -20,8 +20,6 @@ import {
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
 
-import axios from 'axios';
-
 function ForgotPasswordScreen({navigation, token}) {
   //our states
   const [isLoading, setLoading] = useState(false);
