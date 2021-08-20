@@ -38,7 +38,6 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
     'MXN',
     'VES',
   ]);
-  const [isLoading, setLoading] = useState(false);
 
   const [currency1, setCurrency1] = useState('CLP');
   const [currency2, setCurrency2] = useState('COP');
@@ -158,15 +157,12 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
    * updates the currency pairs according to the values passed in from API
    */
   useEffect(() => {
-    setLoading(true);
     getPairs()
       .then(res => {
-        setLoading(false);
         setCurrency1(res.base.name);
         setCurrency2(res.quote.name);
       })
       .catch(err => {
-        setLoading(false);
         console.log(err);
       });
   }, []);
@@ -208,17 +204,6 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
       });
     }
   };
-  if (isLoading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <Spinner
-          visible={isLoading}
-          textContent={'Recolectando datos...'}
-          textStyle={{color: '#fff'}}
-        />
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView style={styles.container}>

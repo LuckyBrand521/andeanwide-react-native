@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import APP from '../../app.json';
 import {Alert} from 'react-native';
@@ -24,7 +24,12 @@ import {
 } from 'react-native-responsive-screen';
 import * as yup from 'yup';
 
-import {loginAction, getMyInfo, getOrderHistory} from '../../actions';
+import {
+  loginAction,
+  getMyInfo,
+  getOrderHistory,
+  removeUserToken,
+} from '../../actions';
 
 const loginFormSchema = yup.object().shape({
   email: yup
@@ -43,9 +48,18 @@ function LoginScreen({
   loginAction,
   getMyInfo,
   getOrderHistory,
+  removeUserToken,
   token,
 }) {
   const [isLoading, setLoading] = useState(false);
+  // useEffect(() => {
+  //   navigation.addListener('focus', () => {
+  //     // The screen is focused
+  //     removeUserToken(null).then(() => {
+  //       console.log('sdfsd', token);
+  //     });
+  //   });
+  // }, [navigation]);
   const loginSubmitAPI = values => {
     setLoading(true);
     loginAction(values)
@@ -57,7 +71,7 @@ function LoginScreen({
               .then(() => {
                 setLoading(false);
                 Toast.show('Welcome!', Toast.LONG);
-                navigation.navigate('tabs');
+                navigation.navigate('tabs', {screen: 'BalanceScreen'});
               })
               .catch(err => {
                 setLoading(false);
@@ -195,13 +209,14 @@ function LoginScreen({
 }
 
 const mapStateToProps = state => ({
-  token: state.root,
+  token: state.root.token,
 });
 
 const mapDispatchToProps = dispatch => ({
   loginAction: values => dispatch(loginAction(values)),
   getMyInfo: () => dispatch(getMyInfo()),
   getOrderHistory: () => dispatch(getOrderHistory()),
+  removeUserToken: () => dispatch(removeUserToken()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);

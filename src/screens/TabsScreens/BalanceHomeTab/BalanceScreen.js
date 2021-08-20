@@ -19,11 +19,9 @@ import {
 import Carousel from 'react-native-looped-carousel';
 import Octicons from 'react-native-vector-icons/Octicons';
 import LinearGradient from 'react-native-linear-gradient';
-
 import {numberWithCommas} from '../../../data/helpers';
 
 function BalanceScreen({navigation, userinfo, orders}) {
-  console.log(orders.length);
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -47,7 +45,10 @@ function BalanceScreen({navigation, userinfo, orders}) {
           Cartera
         </Text>
         <Octicons
-          name="person"
+          onPress={() => {
+            navigation.navigate('LoginScreen');
+          }}
+          name="sign-out"
           style={{flex: 1, textAlign: 'right'}}
           size={24}
           color="#fff"
@@ -81,6 +82,7 @@ function BalanceScreen({navigation, userinfo, orders}) {
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
             colors={['#027532', '#0FB658', '#1CFA7F']}
+            key={1}
             style={styles.card}>
             <LinearGradient
               start={{x: 0, y: 0}}
@@ -128,6 +130,7 @@ function BalanceScreen({navigation, userinfo, orders}) {
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
             colors={['#283B50', '#41627E', '#537EA1']}
+            key={2}
             style={styles.card}>
             <LinearGradient
               start={{x: 0, y: 0}}
@@ -170,6 +173,7 @@ function BalanceScreen({navigation, userinfo, orders}) {
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
             colors={['#696972', '#9A9B9D', '#9A9B9D']}
+            key={3}
             style={styles.card}>
             <LinearGradient
               start={{x: 0, y: 0}}
@@ -287,13 +291,10 @@ const mapStateToProps = state => ({
 });
 
 // const mapDispatchToProps = dispatch => ({
-//   setAccountType: values => dispatch(setAccountType(values)),
+//   removeUserToken: values => dispatch(removeUserToken(null)),
 // });
 
-export default connect(
-  mapStateToProps,
-  // mapDispatchToProps,
-)(BalanceScreen);
+export default connect(mapStateToProps)(BalanceScreen);
 
 const styles = StyleSheet.create({
   container: {

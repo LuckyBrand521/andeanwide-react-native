@@ -32,7 +32,7 @@ function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
         if (value == 'personal') {
           navigation.navigate('CarteraAddPersonnelDetails');
         } else if (value == 'corporative') {
-          navigation.navigate('CarteraAddEmpressa');
+          navigation.navigate('CarteraAddEmpresa');
         }
       })
       .catch(err => {
@@ -76,7 +76,10 @@ function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
       </View>
 
       <View>
-        <TouchableOpacity onPress={() => accTypeSubmit('personal')}>
+        <TouchableOpacity
+          onPress={() => {
+            accTypeSubmit('personal');
+          }}>
           <View style={styles.listContainer}>
             <LinearGradient
               start={{x: 0, y: 0}}
@@ -93,7 +96,10 @@ function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
             </View>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => accTypeSubmit('corporative')}>
+        <TouchableOpacity
+          onPress={() => {
+            accTypeSubmit('corporative');
+          }}>
           <View style={styles.listContainer}>
             <LinearGradient
               start={{x: 0, y: 0}}

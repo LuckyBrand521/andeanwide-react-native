@@ -101,12 +101,8 @@ function CarteraAddPersonnelDetails({
       ...values,
       issuance_country_id: issuanceCountryName,
       nationality_country_id: nationalityCountryName,
-      // account_type: userinfo.account_type,
       document_type: 'dni',
       position: null,
-      // pep_declaration: null,
-      // funds_declaration: null,
-      // veracity_declaration: null,
     };
     setLoading(true);
     personalAccountVerfify(values)

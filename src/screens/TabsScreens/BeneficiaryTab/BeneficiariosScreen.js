@@ -35,17 +35,19 @@ function BeneficiariosScreen({
   saveNewOrder,
 }) {
   const ordering = route.params ? route.params.params.ordering : null;
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
-    getRecipientList()
-      .then(() => {
-        setIsLoading(false);
-      })
-      .catch(err => {
-        setIsLoading(false);
-        Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
-      });
-  }, []);
+    navigation.addListener('focus', () => {
+      getRecipientList()
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch(err => {
+          setIsLoading(false);
+          Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
+        });
+    });
+  }, [navigation]);
 
   const detailView = id => {
     axios
@@ -94,7 +96,7 @@ function BeneficiariosScreen({
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Recolectando datos...'}
+          // textContent={'Recolectando datos...'}
           textStyle={{color: '#fff'}}
         />
       </SafeAreaView>

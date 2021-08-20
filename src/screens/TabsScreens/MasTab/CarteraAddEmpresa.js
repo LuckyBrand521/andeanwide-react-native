@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import APP from '../../../../app.json';
+import {connect} from 'react-redux';
 import axios from 'axios';
 import {
   SafeAreaView,
@@ -27,6 +28,7 @@ import {
 import * as yup from 'yup';
 import LinearGradient from 'react-native-linear-gradient';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import countryList from '../../../data/countries';
 
 const infoFormSchema = yup.object().shape({
   name: yup.string().required('This field is requried'),
@@ -55,22 +57,11 @@ const option_estim = ['10,000', '20,000', '30,000', '40,000', '50,000'];
 const option_size = ['Pequeño', 'Medio', 'Grande'];
 const option_origin = ['utilidades retenidas', 'deuda', 'patrimonio'];
 
-export default function CarteraAddEmpresa({navigation}) {
+function CarteraAddEmpresa({navigation, token}) {
   //inputs are in the same pattern as UI
   // is initial state for country name as Chile
-  const [mycountry, setMyCountry] = useState({
-    countryCode: 'CL',
-    name: 'Chile',
-  });
+  const [mycountry, setMyCountry] = useState('');
   const [isLoading, setLoading] = useState(false);
-
-  const onSelect = country => {
-    setMyCountry({
-      countryCode: country.cca2,
-      name: country.name,
-    });
-    console.log(country);
-  };
 
   const companyInfoSubmit = values => {
     values = {
@@ -152,20 +143,34 @@ export default function CarteraAddEmpresa({navigation}) {
             </View>
             <View style={styles.middleInputsContainer}>
               <ScrollView>
-                <View style={styles.countryPicker}>
-                  <Text style={styles.countryname}>Pais</Text>
-                  <CountryPicker
-                    {...{
-                      countryCode: mycountry.countryCode,
-                      onSelect,
-                    }}
-                    visible="false"
-                  />
-                  {/* {issuanceCountry !== null && (
-                    <Text style={styles.countryname}>
-                      {JSON.stringify(issuanceCountry.name)}
-                    </Text>
-                  )} */}
+                <View>
+                  <Select
+                    // mode="dropdown"
+                    style={styles.countryPicker}
+                    minWidth={wp('75%')}
+                    paddingLeft={1}
+                    borderWidth="0"
+                    borderBottomWidth="2"
+                    borderRadius="0"
+                    borderColor="#919191"
+                    alignSelf="center"
+                    placeholder="País de Emision del Documento"
+                    selectedValue={mycountry}
+                    onValueChange={setMyCountry}
+                    _selectedItem={{
+                      bg: 'cyan.600',
+                      endIcon: <CheckIcon size={4} />,
+                    }}>
+                    {Object.values(countryList).map((item, index) => {
+                      return (
+                        <Select.Item
+                          label={item.label}
+                          value={item.value}
+                          key={item.label}
+                        />
+                      );
+                    })}
+                  </Select>
                 </View>
                 <TextInput
                   placeholder="Nombre o razón social"
@@ -318,6 +323,20 @@ export default function CarteraAddEmpresa({navigation}) {
     </SafeAreaView>
   );
 }
+
+const mapStateToProps = state => ({
+  // userinfo: state.root.userinfo,
+  token: state.root.token,
+});
+
+// const mapDispatchToProps = dispatch => ({
+//   personalAccountVerfify: values => dispatch(personalAccountVerfify(values)),
+// });
+
+export default connect(
+  mapStateToProps,
+  // mapDispatchToProps,
+)(CarteraAddEmpresa);
 
 const styles = StyleSheet.create({
   container: {

@@ -51,6 +51,8 @@ function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
 
   const submitOrder = () => {
     console.log(new_order);
+    console.log(token.value);
+    console.log(APP.APP_URL + 'api/orsers');
     if (isSelected) {
       axios
         .post(APP.APP_URL + 'api/orsers', new_order, {

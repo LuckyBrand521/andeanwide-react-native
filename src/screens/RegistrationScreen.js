@@ -66,6 +66,8 @@ export default function RegistrationScreen({navigation}) {
             width: wp('80%'),
             alignSelf: 'center',
             justifyContent: 'space-around',
+            opacity: 0,
+            height: 0,
             marginTop: hp('1%'),
           }}>
           <TouchableWithoutFeedback onPress={onpresstab1}>

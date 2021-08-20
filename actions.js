@@ -239,27 +239,37 @@ export const getUserToken = () => dispatch => {
   return userToken;
 };
 
-export const saveUserToken = data => dispatch =>
-  AsyncStorage.setItem('userToken', 'abc')
-    .then(data => {
-      dispatch(loading(false));
-      dispatch(saveToken('token saved'));
-    })
-    .catch(err => {
-      dispatch(loading(false));
-      dispatch(error(err.message || 'ERROR'));
-    });
+export const removeUserToken = () => dispatch => {
+  const userToken = store.getState().root.token
+    ? store.getState().root.token
+    : null;
+  if (userToken) {
+    dispatch(removeToken(null));
+    return Promise.resolve();
+  }
+};
 
-export const removeUserToken = () => dispatch =>
-  AsyncStorage.removeItem('userToken')
-    .then(data => {
-      dispatch(loading(false));
-      dispatch(removeToken(data));
-    })
-    .catch(err => {
-      dispatch(loading(false));
-      dispatch(error(err.message || 'ERROR'));
-    });
+// export const saveUserToken = data => dispatch =>
+//   AsyncStorage.setItem('userToken', 'abc')
+//     .then(data => {
+//       dispatch(loading(false));
+//       dispatch(saveToken('token saved'));
+//     })
+//     .catch(err => {
+//       dispatch(loading(false));
+//       dispatch(error(err.message || 'ERROR'));
+//     });
+
+// export const removeUserToken = () => dispatch =>
+//   AsyncStorage.removeItem('userToken')
+//     .then(data => {
+//       dispatch(loading(false));
+//       dispatch(removeToken(data));
+//     })
+//     .catch(err => {
+//       dispatch(loading(false));
+//       dispatch(error(err.message || 'ERROR'));
+//     });
 
 // request API to get wallet balance information
 export const requestBalanceInfoAPI = () => dispatch => {

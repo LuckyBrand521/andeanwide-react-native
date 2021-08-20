@@ -17,6 +17,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import * as yup from 'yup';
+// import {Button, CheckBox} from 'react-native-elements';
 import CheckBox from '@react-native-community/checkbox';
 import {useNavigation} from '@react-navigation/core';
 import axios from 'axios';
@@ -29,7 +30,7 @@ const validationSchema = yup.object().shape({
     .string()
     .oneOf([yup.ref('password'), null])
     .required(),
-  acceptTerms: yup.boolean().oneOf([true], 'Please check this item.'),
+  acceptTerms: yup.bool().oneOf([true], 'Please check this item.'),
 });
 
 const initial_values = {
@@ -56,7 +57,7 @@ export default function PersonViewPersona() {
           const message = res.data.message;
           console.log(res.data);
           Toast.show(
-            'Registration completed. Please check your inbox and confirm it.',
+            'Registro completado. Por favor revise su bandeja de entrada y confírmelo.',
             Toast.LONG,
             ['UIAlertController'],
           );
@@ -77,7 +78,7 @@ export default function PersonViewPersona() {
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Registering...'}
+          textContent={'Envío de datos...'}
           textStyle={styles.spinnerTextStyle}
         />
       </SafeAreaView>
@@ -106,6 +107,7 @@ export default function PersonViewPersona() {
             handleChange,
             handleBlur,
             handleSubmit,
+            setFieldValue,
             values,
             errors,
             isValid,
@@ -113,7 +115,7 @@ export default function PersonViewPersona() {
             <>
               {!isValid && (
                 <Text style={{fontSize: 14, color: 'red', textAlign: 'center'}}>
-                  Please fill the form correctly
+                  Por favor complete el formulario correctamente
                 </Text>
               )}
               <TextInput
@@ -193,22 +195,24 @@ export default function PersonViewPersona() {
                 <CheckBox
                   tintColor="#aaaaaa"
                   onFillColor="#09A04E"
-                  onValueChange={value => {
-                    setCheckTerms(value);
-                    values.acceptTerms = value;
-                  }}
+                  // onPress={handleChange('acceptTerms')}
                   onBlur={handleBlur('acceptTerms')}
                   tintColors
                   disabled={false}
                   key="acceptTerms"
                   value={checkTerms}
+                  onValueChange={value => {
+                    setCheckTerms(value);
+                    // values.acceptTerms = value;
+                    setFieldValue('acceptTerms', value);
+                  }}
                 />
                 <View>
                   <Text style={styles.acceptTerms}>
-                    <Text
+                    {/* <Text
                       style={{fontSize: 14, color: 'red', alignSelf: 'center'}}>
                       *{' '}
-                    </Text>
+                    </Text> */}
                     Acepto los terminos y condiciones{'\n'}
                     de Andean Wide
                   </Text>
