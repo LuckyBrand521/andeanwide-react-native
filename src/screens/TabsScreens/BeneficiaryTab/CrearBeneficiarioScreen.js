@@ -204,7 +204,7 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
               <Text style={{...styles.verifyText}}>Completa tus datos</Text>
               {!isValid && (
                 <Text style={{fontSize: 14, color: 'red', textAlign: 'center'}}>
-                  Please fill the form correctly
+                  Por favor complete el formulario correctamente
                 </Text>
               )}
             </View>

@@ -33,6 +33,7 @@
         "react-native-form-select-picker": "^0.0.12",
         "react-native-gesture-handler": "^1.10.3",
         "react-native-image-crop-picker": "^0.36.2",
+        "react-native-keyboard-avoiding-scroll-view": "^1.0.1",
         "react-native-keyboard-aware-scroll-view": "^0.9.4",
         "react-native-keychain": "^7.0.0",
         "react-native-linear-gradient": "^2.5.6",

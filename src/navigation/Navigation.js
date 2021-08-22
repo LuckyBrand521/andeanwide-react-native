@@ -23,6 +23,7 @@ import DocumentVerificationScreen from '../screens/TabsScreens/MasTab/DocumentVe
 import PassportVerificationScreen from '../screens/TabsScreens/MasTab/PassportVerificationScreen';
 import AfidavetVerificationScreen from '../screens/TabsScreens/MasTab/AfidavetVerificationScreen';
 import CarteraAddEmpresa from '../screens/TabsScreens/MasTab/CarteraAddEmpresa';
+import EmpresaDocumentUploadScreen from '../screens/TabsScreens/MasTab/EmpresaDocumentUploadScreen';
 import ResidanceVerificationScreen from '../screens/TabsScreens/MasTab/ResidanceVerificationScreen';
 import EmpresaVerficationMenuScreen from '../screens/TabsScreens/MasTab/EmpresaVerficationMenuScreen';
 import BalanceScreen from '../screens/TabsScreens/BalanceHomeTab/BalanceScreen';
@@ -38,8 +39,15 @@ const Stack = createStackNavigator();
 function Navigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator headerMode="none" initialRouteName={SplashScreen}>
+      {/* <Stack.Navigator headerMode="none" initialRouteName={SplashScreen}> */}
+      <Stack.Navigator
+        headerMode="none"
+        initialRouteName={EmpresaDocumentUploadScreen}>
         {/* <Stack.Navigator headerMode="none" initialRouteName={MyTabs}> */}
+        <Stack.Screen
+          name="EmpresaDocumentUploadScreen"
+          component={EmpresaDocumentUploadScreen}
+        />
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="tabs" component={MyTabs} />
         <Stack.Screen name="onBoardingScreens" component={onBoardingScreens} />
@@ -312,6 +320,11 @@ function MasStack() {
       <Stack1.Screen
         name="DocumentVerificationScreen"
         component={DocumentVerificationScreen}
+      />
+
+      <Stack1.Screen
+        name="EmpresaDocumentUploadScreen"
+        component={EmpresaDocumentUploadScreen}
       />
 
       <Stack1.Screen

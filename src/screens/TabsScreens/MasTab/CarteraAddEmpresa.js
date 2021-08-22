@@ -12,7 +12,7 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
-
+import {Select, CheckIcon} from 'native-base';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Formik} from 'formik';
 import Toast from 'react-native-simple-toast';
@@ -46,7 +46,7 @@ const initial_form_data = {
   id_number: 0,
   activity: '',
   address: '',
-  has_politician_history: 'null',
+  has_politician_history: 0,
   activities: '',
   anual_revenues: '',
   company_size: '',
@@ -66,11 +66,19 @@ function CarteraAddEmpresa({navigation, token}) {
   const companyInfoSubmit = values => {
     values = {
       ...values,
-      country_id: mycountry.countryCode,
+      country_id: mycountry,
     };
+    console.log(token.value);
+    console.log(values);
     setLoading(true);
     axios
-      .post(APP.APP_URL + 'api/users/company', values)
+      .post(APP.APP_URL + 'api/users/company', values, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.value}`,
+        },
+      })
       .then(res => {
         setLoading(false);
         if (res.data) {
@@ -137,7 +145,7 @@ function CarteraAddEmpresa({navigation, token}) {
               <Text style={{...styles.verifyText}}>Completa tus datos</Text>
               {!isValid && (
                 <Text style={{fontSize: 14, color: 'red', textAlign: 'center'}}>
-                  Please fill the form correctly
+                  Por favor complete el formulario correctamente
                 </Text>
               )}
             </View>
@@ -148,7 +156,6 @@ function CarteraAddEmpresa({navigation, token}) {
                     // mode="dropdown"
                     style={styles.countryPicker}
                     minWidth={wp('75%')}
-                    paddingLeft={1}
                     borderWidth="0"
                     borderBottomWidth="2"
                     borderRadius="0"
@@ -166,7 +173,7 @@ function CarteraAddEmpresa({navigation, token}) {
                         <Select.Item
                           label={item.label}
                           value={item.value}
-                          key={item.label}
+                          key={item.index}
                         />
                       );
                     })}
@@ -223,6 +230,7 @@ function CarteraAddEmpresa({navigation, token}) {
                     ...styles.input,
                     alignItems: 'center',
                     flexDirection: 'row',
+                    marginTop: 6,
                   }}>
                   <SelectPicker
                     placeholder="Facturación Anual Estimada (USD)"
@@ -250,6 +258,7 @@ function CarteraAddEmpresa({navigation, token}) {
                     ...styles.input,
                     alignItems: 'center',
                     flexDirection: 'row',
+                    marginTop: 6,
                   }}>
                   <SelectPicker
                     placeholder="Tamaño empresa"
@@ -277,6 +286,7 @@ function CarteraAddEmpresa({navigation, token}) {
                     ...styles.input,
                     alignItems: 'center',
                     flexDirection: 'row',
+                    marginTop: 6,
                   }}>
                   <SelectPicker
                     placeholder="Origen de los fondos"
@@ -370,7 +380,7 @@ const styles = StyleSheet.create({
   },
   middleInputsContainer: {
     backgroundColor: '#18222E',
-    height: hp('60%'),
+    height: hp('65%'),
     marginTop: hp('1%'),
   },
   input: {
@@ -383,6 +393,8 @@ const styles = StyleSheet.create({
   },
   countryPicker: {
     width: wp('75%'),
+    fontSize: 14,
+    color: '#919191',
     alignSelf: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -390,8 +402,6 @@ const styles = StyleSheet.create({
     paddingLeft: 3,
     paddingBottom: 6,
     marginTop: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: '#919191',
   },
   countryname: {
     color: '#919191',
@@ -401,7 +411,7 @@ const styles = StyleSheet.create({
     height: hp('9%'),
     backgroundColor: '#18222E',
     position: 'absolute',
-    bottom: 5,
+    bottom: 1,
   },
   // continueButton: {
   //   width: wp('90%'),

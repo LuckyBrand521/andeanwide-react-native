@@ -40,7 +40,7 @@ export default function EmpresaVerficationMenuScreen({navigation}) {
       <View style={styles.middleInputsContainer}>
         <ScrollView>
           <TouchableOpacity
-            onPress={() => navigation.navigate('CarteraDocumentTypeSCreen')}>
+            onPress={() => navigation.navigate('EmpresaDocumentUploadScreen')}>
             <View style={styles.listContainer}>
               <LinearGradient
                 start={{x: 0, y: 0}}
@@ -58,7 +58,7 @@ export default function EmpresaVerficationMenuScreen({navigation}) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('CarteraAddEmpresa')}>
+            onPress={() => navigation.navigate('EmpresaDocumentUploadScreen')}>
             <View style={styles.listContainer}>
               <LinearGradient
                 start={{x: 0, y: 0}}
@@ -76,7 +76,7 @@ export default function EmpresaVerficationMenuScreen({navigation}) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('CarteraAddEmpresa')}>
+            onPress={() => navigation.navigate('EmpresaDocumentUploadScreen')}>
             <View style={styles.listContainer}>
               <LinearGradient
                 start={{x: 0, y: 0}}
@@ -96,7 +96,7 @@ export default function EmpresaVerficationMenuScreen({navigation}) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('CarteraAddEmpresa')}>
+            onPress={() => navigation.navigate('EmpresaDocumentUploadScreen')}>
             <View style={styles.listContainer}>
               <LinearGradient
                 start={{x: 0, y: 0}}
@@ -114,7 +114,7 @@ export default function EmpresaVerficationMenuScreen({navigation}) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('CarteraAddEmpresa')}>
+            onPress={() => navigation.navigate('EmpresaDocumentUploadScreen')}>
             <View style={styles.listContainer}>
               <LinearGradient
                 start={{x: 0, y: 0}}
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
 
   middleInputsContainer: {
     backgroundColor: '#18222E',
-    height: hp('55%'),
+    height: hp('65%'),
     marginTop: hp('1%'),
   },
 
