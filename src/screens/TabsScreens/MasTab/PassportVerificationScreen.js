@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     height: hp('9%'),
     backgroundColor: '#18222E',
     position: 'absolute',
-    bottom: 5,
+    bottom: 1,
   },
   continueButton: {
     width: wp('90%'),

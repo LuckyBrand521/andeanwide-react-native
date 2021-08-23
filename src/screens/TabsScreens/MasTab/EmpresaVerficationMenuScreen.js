@@ -40,7 +40,11 @@ export default function EmpresaVerficationMenuScreen({navigation}) {
       <View style={styles.middleInputsContainer}>
         <ScrollView>
           <TouchableOpacity
-            onPress={() => navigation.navigate('EmpresaDocumentUploadScreen')}>
+            onPress={() =>
+              navigation.navigate('EmpresaDocumentUploadScreen', {
+                title: 'Escritura de la empresa',
+              })
+            }>
             <View style={styles.listContainer}>
               <LinearGradient
                 start={{x: 0, y: 0}}
@@ -58,7 +62,11 @@ export default function EmpresaVerficationMenuScreen({navigation}) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('EmpresaDocumentUploadScreen')}>
+            onPress={() =>
+              navigation.navigate('EmpresaDocumentUploadScreen', {
+                title: 'Cuenta empresa',
+              })
+            }>
             <View style={styles.listContainer}>
               <LinearGradient
                 start={{x: 0, y: 0}}
@@ -76,7 +84,11 @@ export default function EmpresaVerficationMenuScreen({navigation}) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('EmpresaDocumentUploadScreen')}>
+            onPress={() =>
+              navigation.navigate('EmpresaDocumentUploadScreen', {
+                title: 'Certificado de vigencia',
+              })
+            }>
             <View style={styles.listContainer}>
               <LinearGradient
                 start={{x: 0, y: 0}}
@@ -96,7 +108,11 @@ export default function EmpresaVerficationMenuScreen({navigation}) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('EmpresaDocumentUploadScreen')}>
+            onPress={() =>
+              navigation.navigate('EmpresaDocumentUploadScreen', {
+                title: 'Carpeta Turbutria',
+              })
+            }>
             <View style={styles.listContainer}>
               <LinearGradient
                 start={{x: 0, y: 0}}
@@ -114,7 +130,11 @@ export default function EmpresaVerficationMenuScreen({navigation}) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('EmpresaDocumentUploadScreen')}>
+            onPress={() =>
+              navigation.navigate('EmpresaDocumentUploadScreen', {
+                title: 'Declaraciones de Impuesto',
+              })
+            }>
             <View style={styles.listContainer}>
               <LinearGradient
                 start={{x: 0, y: 0}}
@@ -231,7 +251,7 @@ const styles = StyleSheet.create({
     height: hp('9%'),
     backgroundColor: '#18222E',
     position: 'absolute',
-    bottom: 5,
+    bottom: 1,
   },
 
   continueButton: {

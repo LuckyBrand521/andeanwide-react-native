@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     height: hp('9%'),
     backgroundColor: '#18222E',
     position: 'relative',
-    bottom: 0,
+    bottom: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

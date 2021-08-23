@@ -19,6 +19,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Formik} from 'formik';
 import Toast from 'react-native-simple-toast';
 import ImagePicker from 'react-native-image-crop-picker';
+import DocumentPicker from 'react-native-document-picker';
 import RBSheet from 'react-native-raw-bottom-sheet';
 
 //Pickers
@@ -35,121 +36,78 @@ const infoFormSchema = yup.object().shape({
   title: yup.string().required('This field is requried'),
   description: yup.string(),
 });
-const initial_form_data = {
-  file: '',
-  description: '',
-};
 
-function EmpresaDocumentUploadScreen({navigation, token}) {
-  const sheet = useRef();
+function EmpresaDocumentUploadScreen({route, navigation, token}) {
+  const [singleFile, setSingleFile] = useState(null);
   const [isLoading, setLoading] = useState(false);
-  const [image, setImage] = useState('');
-  const [passportImage, setPassportImage] = useState(null);
-  //For Front-Side-Image
-  const takePhotoFromCamera = () => {
-    ImagePicker.openCamera({
-      compressImageMaxWidth: 300,
-      compressImageMaxHeight: 300,
-      cropping: true,
-      compressImageQuality: 0.7,
-    }).then(image => {
-      console.log(image);
-      setImage(image.path);
-      setPassportImage(image);
-      sheet.current.close();
-    });
+  const {title} = route.params;
+  const initial_form_data = {
+    title: title,
+    description: '',
   };
 
-  const choosePhotoFromLibrary = () => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 300,
-      cropping: true,
-      compressImageQuality: 0.7,
-    }).then(image => {
-      console.log(image);
-      console.log('Image one called');
-      setImage(image.path);
-      setPassportImage(image);
-      sheet.current.close();
-    });
-  };
-  // uploads image to the server based on passed in url and image
-  const handleSubmit = () => {
-    if (passportImage) {
-      setLoading(true);
-      let formData = new FormData();
-      formData.append('image', {
-        name: passportImage.path.split('/').pop(),
-        type: passportImage.mime,
-        uri:
-          Platform.OS === 'android'
-            ? passportImage.path
-            : passportImage.path.replace('file://', ''),
+  const selectFile = async () => {
+    // Opening Document Picker to select one file
+    try {
+      const res = await DocumentPicker.pick({
+        // Provide which type of file you want user to pick
+        type: [DocumentPicker.types.allFiles],
+        // There can me more options as well
+        // DocumentPicker.types.allFiles
+        // DocumentPicker.types.images
+        // DocumentPicker.types.plainText
+        // DocumentPicker.types.audio
+        // DocumentPicker.types.pdf
       });
-      axios
-        .post(APP.APP_URL + 'api/users/identity/attach-front-image', formData, {
-          headers: {'Content-type': 'multipart/form-data'},
-        })
-        .then(response => {
-          setLoading(false);
-          Toast.show('Successfully uploaded!', Toast.LONG, [
-            'UIAlertController',
-          ]);
-          navigation.navigate('AfidavetVerificationScreen');
-        })
-        .catch(error => {
-          setLoading(false);
-          Toast.show('Ocurrió un error while uploading!', Toast.LONG, [
-            'UIAlertController',
-          ]);
-          console.log(error);
-          // To be removed after completion
-          navigation.navigate('AfidavetVerificationScreen');
-        });
-    } else {
-      Toast.show('Please upload the image!', Toast.LONG, ['UIAlertController']);
+      // Printing the log realted to the file
+      console.log('res : ' + JSON.stringify(res));
+      // Setting the state to show single file attributes
+      setSingleFile(res[0]);
+    } catch (err) {
+      setSingleFile(null);
+      // Handling any exception (If any)
+      if (DocumentPicker.isCancel(err)) {
+        // If user canceled the document selection
+        alert('Canceled');
+      } else {
+        // For Unknown Error
+        alert('Unknown Error: ' + JSON.stringify(err));
+        throw err;
+      }
     }
   };
-  const companyInfoSubmit = values => {
-    values = {
-      ...values,
-      country_id: mycountry,
-    };
-    console.log(token.value);
-    console.log(values);
-    setLoading(true);
-    axios
-      .post(APP.APP_URL + 'api/users/company', values, {
+
+  const uploadDocument = async values => {
+    // Check if any file is selected or not
+    if (singleFile != null) {
+      setLoading(true);
+      // If file selected then create FormData
+      const fileToUpload = singleFile;
+      const data = new FormData();
+      data.append('title', values.title);
+      data.append('description', values.description);
+      data.append('document', fileToUpload);
+      // Please change file upload URL
+      let res = await fetch(APP.APP_URL + 'api/users/company', {
+        method: 'post',
+        body: data,
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token.value}`,
         },
-      })
-      .then(res => {
-        setLoading(false);
-        if (res.data) {
-          navigation.navigate('EmpresaVerficationMenuScreen');
-          // setTimeout(function () {
-          //   navigation.navigate('LoginScreen');
-          // }, 2000);
-        } else {
-          Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        setLoading(false);
-        Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
-        // To be updated
-        setTimeout(function () {
-          navigation.navigate('EmpresaVerficationMenuScreen');
-        }, 2000);
-      })
-      .finally(() => {
-        setLoading(false);
       });
+      let responseJson = await res.json();
+      if (responseJson.status == 204) {
+        setLoading(false);
+        Toast.show('Upload Successful');
+        navigation.navigate('EmpresaVerificationMenuScreen');
+      }
+      setLoading(false);
+    } else {
+      // If no file selected the show alert
+      alert('Please Select File first');
+    }
   };
 
   if (isLoading) {
@@ -166,46 +124,10 @@ function EmpresaDocumentUploadScreen({navigation, token}) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <RBSheet
-        ref={sheet}
-        height={350}
-        closeOnDragDown={true}
-        closeOnPressMask={false}
-        customStyles={{
-          wrapper: {},
-          draggableIcon: {
-            backgroundColor: '#000',
-          },
-        }}>
-        <View style={styles.panel}>
-          <View style={{alignItems: 'center'}}>
-            <Text style={styles.panelTitle}>Upload Photo</Text>
-            <Text style={styles.panelSubtitle}>
-              Choose Your Profile Picture
-            </Text>
-          </View>
-          <TouchableHighlight
-            style={styles.panelButton}
-            onPress={takePhotoFromCamera}>
-            <Text style={styles.panelButtonTitle}>Take Photo</Text>
-          </TouchableHighlight>
-
-          <TouchableHighlight
-            style={styles.panelButton}
-            onPress={choosePhotoFromLibrary}>
-            <Text style={styles.panelButtonTitle}>Choose From Library</Text>
-          </TouchableHighlight>
-          <TouchableHighlight
-            style={styles.panelButton}
-            onPress={() => sheet.current.close()}>
-            <Text style={styles.panelButtonTitle}>Cancel</Text>
-          </TouchableHighlight>
-        </View>
-      </RBSheet>
       <Formik
         validationSchema={infoFormSchema}
         initialValues={initial_form_data}
-        onSubmit={values => companyInfoSubmit(values)}>
+        onSubmit={values => uploadDocument(values)}>
         {({
           handleChange,
           handleBlur,
@@ -241,9 +163,21 @@ function EmpresaDocumentUploadScreen({navigation, token}) {
                 name="title"
                 onChangeText={handleChange('title')}
                 onBlur={handleBlur('title')}
-                value={values.name}
+                value={values.title}
               />
-              <Stack w="90%">
+              <TextInput
+                style={styles.description}
+                underlineColorAndroid="transparent"
+                placeholder="Escriba la descripcións"
+                placeholderTextColor="grey"
+                numberOfLines={5}
+                multiline={true}
+                name="description"
+                onChangeText={handleChange('description')}
+                onBlur={handleBlur('description')}
+                value={values.description}
+              />
+              {/* <Stack w="75%" style={{alignSelf: 'center', marginTop: 10}}>
                 <TextArea
                   numberOfLines={5}
                   placeholder="Text Area Placeholder"
@@ -253,35 +187,45 @@ function EmpresaDocumentUploadScreen({navigation, token}) {
                   onChangeText={handleChange('description')}
                   onBlur={handleBlur('description')}
                 />
-              </Stack>
+              </Stack> */}
+              <View>
+                {singleFile != null ? (
+                  <Text style={styles.textStyle}>
+                    File Name: {singleFile.name ? singleFile.name : ''}
+                    {'\n'}
+                    Type: {singleFile.type ? singleFile.type : ''}
+                    {'\n'}
+                    File Size: {singleFile.size ? singleFile.size : ''}
+                    {'\n'}
+                    URI: {singleFile.uri ? singleFile.uri : ''}
+                    {'\n'}
+                  </Text>
+                ) : null}
+                <TouchableOpacity
+                  style={styles.buttonStyle}
+                  activeOpacity={0.5}
+                  onPress={selectFile}>
+                  <Text style={styles.buttonTextStyle}>Select File</Text>
+                </TouchableOpacity>
+                <Text style={{...styles.cardText, color: '#919191'}}>
+                  Sube una foto o un escaneado de la foto{'\n'}
+                  de tu pasaporte.
+                </Text>
+              </View>
             </View>
-            <View>
-              <TouchableOpacity onPress={() => sheet.current.open()}>
-                {image === '' ? (
-                  <View style={styles.imageContainer}>
-                    <LinearGradient
-                      start={{x: 0, y: 0}}
-                      end={{x: 1, y: 0}}
-                      colors={['#078F41', '#17DD6F']}
-                      style={styles.plusCircle}>
-                      <AntDesign name="plus" size={16} color="#fff" />
-                    </LinearGradient>
-                    <Text style={styles.cardText}>Cargar Imagen</Text>
-                  </View>
-                ) : (
-                  <ImageBackground
-                    resizeMode="cover"
-                    style={{...styles.imageContainer, overflow: 'hidden'}}
-                    source={{
-                      uri: image,
-                    }}
-                  />
-                )}
+            <View style={styles.footerButtonContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  handleSubmit();
+                }}>
+                <LinearGradient
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 0}}
+                  colors={['#119438', '#1A9B36', '#1B9D36']}
+                  style={styles.continueButton}>
+                  <Text style={styles.buttonText}>Continuar</Text>
+                </LinearGradient>
               </TouchableOpacity>
-              <Text style={{...styles.cardText, color: '#919191'}}>
-                Sube una foto o un escaneado de la foto{'\n'}
-                de tu pasaporte.
-              </Text>
             </View>
           </>
         )}
@@ -313,11 +257,11 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderRadius: 0,
     borderBottomWidth: 2,
-    marginTop: hp('1%'),
     borderBottomColor: '#919191',
     width: wp('75%'),
-    alignSelf: 'center',
     color: '#919191',
+    alignSelf: 'center',
+    marginTop: 10,
   },
   header: {
     width: wp('100%'),
@@ -344,7 +288,7 @@ const styles = StyleSheet.create({
   },
   middleInputsContainer: {
     backgroundColor: '#18222E',
-    height: hp('65%'),
+    height: hp('60%'),
     marginTop: hp('1%'),
   },
   input: {
@@ -417,7 +361,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: hp('1.5%'),
+    marginTop: hp('2.5%'),
   },
   cardText: {
     fontSize: 14,
@@ -475,5 +419,30 @@ const styles = StyleSheet.create({
     // shadowOffset: {width: 0, height: 0},
     // shadowRadius: 5,
     // shadowOpacity: 0.4,
+  },
+  buttonStyle: {
+    backgroundColor: '#307ecc',
+    borderWidth: 0,
+    color: '#FFFFFF',
+    borderColor: '#307ecc',
+    height: 40,
+    alignItems: 'center',
+    borderRadius: 30,
+    marginLeft: 35,
+    marginRight: 35,
+    marginTop: 15,
+  },
+  buttonTextStyle: {
+    color: '#FFFFFF',
+    paddingVertical: 10,
+    fontSize: 16,
+  },
+  textStyle: {
+    backgroundColor: '#fff',
+    fontSize: 15,
+    marginTop: 16,
+    marginLeft: 35,
+    marginRight: 35,
+    textAlign: 'center',
   },
 });

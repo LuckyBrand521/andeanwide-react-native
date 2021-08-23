@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     height: hp('42%'),
     width: wp('100%'),
     padding: 25,
-    marginTop: hp('1%'),
+    marginTop: 0,
   },
   input: {
     marginTop: hp('0%'),

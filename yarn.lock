@@ -6967,6 +6967,13 @@ react-native-datepicker@^1.7.2:
   dependencies:
     moment "^2.22.0"
 
+react-native-document-picker@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-6.0.3.tgz#a58f16ef27e3d476fc7ffaef75bca461945aff18"
+  integrity sha512-PHO7HbWJyZy8medcvo37tdw656sFsHIcu6rCMLxBJhJ2IV/uMCYIahaO3A/fydyZ1Si2fnGE6Lef168xSEnjdQ==
+  dependencies:
+    invariant "^2.2.4"
+
 react-native-easy-grid@^0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/react-native-easy-grid/-/react-native-easy-grid-0.2.2.tgz#f0be33620be1ebe2d2295918eb58b0a27e8272ab"

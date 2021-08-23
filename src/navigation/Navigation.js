@@ -39,15 +39,8 @@ const Stack = createStackNavigator();
 function Navigation() {
   return (
     <NavigationContainer>
-      {/* <Stack.Navigator headerMode="none" initialRouteName={SplashScreen}> */}
-      <Stack.Navigator
-        headerMode="none"
-        initialRouteName={EmpresaDocumentUploadScreen}>
+      <Stack.Navigator headerMode="none" initialRouteName={SplashScreen}>
         {/* <Stack.Navigator headerMode="none" initialRouteName={MyTabs}> */}
-        <Stack.Screen
-          name="EmpresaDocumentUploadScreen"
-          component={EmpresaDocumentUploadScreen}
-        />
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="tabs" component={MyTabs} />
         <Stack.Screen name="onBoardingScreens" component={onBoardingScreens} />
@@ -91,7 +84,7 @@ function MyTabs() {
         keyboardHidesTabBar: true,
         labelStyle: {
           position: 'absolute',
-          bottom: 15,
+          bottom: 10,
         },
 
         tabStyle: {
@@ -99,7 +92,7 @@ function MyTabs() {
         },
 
         style: {
-          height: 90,
+          height: 75,
           borderTopWidth: 0,
         },
       }}>
@@ -113,7 +106,7 @@ function MyTabs() {
                 <View
                   style={{
                     backgroundColor: '#525962',
-                    height: 90,
+                    height: 75,
                     width: 80,
                     borderRadius: 10,
                     borderBottomStartRadius: 0,
@@ -150,7 +143,7 @@ function MyTabs() {
                 <View
                   style={{
                     backgroundColor: '#525962',
-                    height: 90,
+                    height: 75,
                     width: 80,
                     borderRadius: 10,
                     justifyContent: 'center',
@@ -185,7 +178,7 @@ function MyTabs() {
                 <View
                   style={{
                     backgroundColor: '#525962',
-                    height: 90,
+                    height: 75,
                     width: 80,
                     borderRadius: 10,
                     justifyContent: 'center',
@@ -220,7 +213,7 @@ function MyTabs() {
                 <View
                   style={{
                     backgroundColor: '#525962',
-                    height: 90,
+                    height: 75,
                     width: 80,
                     borderRadius: 10,
                     justifyContent: 'center',
@@ -256,7 +249,7 @@ function MyTabs() {
                 <View
                   style={{
                     backgroundColor: '#525962',
-                    height: 90,
+                    height: 75,
                     width: 80,
                     borderRadius: 10,
                     borderTopRightRadius: 0,

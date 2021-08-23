@@ -653,7 +653,6 @@ const styles = StyleSheet.create({
   },
 
   contentContainer: {
-    marginTop: hp('1%'),
     backgroundColor: '#18222E',
     height: hp('52%'),
   },
@@ -734,7 +733,7 @@ const styles = StyleSheet.create({
     height: hp('9%'),
     backgroundColor: '#18222E',
     position: 'absolute',
-    bottom: 5,
+    bottom: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
