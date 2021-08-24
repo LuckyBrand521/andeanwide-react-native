@@ -27,6 +27,7 @@ import EmpresaDocumentUploadScreen from '../screens/TabsScreens/MasTab/EmpresaDo
 import ResidanceVerificationScreen from '../screens/TabsScreens/MasTab/ResidanceVerificationScreen';
 import EmpresaVerficationMenuScreen from '../screens/TabsScreens/MasTab/EmpresaVerficationMenuScreen';
 import BalanceScreen from '../screens/TabsScreens/BalanceHomeTab/BalanceScreen';
+import DepositScreen from '../screens/TabsScreens/BalanceHomeTab/DepositScreen';
 import EnviarScreen from '../screens/TabsScreens/EnviarTab/EnviarScreen';
 import ReviewEnviarScreen from '../screens/TabsScreens/EnviarTab/ReviewEnviarScreen';
 import PriorityScreen from '../screens/TabsScreens/EnviarTab/PriorityScreen';
@@ -361,6 +362,7 @@ function BalanceStack() {
     // <NavigationContainer independent={true} headerMode>
     <Stack2.Navigator headerMode="none" initialRouteName={BalanceScreen}>
       <Stack2.Screen name="BalanceScreen" component={BalanceScreen} />
+      <Stack2.Screen name="DepositScreen" component={DepositScreen} />
     </Stack2.Navigator>
     // </NavigationContainer>
   );

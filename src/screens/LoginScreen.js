@@ -121,7 +121,10 @@ function LoginScreen({
         <View style={styles.loginContainer}>
           <Formik
             validationSchema={loginFormSchema}
-            initialValues={{email: '', password: ''}}
+            initialValues={{
+              email: '',
+              password: '',
+            }}
             onSubmit={values => loginSubmitAPI(values)}>
             {({
               handleChange,

@@ -29,6 +29,7 @@ import * as yup from 'yup';
 import LinearGradient from 'react-native-linear-gradient';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import countryList from '../../../data/countries';
+import * as CONSTANTS from '../../../data/global-constants';
 
 const infoFormSchema = yup.object().shape({
   name: yup.string().required('This field is requried'),
@@ -57,7 +58,8 @@ const option_estim = ['10,000', '20,000', '30,000', '40,000', '50,000'];
 const option_size = ['Pequeño', 'Medio', 'Grande'];
 const option_origin = ['utilidades retenidas', 'deuda', 'patrimonio'];
 
-function CarteraAddEmpresa({navigation, token}) {
+function CarteraAddEmpresa({navigation, token, userinfo}) {
+  console.log(userinfo);
   //inputs are in the same pattern as UI
   // is initial state for country name as Chile
   const [mycountry, setMyCountry] = useState('');
@@ -335,7 +337,7 @@ function CarteraAddEmpresa({navigation, token}) {
 }
 
 const mapStateToProps = state => ({
-  // userinfo: state.root.userinfo,
+  userinfo: state.root.userinfo,
   token: state.root.token,
 });
 

@@ -33,6 +33,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {personalAccountVerfify} from '../../../../actions';
 import countryList from '../../../data/countries';
+import * as CONSTANTS from '../../../data/global-constants';
 
 const gender_options = [
   {label: 'Masculina', val: 'M'},
@@ -71,6 +72,7 @@ function CarteraAddPersonnelDetails({
   personalAccountVerfify,
   userinfo,
 }) {
+  console.log(userinfo.account_type);
   if (userinfo != null) {
     initial_form_data.firstname = userinfo.identity.firstname;
     initial_form_data.lastname = userinfo.identity.lastname;
@@ -154,7 +156,11 @@ function CarteraAddPersonnelDetails({
               translucent={true}
             />
             <View style={styles.header}>
-              <Text style={styles.headerText}>Datos de usuario</Text>
+              <Text style={styles.headerText}>
+                {userinfo.account_type == 'personal'
+                  ? CONSTANTS.PERSONAL_INFO_VERIFICATION
+                  : CONSTANTS.COMPANY_REPRESENTATIV_VERIFICATION}
+              </Text>
             </View>
 
             <View>

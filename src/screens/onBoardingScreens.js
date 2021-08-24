@@ -64,7 +64,7 @@ export default function onBoardingScreens({navigation}) {
                   fontWeight: 'normal',
                   fontSize: 14,
                 }}>
-                Podras activar direntes monedas en tus balances de{'\n'}
+                Podras activar diferentes monedas en tus balances de{'\n'}
                 andea wide y convertir tu dinero de una a otra con tan{'\n'}
                 solo un click.
               </Text>
@@ -99,7 +99,7 @@ export default function onBoardingScreens({navigation}) {
                   fontWeight: 'normal',
                   fontSize: 14,
                 }}>
-                realiza todas tus trasnferecias con la app de{'\n'}
+                realiza todas tus transferencias con la app de{'\n'}
                 andean wide, donde quiera que estes solo con{'\n'}
                 un click
               </Text>

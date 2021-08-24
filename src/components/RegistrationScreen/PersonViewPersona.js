@@ -68,7 +68,9 @@ export default function PersonViewPersona() {
         .catch(err => {
           console.log(err);
           setLoading(false);
-          Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
+          Toast.show('No permite crear cuenta nueva!', Toast.LONG, [
+            'UIAlertController',
+          ]);
         });
     }
   };

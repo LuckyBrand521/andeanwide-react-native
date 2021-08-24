@@ -67,15 +67,16 @@ function ResidanceVerificationScreen({navigation, addressVerify, userinfo}) {
     setLoading(true);
     addressVerify(values)
       .then(() => {
-        navigation.navigate('CarteraDocumentTypeSCreen');
+        console.log(values);
+        if (userinfo.account_type == 'personal') {
+          navigation.navigate('CarteraDocumentTypeSCreen');
+        } else if (userinfo.account_type == 'corporative') {
+          navigation.navigate('CarteraAddEmpresa');
+        }
       })
       .catch(err => {
         console.log(err);
         Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
-      })
-      .finally(() => {
-        setLoading(false);
-        // navigation.navigate('CarteraDocumentTypeSCreen');
       });
   };
 

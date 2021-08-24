@@ -25,14 +25,14 @@ function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
   const [isLoading, setLoading] = useState(false);
   // submits the account type to /api/users/set-account-type
   const accTypeSubmit = value => {
-    const values = {acount_Type: value};
+    const values = {account_type: value};
     setLoading(true);
     setAccountType(values)
       .then(() => {
         if (value == 'personal') {
           navigation.navigate('CarteraAddPersonnelDetails');
         } else if (value == 'corporative') {
-          navigation.navigate('CarteraAddEmpresa');
+          navigation.navigate('CarteraAddPersonnelDetails');
         }
       })
       .catch(err => {

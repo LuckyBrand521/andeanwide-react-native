@@ -261,6 +261,37 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
                   onBlur={handleBlur('lastname')}
                   value={values.lastname}
                 />
+                <View
+                  style={{
+                    ...styles.input,
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                  }}>
+                  <SelectPicker
+                    placeholderStyle={{color: '#999999'}}
+                    style={{right: wp('1%')}}
+                    placeholder="Tipo de Documento"
+                    onSelectedStyle={{color: '#999999'}}
+                    onValueChange={res => {
+                      values.document_type = res;
+                    }}
+                    onBlur={handleBlur('document_type')}
+                    selected={values.document_type}>
+                    {Object.values(dniOptions).map((item, index) => (
+                      <SelectPicker.Item
+                        label={item}
+                        value={item}
+                        key={index}
+                      />
+                    ))}
+                  </SelectPicker>
+                  <AntDesign
+                    style={{position: 'absolute', right: 10}}
+                    name="caretdown"
+                    color="#919191"
+                    size={14}
+                  />
+                </View>
                 <TextInput
                   placeholder="Documento de Identidad"
                   name="dni"
@@ -331,37 +362,6 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
                   onBlur={handleBlur('address')}
                   value={values.address}
                 />
-                <View
-                  style={{
-                    ...styles.input,
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                  }}>
-                  <SelectPicker
-                    placeholderStyle={{color: '#999999'}}
-                    style={{right: wp('1%')}}
-                    placeholder="Tipo de Documento"
-                    onSelectedStyle={{color: '#999999'}}
-                    onValueChange={res => {
-                      values.document_type = res;
-                    }}
-                    onBlur={handleBlur('document_type')}
-                    selected={values.document_type}>
-                    {Object.values(dniOptions).map((item, index) => (
-                      <SelectPicker.Item
-                        label={item}
-                        value={item}
-                        key={index}
-                      />
-                    ))}
-                  </SelectPicker>
-                  <AntDesign
-                    style={{position: 'absolute', right: 10}}
-                    name="caretdown"
-                    color="#919191"
-                    size={14}
-                  />
-                </View>
                 <View
                   style={{
                     ...styles.input,

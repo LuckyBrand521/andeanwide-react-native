@@ -19,9 +19,16 @@ import {
 import Carousel from 'react-native-looped-carousel';
 import Octicons from 'react-native-vector-icons/Octicons';
 import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Modal from 'react-native-modal';
+
 import {numberWithCommas} from '../../../data/helpers';
 
 function BalanceScreen({navigation, userinfo, orders}) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -30,35 +37,53 @@ function BalanceScreen({navigation, userinfo, orders}) {
         backgroundColor="#18222E"
         translucent={true}
       />
+      <Modal
+        isVisible={modalVisible}
+        onBackdropPress={() => setModalVisible(false)}>
+        <View style={styles.modal_container}>
+          <Text style={styles.modal_header}>
+            Próximamente, en breve, pronto
+          </Text>
+        </View>
+      </Modal>
+
       <View style={styles.header}>
-        <Text
-          style={{
-            ...styles.headerText,
-            fontWeight: 'normal',
-            fontSize: 15,
-            flex: 1,
-            textAlign: 'left',
-          }}>
-          Historia
-        </Text>
-        <Text style={{...styles.headerText, flex: 1, textAlign: 'center'}}>
-          Cartera
-        </Text>
         <Octicons
           onPress={() => {
             navigation.navigate('LoginScreen');
           }}
-          name="sign-out"
+          name="gear"
+          size={24}
+          color="#fff"
+          style={{
+            flex: 1,
+            textAlign: 'left',
+          }}
+        />
+        <Text style={{...styles.headerText, flex: 1, textAlign: 'center'}}>
+          Cartera
+        </Text>
+        <Icon
+          name="qrcode"
           style={{flex: 1, textAlign: 'right'}}
           size={24}
           color="#fff"
         />
+        {/* <Octicons
+          onPress={() => {
+            navigation.navigate('LoginScreen');
+          }}
+          name="qr-code"
+          style={{flex: 1, textAlign: 'right'}}
+          size={24}
+          color="#fff"
+        /> */}
       </View>
 
       <View style={styles.middleInputsContainer}>
         <Carousel
           delay={2000}
-          style={{width: wp('85%'), height: 180, alignSelf: 'center'}}
+          style={{width: wp('90%'), height: 180, alignSelf: 'center'}}
           autoplay={false}
           pageInfo={false}
           bullets={true}
@@ -78,82 +103,35 @@ function BalanceScreen({navigation, userinfo, orders}) {
             backgroundColor: '#2C3240',
           }}
           onAnimateNextPage={p => console.log(p)}>
-          <LinearGradient
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            colors={['#027532', '#0FB658', '#1CFA7F']}
-            key={1}
-            style={styles.card}>
-            <LinearGradient
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
-              colors={['#15BC63', '#1CFA7F']}
-              style={{
-                width: 150,
-                height: 150,
-                right: -20,
-                top: -40,
-
-                overflow: 'hidden',
-                position: 'absolute',
-                borderRadius: 75,
-                backgroundColor: '#1CFA7F',
-              }}
-            />
-
-            <View style={styles.cardTextContainer}>
-              <Text style={styles.cardText}>CLP Balance</Text>
-              <Text style={{...styles.cardText, fontSize: 34}}>
-                CLP {numberWithCommas(userinfo.balance)}
-              </Text>
-              <Text style={styles.cardText}>
-                CLP {numberWithCommas(userinfo.available_amount)}
-              </Text>
-            </View>
-
+          <View key={1} style={styles.card}>
             <View style={styles.cardButtonContainer}>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('DepositScreen');
+                }}>
                 <View style={styles.button}>
                   <Text style={styles.btnText}>Deposito</Text>
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity>
+              <TouchableOpacity onPress={toggleModal}>
                 <View style={styles.button}>
                   <Text style={styles.btnText}>Retiro</Text>
                 </View>
               </TouchableOpacity>
             </View>
-          </LinearGradient>
-
-          <LinearGradient
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            colors={['#283B50', '#41627E', '#537EA1']}
-            key={2}
-            style={styles.card}>
-            <LinearGradient
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
-              colors={['#466A89', '#4C7494']}
-              style={{
-                width: 150,
-                height: 150,
-                right: -20,
-                top: -40,
-
-                overflow: 'hidden',
-                position: 'absolute',
-                borderRadius: 75,
-              }}
-            />
-
             <View style={styles.cardTextContainer}>
-              <Text style={styles.cardText}>USD Balance</Text>
-              <Text style={{...styles.cardText, fontSize: 34}}>$ 0.00</Text>
-              <Text style={styles.cardText}>$ 0.00 Disponible</Text>
+              <Text style={styles.cardText}>CLP</Text>
+              <Text style={{...styles.cardText, fontSize: 40}}>
+                {numberWithCommas(userinfo.balance)}
+              </Text>
+              <Text style={{...styles.cardText, color: '#1A8D35'}}>
+                Disponsible
+              </Text>
             </View>
+          </View>
 
+          <View key={2} style={styles.card}>
             <View style={styles.cardButtonContainer}>
               <TouchableOpacity>
                 <View style={{...styles.button, backgroundColor: '#617E96'}}>
@@ -161,59 +139,51 @@ function BalanceScreen({navigation, userinfo, orders}) {
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity>
+              <TouchableOpacity onPress={toggleModal}>
                 <View style={{...styles.button, backgroundColor: '#617E96'}}>
                   <Text style={styles.btnText}>Retiro</Text>
                 </View>
               </TouchableOpacity>
             </View>
-          </LinearGradient>
-
-          <LinearGradient
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            colors={['#696972', '#9A9B9D', '#9A9B9D']}
-            key={3}
-            style={styles.card}>
-            <LinearGradient
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
-              colors={['#7F8086', '#9A9B9D']}
-              style={{
-                width: 150,
-                height: 150,
-                right: -20,
-                top: -40,
-
-                overflow: 'hidden',
-                position: 'absolute',
-                borderRadius: 75,
-                backgroundColor: '#1CFA7F',
-              }}
-            />
-
             <View style={styles.cardTextContainer}>
-              <Text style={styles.cardText}>EUR Balance</Text>
-              <Text style={{...styles.cardText, fontSize: 34}}>€ 0.00</Text>
-              <Text style={styles.cardText}>$ 0.00 Disponible</Text>
+              <Text style={styles.cardText}>USD</Text>
+              <Text style={{...styles.cardText, fontSize: 40}}>0.00</Text>
+              <Text style={{...styles.cardText, color: '#1A8D35'}}>
+                Disponible
+              </Text>
             </View>
+          </View>
 
+          <View key={3} style={styles.card}>
             <View style={styles.cardButtonContainer}>
               <TouchableOpacity>
-                <View style={{...styles.button, backgroundColor: '#ACACAE'}}>
+                <View style={{...styles.button, backgroundColor: '#296945'}}>
                   <Text style={styles.btnText}>Deposito</Text>
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity>
-                <View style={{...styles.button, backgroundColor: '#ACACAE'}}>
+              <TouchableOpacity onPress={toggleModal}>
+                <View style={{...styles.button, backgroundColor: '#296945'}}>
                   <Text style={styles.btnText}>Retiro</Text>
                 </View>
               </TouchableOpacity>
             </View>
-          </LinearGradient>
+            <View style={styles.cardTextContainer}>
+              <Text style={styles.cardText}>EUR</Text>
+              <Text style={{...styles.cardText, fontSize: 40}}>0.00</Text>
+              <Text style={{...styles.cardText, color: '#1A8D35'}}>
+                Disponible
+              </Text>
+            </View>
+          </View>
         </Carousel>
-        <Text style={{...styles.headerText, paddingTop: 35}}>
+        <Text
+          style={{
+            ...styles.headerText,
+            paddingTop: 35,
+            textAlign: 'center',
+            color: '#aaa',
+          }}>
           Transacciones
         </Text>
 
@@ -377,10 +347,9 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: '#BADA55',
-    width: wp('85%'),
+    backgroundColor: 'transparent',
+    width: wp('90%'),
     height: 180,
-    borderRadius: 20,
     overflow: 'hidden',
   },
 
@@ -392,20 +361,21 @@ const styles = StyleSheet.create({
   cardTextContainer: {
     paddingHorizontal: 20,
     paddingVertical: 15,
+    alignItems: 'center',
   },
 
   button: {
-    width: wp('35%'),
-    height: 45,
+    width: wp('30%'),
+    height: 30,
     borderRadius: 10,
-    backgroundColor: '#35BC6F',
+    backgroundColor: '#353535',
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   btnText: {
     color: '#fff',
-    fontSize: 20,
+    fontSize: 16,
   },
 
   cardButtonContainer: {
@@ -429,5 +399,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
+  },
+  modal_container: {
+    backgroundColor: '#1a2138',
+    height: 200,
+    borderRadius: 10,
+    borderWidth: 0,
+    paddingTop: 10,
+    paddingBottom: 15,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  modal_header: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#fff',
+    alignSelf: 'center',
   },
 });
