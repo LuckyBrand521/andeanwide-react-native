@@ -95,7 +95,7 @@ export const getMyInfo = () => dispatch => {
     )
     .then(res => {
       dispatch(saveAccInfo(res.data.user));
-      return Promise.resolve();
+      return Promise.resolve(res.data.user);
     })
     .catch(err => {
       console.log(err);

@@ -17,7 +17,9 @@ import {Switch} from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
 import SelectPicker from 'react-native-form-select-picker';
 import Spinner from 'react-native-loading-spinner-overlay';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import Toast from 'react-native-simple-toast';
+import Modal from 'react-native-modal';
 
 import {
   widthPercentageToDP as wp,
@@ -28,6 +30,7 @@ import {getPairs, saveNewOrder} from '../../../../actions';
 const options = ['CLP', 'USD', 'PEN', 'COP'];
 
 function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
+  const [modalVisible, setModalVisible] = useState(false);
   const [cost, setCost] = useState(1.19);
   const [rate, setRate] = useState(1.0);
   const [sendOptions, setSendOptions] = useState(['CLP', 'USD', 'PEN', 'COP']);
@@ -204,7 +207,9 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
       });
     }
   };
-
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -213,6 +218,23 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
         backgroundColor="#18222E"
         translucent={true}
       />
+      <Modal
+        isVisible={modalVisible}
+        onBackdropPress={() => setModalVisible(false)}>
+        <View style={styles.modal_container}>
+          <Icon
+            name="bullhorn"
+            style={{
+              textAlign: 'center',
+            }}
+            size={40}
+            color="#fff"
+          />
+          <Text style={styles.modal_header}>
+            Próximamente, en breve, pronto
+          </Text>
+        </View>
+      </Modal>
       <View style={styles.header}>
         <Text style={styles.headerText}>Enviar</Text>
       </View>
@@ -238,11 +260,11 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
             </View>
           </TouchableWithoutFeedback>
 
-          <TouchableWithoutFeedback onPress={onpresstab2}>
+          <TouchableWithoutFeedback onPress={toggleModal}>
             <View>
               <Text
                 style={{color: colorE, textAlign: 'center', marginBottom: 4}}>
-                Misma moneda
+                Andean Wide
               </Text>
               <View
                 style={{width: 150, height: 5, backgroundColor: bgColorE}}
@@ -736,5 +758,21 @@ const styles = StyleSheet.create({
     bottom: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  modal_container: {
+    backgroundColor: '#1a2138',
+    height: 'auto',
+    borderRadius: 10,
+    borderWidth: 0,
+    paddingTop: 10,
+    paddingBottom: 15,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  modal_header: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#fff',
+    alignSelf: 'center',
   },
 });

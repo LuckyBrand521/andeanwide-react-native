@@ -21,14 +21,98 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Modal from 'react-native-modal';
+import CircleWithLabel from '../../../components/subviews/CircleWithLabel';
 
 import {numberWithCommas} from '../../../data/helpers';
 
+const formatDate = date_str => {
+  const d = new Date(date_str);
+  const d_str = d.toDateString();
+  return d_str.substr(4);
+};
+
+const trimName = name => {
+  if (name.length > 15) {
+    return name.substr(0, 14) + '...';
+  }
+  return name;
+};
+
+const colorLabel = order => {
+  if (order.status == 'COMPLETED') {
+    return (
+      <Text
+        style={{
+          ...styles.btnText,
+          fontSize: 18,
+          flex: 1,
+          textAlign: 'right',
+          color: '#D21019',
+        }}>
+        {numberWithCommas(order.payment_amount)} {order.pair.base.name}
+      </Text>
+    );
+  } else if (order.status == 'PAYOUT_RECEIVED') {
+    return (
+      <Text
+        style={{
+          ...styles.btnText,
+          fontSize: 18,
+          flex: 1,
+          textAlign: 'right',
+          color: '#0BCE5E',
+        }}>
+        {numberWithCommas(order.payment_amount)} {order.pair.base.name}
+      </Text>
+    );
+  }
+};
+
 function BalanceScreen({navigation, userinfo, orders}) {
   const [modalVisible, setModalVisible] = useState(false);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [detailIndex, setDetailIndex] = useState(-1);
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
+  const toggleDetailModal = index => {
+    setDetailModalVisible(!detailModalVisible);
+    setDetailIndex(index);
+  };
+  let date_label = '';
+  let order_rows = [];
+  for (let i = 0; i < orders.length; i++) {
+    if (formatDate(orders[i].filled_at) != date_label) {
+      date_label = formatDate(orders[i].filled_at);
+      order_rows.push(
+        <Text style={{color: '#919191', padding: 8, paddingHorizontal: 20}}>
+          {date_label}
+        </Text>,
+      );
+    }
+    order_rows.push(
+      <TouchableOpacity
+        style={{...styles.transactionsList, justifyContent: 'space-around'}}
+        key={orders[i].id}
+        onPress={() => {
+          toggleDetailModal(i);
+        }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <CircleWithLabel
+            label={
+              orders[i].recipient.name[0] + orders[i].recipient.lastname[0]
+            }
+          />
+          <Text style={{...styles.headerText}}>
+            {trimName(orders[i].recipient.name)}
+          </Text>
+        </View>
+
+        {colorLabel(orders[i])}
+      </TouchableOpacity>,
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -41,10 +125,53 @@ function BalanceScreen({navigation, userinfo, orders}) {
         isVisible={modalVisible}
         onBackdropPress={() => setModalVisible(false)}>
         <View style={styles.modal_container}>
+          <Icon
+            name="bullhorn"
+            style={{
+              textAlign: 'center',
+            }}
+            size={40}
+            color="#fff"
+          />
           <Text style={styles.modal_header}>
             Próximamente, en breve, pronto
           </Text>
         </View>
+      </Modal>
+      <Modal
+        isVisible={detailModalVisible}
+        onBackdropPress={() => setDetailModalVisible(false)}>
+        {detailIndex > -1 ? (
+          <>
+            <View style={styles.modal_container}>
+              <Text style={{color: '#959595'}}>FECHA:</Text>
+              <Text style={{color: 'white', fontSize: 18}}>
+                {orders[detailIndex].filled_at}
+              </Text>
+              <Text style={{color: '#959595'}}>BENEFICIARIO:</Text>
+              <Text style={{color: 'white', fontSize: 18}}>
+                {orders[detailIndex].recipient.name}
+              </Text>
+              <Text style={{color: '#959595'}}>MONTO ENVIADO:</Text>
+              <Text style={{color: 'white', fontSize: 18}}>
+                {orders[detailIndex].payment_amount}{' '}
+                {orders[detailIndex].pair.base.name}
+              </Text>
+              <Text style={{color: '#959595'}}>MONTO RECIBIDO:</Text>
+              <Text style={{color: 'white', fontSize: 18}}>
+                {orders[detailIndex].received_amount}{' '}
+                {orders[detailIndex].pair.quote.name}
+              </Text>
+              <Text style={{color: '#959595'}}>TASA:</Text>
+              <Text style={{color: 'white', fontSize: 18}}>
+                {orders[detailIndex].rate.toFixed(4)}{' '}
+                {orders[detailIndex].pair.name}
+              </Text>
+            </View>
+          </>
+        ) : (
+          <></>
+        )}
       </Modal>
 
       <View style={styles.header}>
@@ -60,9 +187,12 @@ function BalanceScreen({navigation, userinfo, orders}) {
             textAlign: 'left',
           }}
         />
-        <Text style={{...styles.headerText, flex: 1, textAlign: 'center'}}>
-          Cartera
-        </Text>
+        <View style={{flex: 5, alignItems: 'center'}}>
+          <View style={styles.nameHeader}>
+            <CircleWithLabel label={userinfo.initials} />
+            <Text style={{...styles.headerText}}>{userinfo.name}</Text>
+          </View>
+        </View>
         <Icon
           name="qrcode"
           style={{flex: 1, textAlign: 'right'}}
@@ -83,11 +213,17 @@ function BalanceScreen({navigation, userinfo, orders}) {
       <View style={styles.middleInputsContainer}>
         <Carousel
           delay={2000}
-          style={{width: wp('90%'), height: 180, alignSelf: 'center'}}
+          style={{
+            width: wp('90%'),
+            height: 175,
+            alignSelf: 'center',
+            marginTop: 15,
+            marginBottom: 15,
+          }}
           autoplay={false}
           pageInfo={false}
           bullets={true}
-          bulletsContainerStyle={{position: 'absolute', bottom: -30}}
+          bulletsContainerStyle={{position: 'absolute', bottom: -10}}
           chosenBulletStyle={{
             width: 23,
             height: 6,
@@ -122,10 +258,16 @@ function BalanceScreen({navigation, userinfo, orders}) {
             </View>
             <View style={styles.cardTextContainer}>
               <Text style={styles.cardText}>CLP</Text>
-              <Text style={{...styles.cardText, fontSize: 40}}>
+              <Text style={{...styles.cardText, fontSize: 34}}>
                 {numberWithCommas(userinfo.balance)}
               </Text>
-              <Text style={{...styles.cardText, color: '#1A8D35'}}>
+              <Text
+                style={{
+                  ...styles.cardText,
+                  color: '#0A9F4B',
+                  fontSize: 18,
+                  marginTop: 10,
+                }}>
                 Disponsible
               </Text>
             </View>
@@ -147,8 +289,14 @@ function BalanceScreen({navigation, userinfo, orders}) {
             </View>
             <View style={styles.cardTextContainer}>
               <Text style={styles.cardText}>USD</Text>
-              <Text style={{...styles.cardText, fontSize: 40}}>0.00</Text>
-              <Text style={{...styles.cardText, color: '#1A8D35'}}>
+              <Text style={{...styles.cardText, fontSize: 34}}>0.00</Text>
+              <Text
+                style={{
+                  ...styles.cardText,
+                  color: '#0A9F4B',
+                  fontSize: 18,
+                  marginTop: 10,
+                }}>
                 Disponible
               </Text>
             </View>
@@ -170,8 +318,14 @@ function BalanceScreen({navigation, userinfo, orders}) {
             </View>
             <View style={styles.cardTextContainer}>
               <Text style={styles.cardText}>EUR</Text>
-              <Text style={{...styles.cardText, fontSize: 40}}>0.00</Text>
-              <Text style={{...styles.cardText, color: '#1A8D35'}}>
+              <Text style={{...styles.cardText, fontSize: 34}}>0.00</Text>
+              <Text
+                style={{
+                  ...styles.cardText,
+                  color: '#0A9F4B',
+                  fontSize: 18,
+                  marginTop: 10,
+                }}>
                 Disponible
               </Text>
             </View>
@@ -180,66 +334,20 @@ function BalanceScreen({navigation, userinfo, orders}) {
         <Text
           style={{
             ...styles.headerText,
-            paddingTop: 35,
+            paddingTop: 10,
+            paddingBottom: 10,
             textAlign: 'center',
-            color: '#aaa',
+            color: '#fff',
+            backgroundColor: '#141A28',
+            width: wp('100%'),
+            marginHorizontal: 0,
           }}>
           Transacciones
         </Text>
-
-        <View style={styles.trasactionsTitle}>
-          <Text
-            style={{
-              ...styles.btnText,
-              color: '#707A81',
-              fontSize: 18,
-              flex: 2,
-            }}>
-            Cantidad
-          </Text>
-          <Text
-            style={{
-              ...styles.btnText,
-              color: '#707A81',
-              fontSize: 18,
-              flex: 2,
-            }}>
-            Fecha{' '}
-          </Text>
-          <Text
-            style={{
-              ...styles.btnText,
-              color: '#707A81',
-              fontSize: 18,
-              flex: 1,
-            }}>
-            Estatus
-          </Text>
-        </View>
       </View>
       <ScrollView>
-        {orders.length > 0 &&
-          orders.map(item => {
-            return (
-              <TouchableOpacity style={styles.transactionsList} key={item.id}>
-                <Text
-                  style={{
-                    color: '#fff',
-                    fontSize: 18,
-                    flex: 2,
-                  }}>
-                  {numberWithCommas(item.payment_amount)}
-                </Text>
-                <Text style={{color: '#fff', fontSize: 18, flex: 2}}>
-                  {item.payed_at}
-                </Text>
-
-                <Text style={{...styles.btnText, fontSize: 14, flex: 1}}>
-                  {item.payout_status}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+        <Text style={{backgroundColor: '#18222E', height: 4}} />
+        {order_rows}
       </ScrollView>
       {/* <View style={styles.footerButtonContainer}>
         <TouchableOpacity>
@@ -275,20 +383,20 @@ const styles = StyleSheet.create({
 
   header: {
     width: wp('100%'),
-    height: hp('12%'),
-    marginTop: hp('2%'),
+    height: hp('10%'),
+    marginTop: hp('6%'),
+    marginBottom: hp('0.5%'),
     backgroundColor: '#18222E',
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 20,
-    paddingBottom: 10,
   },
 
   headerText: {
     color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    paddingHorizontal: 10,
   },
 
   verifyText: {
@@ -299,9 +407,8 @@ const styles = StyleSheet.create({
   },
   middleInputsContainer: {
     backgroundColor: '#18222E',
-    height: hp('42%'),
+    // height: hp('42%'),
     width: wp('100%'),
-    padding: 25,
     marginTop: 0,
   },
   input: {
@@ -355,12 +462,12 @@ const styles = StyleSheet.create({
 
   cardText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
   },
 
   cardTextContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 16,
     alignItems: 'center',
   },
 
@@ -368,31 +475,32 @@ const styles = StyleSheet.create({
     width: wp('30%'),
     height: 30,
     borderRadius: 10,
-    backgroundColor: '#353535',
+    backgroundColor: '#3D4650',
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   btnText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
   },
 
   cardButtonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: 8,
   },
   trasactionsTitle: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: hp('1%'),
+    paddingHorizontal: 10,
   },
 
   transactionsList: {
-    height: hp('11%'),
+    height: hp('6%'),
     backgroundColor: '#18222E',
     marginTop: 3,
     flexDirection: 'row',
@@ -402,18 +510,29 @@ const styles = StyleSheet.create({
   },
   modal_container: {
     backgroundColor: '#1a2138',
-    height: 200,
+    height: 'auto',
     borderRadius: 10,
     borderWidth: 0,
     paddingTop: 10,
     paddingBottom: 15,
     flexDirection: 'column',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   modal_header: {
     marginTop: 10,
     fontSize: 16,
     color: '#fff',
     alignSelf: 'center',
+  },
+  nameHeader: {
+    width: 'auto',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 5,
+    borderRadius: 100,
+    backgroundColor: '#141A27',
+    borderWidth: 0,
+    flexDirection: 'row',
   },
 });

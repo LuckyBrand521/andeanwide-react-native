@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import APP from '../../app.json';
 import {Alert} from 'react-native';
+import axios from 'axios';
 import {Formik} from 'formik';
 import {
   StyleSheet,
@@ -17,6 +18,8 @@ import {
 } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
+import Modal from 'react-native-modal';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import {
   widthPercentageToDP as wp,
@@ -52,26 +55,29 @@ function LoginScreen({
   token,
 }) {
   const [isLoading, setLoading] = useState(false);
-  // useEffect(() => {
-  //   navigation.addListener('focus', () => {
-  //     // The screen is focused
-  //     removeUserToken(null).then(() => {
-  //       console.log('sdfsd', token);
-  //     });
-  //   });
-  // }, [navigation]);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
+
   const loginSubmitAPI = values => {
     setLoading(true);
     loginAction(values)
       .then(() => {
         //navigation.navigate('FaceConfigurationScreen');
         getMyInfo()
-          .then(() => {
+          .then(userinfo => {
             getOrderHistory()
               .then(() => {
                 setLoading(false);
                 Toast.show('Welcome!', Toast.LONG);
-                navigation.navigate('tabs', {screen: 'BalanceScreen'});
+                console.log(userinfo.email_verified_at);
+                if (userinfo.email_verified_at != null) {
+                  navigation.navigate('tabs', {screen: 'BalanceScreen'});
+                } else {
+                  setModalVisible(true);
+                }
               })
               .catch(err => {
                 setLoading(false);
@@ -97,12 +103,39 @@ function LoginScreen({
       });
   };
 
+  const sendEmailVerification = () => {
+    setLoading(true);
+    axios
+      .post(
+        APP.APP_URL + 'api/email/verification-notification',
+        {},
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.value}`,
+          },
+        },
+      )
+      .then(res => {
+        setLoading(false);
+        if (res.data.message) {
+          Toast.show(res.data.message, Toast.LONG);
+        }
+      })
+      .catch(err => {
+        setLoading(false);
+        console.log(err);
+        Toast.show('Ocurrió un error!', Toast.LONG);
+      });
+  };
+
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Logging in...'}
+          textContent={'Iniciando sesión...'}
           textStyle={styles.spinnerTextStyle}
         />
       </SafeAreaView>
@@ -111,6 +144,57 @@ function LoginScreen({
 
   return (
     <SafeAreaView style={styles.container}>
+      <Modal
+        isVisible={modalVisible}
+        onBackdropPress={() => setModalVisible(false)}>
+        <View style={styles.modal_container}>
+          <Icon
+            name="bullhorn"
+            style={{
+              textAlign: 'center',
+            }}
+            size={40}
+            color="#fff"
+          />
+          <Text style={styles.modal_header}>
+            TU CUENTA DE CORREO NO HA SIDO VERIFICADA
+          </Text>
+          <Text style={{color: '#999999', paddingHorizontal: 10}}>
+            Un correo de confirmación fue enviado con el link de verificación de
+            correo electrónico a la cuenta que has registrado en andenwide.com .
+            Haz clic en el botón “Verificar Cuenta”, para poder acceder a
+            nuestros servicios. Si no has recibido el correo con el link, puedes
+            solicitar haciendo clic en el botón "Solicitar Link de
+            Verificación".
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginTop: 10,
+              alignItems: 'center',
+            }}>
+            <Text
+              style={{marginRight: 20, color: 'white', fontSize: 16}}
+              onPress={toggleModal}>
+              SALIR
+            </Text>
+            <TouchableOpacity
+              style={{
+                borderWidth: 1,
+                borderColor: '#10D234',
+                borderRadius: 5,
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+              }}
+              onPress={sendEmailVerification}>
+              <Text style={{color: '#BBB', fontSize: 13}}>
+                Solicitar Link de Verificación
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.contentContainer}>
         <Image style={styles.topLogo} source={require('../images/logo.png')} />
         <Text />
@@ -122,8 +206,8 @@ function LoginScreen({
           <Formik
             validationSchema={loginFormSchema}
             initialValues={{
-              email: '',
-              password: '',
+              email: 'josechavez2006@gmail.com',
+              password: 'Test123456789$',
             }}
             onSubmit={values => loginSubmitAPI(values)}>
             {({
@@ -273,5 +357,22 @@ const styles = StyleSheet.create({
 
   spinnerTextStyle: {
     color: '#FFF',
+  },
+  modal_container: {
+    backgroundColor: '#1a2138',
+    height: 'auto',
+    borderRadius: 10,
+    borderWidth: 0,
+    paddingTop: 10,
+    paddingBottom: 15,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modal_header: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#fff',
+    alignSelf: 'center',
   },
 });
