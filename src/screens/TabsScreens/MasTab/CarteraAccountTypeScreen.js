@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import {
   SafeAreaView,
@@ -19,10 +19,27 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {TouchableOpacity} from 'react-native';
 import Toast from 'react-native-simple-toast';
 import Spinner from 'react-native-loading-spinner-overlay';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Modal from 'react-native-modal';
 import {setAccountType} from '../../../../actions';
 
 function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
   const [isLoading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  // if(navigation.curr)
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      console.log(userinfo.veracity_declaration_at);
+      console.log(modalVisible);
+      if (userinfo.veracity_declaration_at == 'null') {
+        setModalVisible(false);
+      } else {
+        console.log('Ok');
+        setModalVisible(true);
+      }
+    });
+  }, [navigation]);
+  console.log('------------', modalVisible);
   // submits the account type to /api/users/set-account-type
   const accTypeSubmit = value => {
     const values = {account_type: value};
@@ -45,6 +62,14 @@ function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
       });
   };
 
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
+
+  const sendEmailVerification = () => {
+    setModalVisible(false);
+    navigation.navigate('BalanceScreen');
+  };
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -65,6 +90,45 @@ function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
         backgroundColor="#18222E"
         translucent={true}
       />
+      <Modal isVisible={modalVisible}>
+        <View style={styles.modal_container}>
+          <Icon
+            name="bullhorn"
+            style={{
+              textAlign: 'center',
+            }}
+            size={40}
+            color="#fff"
+          />
+          <Text style={{...styles.modal_header, marginBottom: 10}}>
+            VERIFICACIÓN DE CUENTA DE USUARIO
+          </Text>
+          <Text style={{color: '#999999', paddingHorizontal: 15}}>
+            FELICITACIONES TUS DOCUMENTOS FUERON ENVIADOS EXITOSAMENTE. {'\n\n'}
+            Tu documentación fue cargada de forma exitosa, estamos en proceso de
+            verificacion de tu cuenta.
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              marginTop: 10,
+              alignItems: 'center',
+            }}>
+            <TouchableOpacity
+              style={{
+                borderWidth: 1,
+                borderColor: '#10D234',
+                borderRadius: 5,
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+              }}
+              onPress={sendEmailVerification}>
+              <Text style={{color: '#BBB', fontSize: 14}}>ACEPTAR</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.header}>
         <Text style={styles.headerText}>Verificar Cuenta</Text>
       </View>
@@ -88,7 +152,6 @@ function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
               style={styles.plusCircle}>
               <AntDesign name="plus" size={16} color="#fff" />
             </LinearGradient>
-
             <View>
               <Text style={{...styles.headerText, ...styles.listTitle}}>
                 Cuenta Personal
@@ -197,5 +260,21 @@ const styles = StyleSheet.create({
     textAlign: 'auto',
     marginTop: 0,
     fontSize: 12,
+  },
+  modal_container: {
+    backgroundColor: '#1a2138',
+    height: 'auto',
+    borderRadius: 10,
+    borderWidth: 0,
+    paddingTop: 10,
+    paddingBottom: 15,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  modal_header: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#fff',
+    alignSelf: 'center',
   },
 });

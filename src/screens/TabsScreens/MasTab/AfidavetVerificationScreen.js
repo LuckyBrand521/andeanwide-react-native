@@ -44,9 +44,7 @@ function AfidavetVerificationScreen({navigation, token}) {
         })
         .then(response => {
           setLoading(false);
-          Toast.show('Successfully finished!', Toast.LONG, [
-            'UIAlertController',
-          ]);
+          Toast.show('Terminado con éxito!', Toast.LONG, ['UIAlertController']);
           navigation.navigate('CarteraAccountTypeScreen');
         })
         .catch(error => {
@@ -58,7 +56,9 @@ function AfidavetVerificationScreen({navigation, token}) {
           // navigation.navigate('CarteraAccountTypeScreen');
         });
     } else {
-      Toast.show('Please accept all terms!', Toast.LONG, ['UIAlertController']);
+      Toast.show('¡Acepte todos los términos!', Toast.LONG, [
+        'UIAlertController',
+      ]);
     }
   };
 

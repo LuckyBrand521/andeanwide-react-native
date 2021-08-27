@@ -39,33 +39,33 @@ const trimName = name => {
 };
 
 const colorLabel = order => {
-  if (order.status == 'COMPLETED') {
-    return (
-      <Text
-        style={{
-          ...styles.btnText,
-          fontSize: 18,
-          flex: 1,
-          textAlign: 'right',
-          color: '#D21019',
-        }}>
-        {numberWithCommas(order.payment_amount)} {order.pair.base.name}
-      </Text>
-    );
-  } else if (order.status == 'PAYOUT_RECEIVED') {
-    return (
-      <Text
-        style={{
-          ...styles.btnText,
-          fontSize: 18,
-          flex: 1,
-          textAlign: 'right',
-          color: '#0BCE5E',
-        }}>
-        {numberWithCommas(order.payment_amount)} {order.pair.base.name}
-      </Text>
-    );
-  }
+  // if (order.status == 'COMPLETED') {
+  //   return (
+  //     <Text
+  //       style={{
+  //         ...styles.btnText,
+  //         fontSize: 18,
+  //         flex: 1,
+  //         textAlign: 'right',
+  //         color: '#D21019',
+  //       }}>
+  //       {numberWithCommas(order.payment_amount)} {order.pair.base.name}
+  //     </Text>
+  //   );
+  // } else if (order.status == 'PAYOUT_RECEIVED') {
+  return (
+    <Text
+      style={{
+        ...styles.btnText,
+        fontSize: 18,
+        flex: 1,
+        textAlign: 'right',
+        color: '#0BCE5E',
+      }}>
+      {numberWithCommas(order.payment_amount)} {order.pair.base.name}
+    </Text>
+  );
+  // }
 };
 
 function BalanceScreen({navigation, userinfo, orders}) {
@@ -189,7 +189,11 @@ function BalanceScreen({navigation, userinfo, orders}) {
         />
         <View style={{flex: 5, alignItems: 'center'}}>
           <View style={styles.nameHeader}>
-            <CircleWithLabel label={userinfo.initials} />
+            <CircleWithLabel
+              label={
+                userinfo.identity.firstname[0] + userinfo.identity.lastname[0]
+              }
+            />
             <Text style={{...styles.headerText}}>{userinfo.name}</Text>
           </View>
         </View>

@@ -67,7 +67,10 @@ function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
         })
         .catch(err => {
           console.log(err);
-          Toast.show('Order request failed, try again!', Toast.LONG);
+          Toast.show(
+            'Solicitud de pedido fallida, inténtalo de nuevo.',
+            Toast.LONG,
+          );
           // navigation.navigate('OrderRequestCompleted');
         });
     }

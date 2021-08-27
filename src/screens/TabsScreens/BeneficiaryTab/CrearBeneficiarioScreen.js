@@ -106,7 +106,7 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
       })
       .then(res => {
         setLoading(false);
-        Toast.show('Successfully created!', Toast.LONG);
+        Toast.show('¡Creado con éxito!', Toast.LONG);
         navigation.navigate('BeneficiariosScreen', {ordering: false});
       })
       .catch(err => {
@@ -136,7 +136,7 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
         },
       )
       .then(res => {
-        Toast.show('Successfully deleted!', Toast.LONG);
+        Toast.show('Eliminado con éxito!', Toast.LONG);
         navigation.navigate('BeneficiariosScreen');
       })
       .catch(err => {

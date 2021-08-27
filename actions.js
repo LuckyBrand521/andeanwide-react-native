@@ -216,6 +216,7 @@ export const getPairs = () => dispatch => {
   return axios
     .get(APP.APP_URL + 'api/pairs')
     .then(res => {
+      console.log(res.data);
       dispatch(saveCurrencyPairs(res.data.data));
       return Promise.resolve(res.data.data[0]);
     })

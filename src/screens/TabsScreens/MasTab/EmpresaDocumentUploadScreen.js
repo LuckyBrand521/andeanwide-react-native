@@ -100,13 +100,13 @@ function EmpresaDocumentUploadScreen({route, navigation, token}) {
       let responseJson = await res.json();
       if (responseJson.status == 204) {
         setLoading(false);
-        Toast.show('Upload Successful');
+        Toast.show('Subida exitosa');
         navigation.navigate('EmpresaVerificationMenuScreen');
       }
       setLoading(false);
     } else {
       // If no file selected the show alert
-      alert('Please Select File first');
+      alert('Primero seleccione Archivo');
     }
   };
 
@@ -205,7 +205,7 @@ function EmpresaDocumentUploadScreen({route, navigation, token}) {
                   style={styles.buttonStyle}
                   activeOpacity={0.5}
                   onPress={selectFile}>
-                  <Text style={styles.buttonTextStyle}>Select File</Text>
+                  <Text style={styles.buttonTextStyle}>Seleccione Archivo</Text>
                 </TouchableOpacity>
                 <Text style={{...styles.cardText, color: '#919191'}}>
                   Sube una foto o un escaneado de la foto{'\n'}

@@ -16,6 +16,7 @@ import {
 import {Switch} from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
 import SelectPicker from 'react-native-form-select-picker';
+import RNPickerSelect from 'react-native-picker-select';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Toast from 'react-native-simple-toast';
@@ -28,7 +29,14 @@ import {
 import {getPairs, saveNewOrder} from '../../../../actions';
 
 const options = ['CLP', 'USD', 'PEN', 'COP'];
-
+const trimDigit = value => {
+  let number = Number(value);
+  if (Number.isInteger(number)) {
+    return number;
+  } else {
+    return number.toFixed(2);
+  }
+};
 function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [cost, setCost] = useState(1.19);
@@ -90,69 +98,75 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
 
   const handleNumber1Change = val => {
     setNumber1(val);
-    setNumber2((val * rate * (intPriority ? 0.95 : 0.9881)).toFixed(3));
+    setNumber2(trimDigit(val * rate * (intPriority ? 0.95 : 0.9881)));
   };
 
   const handleNumber2Change = val => {
     setNumber2(val);
-    setNumber1((val / rate / (intPriority ? 0.95 : 0.9881)).toFixed(3));
+    setNumber1(trimDigit(val / rate / (intPriority ? 0.95 : 0.9881)));
   };
 
   const handleSwitchChange = res => {
     setIntPriority(!intPriority);
-    setNumber2((number1 * rate * (!intPriority ? 0.95 : 0.9881)).toFixed(3));
+    setNumber2(trimDigit(number1 * rate * (!intPriority ? 0.95 : 0.9881)));
   };
 
   const handleCurrency1Change = res => {
-    setCurrency1(res);
-    if (pairs.length > 0) {
-      let seconds = [];
-      pairs.map(item => {
-        if (item.base.name == res) {
-          seconds.push(item.quote.name);
+    if (res != '') {
+      setCurrency1(res);
+      if (pairs.length > 0) {
+        let seconds = [];
+        pairs.map(item => {
+          if (item.base.name == res) {
+            seconds.push(item.quote.name);
+          }
+        });
+        setRecvOptions(seconds);
+        if (seconds.indexOf(currency2) == -1) {
+          setCurrency2(seconds[0]);
+          axios
+            .get(
+              `https://api.andeanwide.com/api/exchange-rate/${res}/${seconds[0]}`,
+            )
+            .then(res => {
+              const new_rate = parseFloat(res.data.data.bid);
+              setRate(new_rate);
+              setNumber2(
+                trimDigit(number1 * new_rate * (intPriority ? 0.95 : 0.9881)),
+              );
+            });
+        } else {
+          axios
+            .get(
+              `https://api.andeanwide.com/api/exchange-rate/${res}/${currency2}`,
+            )
+            .then(res => {
+              console.log(res.data);
+              const new_rate = parseFloat(res.data.data.bid);
+              setRate(new_rate);
+              setNumber2(
+                trimDigit(number1 * new_rate * (intPriority ? 0.95 : 0.9881)),
+              );
+            });
         }
-      });
-      setRecvOptions(seconds);
-      if (seconds.indexOf(currency2) == -1) {
-        setCurrency2(seconds[0]);
-        axios
-          .get(
-            `https://api.andeanwide.com/api/exchange-rate/${res}/${seconds[0]}`,
-          )
-          .then(res => {
-            const new_rate = parseFloat(res.data.data.bid);
-            setRate(new_rate);
-            setNumber2(
-              (number1 * new_rate * (intPriority ? 0.95 : 0.9881)).toFixed(3),
-            );
-          });
-      } else {
-        axios
-          .get(
-            `https://api.andeanwide.com/api/exchange-rate/${res}/${currency2}`,
-          )
-          .then(res => {
-            const new_rate = parseFloat(res.data.data.bid);
-            setRate(new_rate);
-            setNumber2(
-              (number1 * new_rate * (intPriority ? 0.95 : 0.9881)).toFixed(3),
-            );
-          });
       }
     }
   };
 
   const handleCurrency2Change = res => {
-    setCurrency2(res);
-    axios
-      .get(`https://api.andeanwide.com/api/exchange-rate/${currency1}/${res}`)
-      .then(res => {
-        const new_rate = parseFloat(res.data.data.bid);
-        setRate(new_rate);
-        setNumber1(
-          (number2 / new_rate / (intPriority ? 0.95 : 0.9881)).toFixed(3),
-        );
-      });
+    if (res != '') {
+      setCurrency2(res);
+      axios
+        .get(`https://api.andeanwide.com/api/exchange-rate/${currency1}/${res}`)
+        .then(res => {
+          console.log(res.data);
+          const new_rate = parseFloat(res.data.data.bid);
+          setRate(new_rate);
+          setNumber1(
+            trimDigit(number2 / new_rate / (intPriority ? 0.95 : 0.9881)),
+          );
+        });
+    }
   };
 
   /**
@@ -199,7 +213,6 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
         cost: cost,
         receive_amount: Number(number2),
       };
-      console.log(data);
       saveNewOrder(data);
       // navigation.navigate('BeneficiariosStack', {screen: 'BeneficiariosScreen'});
       navigation.navigate('BeneficiariosScreen', {
@@ -292,9 +305,10 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
                     handleNumber1Change(res);
                   }}
                   value={number1}
-                  placeholder="100.000"
+                  placeholder="0"
                   placeholderTextColor="#fff"
                   keyboardType="numeric"
+                  maxLength={10}
                 />
               </View>
 
@@ -309,7 +323,7 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <SelectPicker
+                {/* <SelectPicker
                   placeholder="Currency"
                   placeholderStyle={{
                     color: '#fff',
@@ -331,14 +345,39 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
                   {Object.values(sendOptions).map((val, index) => (
                     <SelectPicker.Item label={val} value={val} key={index} />
                   ))}
-                </SelectPicker>
+                </SelectPicker> */}
+                <RNPickerSelect
+                  placeholder={{
+                    label: 'Currency',
+                    value: '',
+                  }}
+                  style={{
+                    // color: 'white',
+                    // fontSize: 20,
+                    // fontWeight: 'bold',
+                    inputAndroid: {
+                      color: 'white',
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                    },
+                  }}
+                  useNativeAndroidPickerStyle={false}
+                  placeholderTextColor="white"
+                  onValueChange={value => {
+                    handleCurrency1Change(value);
+                  }}
+                  items={sendOptions.map((val, index) => {
+                    return {value: val, label: val};
+                  })}
+                  value={currency1}
+                />
               </LinearGradient>
             </View>
             <View>
               <View style={styles.textContainer}>
                 <Text
                   style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  {(number1 * (intPriority ? 0.05 : 0.0119)).toFixed(3)}{' '}
+                  {trimDigit(number1 * (intPriority ? 0.05 : 0.0119))}{' '}
                   {currency1}
                 </Text>
                 <Text style={styles.text}>Transferencia de bajo costo</Text>
@@ -347,7 +386,7 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
               <View style={styles.textContainer}>
                 <Text
                   style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  {(number1 * (intPriority ? 0.95 : 0.9881)).toFixed(3)}
+                  {trimDigit(number1 * (intPriority ? 0.95 : 0.9881))}
                 </Text>
                 <Text style={styles.text}>
                   Importe de {currency1} convertido
@@ -357,7 +396,7 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
               <View style={styles.textContainer}>
                 <Text
                   style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  {rate.toFixed(3)}
+                  {trimDigit(rate)}
                 </Text>
                 <Text style={styles.text}>
                   Tipo de cambio {currency1}/{currency2}
@@ -385,6 +424,7 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
                   placeholder=""
                   placeholderTextColor="#fff"
                   keyboardType="numeric"
+                  maxLength={10}
                 />
               </View>
 
@@ -399,7 +439,7 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <SelectPicker
+                {/* <SelectPicker
                   placeholderStyle={{
                     color: '#fff',
                     fontWeight: 'bold',
@@ -421,7 +461,32 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
                   {Object.values(recvOptions).map((val, index) => (
                     <SelectPicker.Item label={val} value={val} key={index} />
                   ))}
-                </SelectPicker>
+                </SelectPicker> */}
+                <RNPickerSelect
+                  placeholder={{
+                    label: 'Currency',
+                    value: '',
+                  }}
+                  style={{
+                    // color: 'white',
+                    // fontSize: 20,
+                    // fontWeight: 'bold',
+                    inputAndroid: {
+                      color: 'white',
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                    },
+                  }}
+                  useNativeAndroidPickerStyle={false}
+                  placeholderTextColor="white"
+                  onValueChange={value => {
+                    handleCurrency2Change(value);
+                  }}
+                  items={recvOptions.map((val, index) => {
+                    return {value: val, label: val};
+                  })}
+                  value={currency2}
+                />
               </LinearGradient>
             </View>
             <View>
@@ -469,7 +534,7 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
                   style={styles.input}
                   // onChangeText={}
                   // value={}
-                  placeholder="1.000 $"
+                  placeholder="1.0 $"
                   placeholderTextColor="#fff"
                   keyboardType="numeric"
                 />

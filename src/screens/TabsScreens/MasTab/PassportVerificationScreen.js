@@ -80,7 +80,7 @@ export default function PassportVerificationScreen({navigation}) {
         })
         .then(response => {
           setLoading(false);
-          Toast.show('Successfully uploaded!', Toast.LONG, [
+          Toast.show('¡Cargado correctamente!', Toast.LONG, [
             'UIAlertController',
           ]);
           navigation.navigate('AfidavetVerificationScreen');
@@ -95,7 +95,7 @@ export default function PassportVerificationScreen({navigation}) {
           navigation.navigate('AfidavetVerificationScreen');
         });
     } else {
-      Toast.show('Please upload the image!', Toast.LONG, ['UIAlertController']);
+      Toast.show('¡Sube la imagen!', Toast.LONG, ['UIAlertController']);
     }
   };
 
@@ -126,26 +126,24 @@ export default function PassportVerificationScreen({navigation}) {
         }}>
         <View style={styles.panel}>
           <View style={{alignItems: 'center'}}>
-            <Text style={styles.panelTitle}>Upload Photo</Text>
-            <Text style={styles.panelSubtitle}>
-              Choose Your Profile Picture
-            </Text>
+            <Text style={styles.panelTitle}>Subir foto</Text>
+            <Text style={styles.panelSubtitle}>Elige tu foto de perfil</Text>
           </View>
           <TouchableHighlight
             style={styles.panelButton}
             onPress={takePhotoFromCamera}>
-            <Text style={styles.panelButtonTitle}>Take Photo</Text>
+            <Text style={styles.panelButtonTitle}>Tomar foto</Text>
           </TouchableHighlight>
 
           <TouchableHighlight
             style={styles.panelButton}
             onPress={choosePhotoFromLibrary}>
-            <Text style={styles.panelButtonTitle}>Choose From Library</Text>
+            <Text style={styles.panelButtonTitle}>Elige de la biblioteca</Text>
           </TouchableHighlight>
           <TouchableHighlight
             style={styles.panelButton}
             onPress={() => sheet.current.close()}>
-            <Text style={styles.panelButtonTitle}>Cancel</Text>
+            <Text style={styles.panelButtonTitle}>Cancelar</Text>
           </TouchableHighlight>
         </View>
       </RBSheet>

@@ -242,7 +242,7 @@ function MyTabs() {
 
       <Tab.Screen
         options={{
-          tabBarLabel: 'Mas',
+          tabBarLabel: 'Verificar Cuenta',
 
           tabBarIcon: ({focused, tintColor, color}) => {
             if (focused) {
@@ -259,7 +259,7 @@ function MyTabs() {
                     alignItems: 'center',
                   }}>
                   <Image
-                    source={require('../icons/icons/5.png')}
+                    source={require('../icons/icons/15.png')}
                     style={{width: 40, height: 40}}
                   />
                 </View>
@@ -267,7 +267,7 @@ function MyTabs() {
             } else {
               return (
                 <Image
-                  source={require('../icons/icons/5.png')}
+                  source={require('../icons/icons/15.png')}
                   style={{width: 34, height: 34}}
                 />
               );

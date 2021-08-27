@@ -135,7 +135,7 @@ function DocumentVerificationScreen({navigation, token}) {
           )
             .then(res2 => {
               setLoading(false);
-              Toast.show('Successfully uploaded!', Toast.LONG, [
+              Toast.show('¡Cargado correctamente!', Toast.LONG, [
                 'UIAlertController',
               ]);
               navigation.navigate('AfidavetVerificationScreen');
@@ -143,7 +143,7 @@ function DocumentVerificationScreen({navigation, token}) {
             .catch(err => {
               setLoading(false);
               console.log(err);
-              Toast.show('Back Image Upload Post Failed!', Toast.LONG, [
+              Toast.show('Atrás Error al cargar la imagen.', Toast.LONG, [
                 'UIAlertController',
               ]);
             });
@@ -151,7 +151,7 @@ function DocumentVerificationScreen({navigation, token}) {
         .catch(error => {
           setLoading(false);
           console.log(error);
-          Toast.show('Image Upload Post Failed!', Toast.LONG, [
+          Toast.show('¡La publicación de subida de imagen falló!', Toast.LONG, [
             'UIAlertController',
           ]);
           // To be removed after completing project
@@ -187,26 +187,26 @@ function DocumentVerificationScreen({navigation, token}) {
         }}>
         <View style={styles.panel}>
           <View style={{alignItems: 'center'}}>
-            <Text style={styles.panelTitle}>Upload Photo</Text>
+            <Text style={styles.panelTitle}>Subir foto</Text>
             <Text style={styles.panelSubtitle}>
-              Choose Your Profile Picture
+              Elige tu foto de perfil (Delantero)
             </Text>
           </View>
           <TouchableHighlight
             style={styles.panelButton}
             onPress={takePhotoFromCamera}>
-            <Text style={styles.panelButtonTitle}>Take Photo</Text>
+            <Text style={styles.panelButtonTitle}>Tomar foto</Text>
           </TouchableHighlight>
 
           <TouchableHighlight
             style={styles.panelButton}
             onPress={choosePhotoFromLibrary}>
-            <Text style={styles.panelButtonTitle}>Choose From Library</Text>
+            <Text style={styles.panelButtonTitle}>Elegir de la biblioteca</Text>
           </TouchableHighlight>
           <TouchableHighlight
             style={styles.panelButton}
             onPress={() => sheet.current.close()}>
-            <Text style={styles.panelButtonTitle}>Cancel</Text>
+            <Text style={styles.panelButtonTitle}>Cancelar</Text>
           </TouchableHighlight>
         </View>
       </RBSheet>
@@ -226,26 +226,26 @@ function DocumentVerificationScreen({navigation, token}) {
         }}>
         <View style={styles.panel}>
           <View style={{alignItems: 'center'}}>
-            <Text style={styles.panelTitle}>Upload Photo</Text>
+            <Text style={styles.panelTitle}>Subir foto</Text>
             <Text style={styles.panelSubtitle}>
-              Choose Your Profile Picture
+              Elige tu foto de perfil (atrás)
             </Text>
           </View>
           <TouchableHighlight
             style={styles.panelButton}
             onPress={takePhotoFromCamera2}>
-            <Text style={styles.panelButtonTitle}>Take Photo</Text>
+            <Text style={styles.panelButtonTitle}>Tomar foto</Text>
           </TouchableHighlight>
 
           <TouchableHighlight
             style={styles.panelButton}
             onPress={choosePhotoFromLibrary2}>
-            <Text style={styles.panelButtonTitle}>Choose From Library</Text>
+            <Text style={styles.panelButtonTitle}>Elegir de la biblioteca</Text>
           </TouchableHighlight>
           <TouchableHighlight
             style={styles.panelButton}
             onPress={() => sheet2.current.close()}>
-            <Text style={styles.panelButtonTitle}>Cancel</Text>
+            <Text style={styles.panelButtonTitle}>Cancelar</Text>
           </TouchableHighlight>
         </View>
       </RBSheet>

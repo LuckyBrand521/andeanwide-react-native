@@ -19,11 +19,97 @@ import {
 import Carousel from 'react-native-looped-carousel';
 import Octicons from 'react-native-vector-icons/Octicons';
 import LinearGradient from 'react-native-linear-gradient';
-
+import Modal from 'react-native-modal';
+import CircleWithLabel from '../../components/subviews/CircleWithLabel';
 import {numberWithCommas} from '../../data/helpers';
 
+const formatDate = date_str => {
+  const d = new Date(date_str);
+  const d_str = d.toDateString();
+  return d_str.substr(4);
+};
+
+const trimName = name => {
+  if (name.length > 15) {
+    return name.substr(0, 14) + '...';
+  }
+  return name;
+};
+
+const colorLabel = order => {
+  // if (order.status == 'COMPLETED') {
+  //   return (
+  //     <Text
+  //       style={{
+  //         ...styles.btnText,
+  //         fontSize: 18,
+  //         flex: 1,
+  //         textAlign: 'right',
+  //         color: '#D21019',
+  //       }}>
+  //       {numberWithCommas(order.payment_amount)} {order.pair.base.name}
+  //     </Text>
+  //   );
+  // } else if (order.status == 'PAYOUT_RECEIVED') {
+  return (
+    <Text
+      style={{
+        ...styles.btnText,
+        fontSize: 18,
+        flex: 1,
+        textAlign: 'right',
+        color: '#0BCE5E',
+      }}>
+      {numberWithCommas(order.payment_amount)} {order.pair.base.name}
+    </Text>
+  );
+  // }
+};
 function HistoryScreen({navigation, userinfo, orders}) {
-  console.log(orders.length);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [detailIndex, setDetailIndex] = useState(-1);
+  const toggleDetailModal = index => {
+    setDetailModalVisible(!detailModalVisible);
+    setDetailIndex(index);
+  };
+  let date_label = '';
+  let order_rows = [];
+  for (let i = 0; i < orders.length; i++) {
+    if (formatDate(orders[i].filled_at) != date_label) {
+      date_label = formatDate(orders[i].filled_at);
+      order_rows.push(
+        <Text style={{color: '#919191', padding: 8, paddingHorizontal: 20}}>
+          {date_label}
+        </Text>,
+      );
+    }
+    order_rows.push(
+      <TouchableOpacity
+        style={{...styles.transactionsList, justifyContent: 'space-around'}}
+        key={orders[i].id}
+        onPress={() => {
+          toggleDetailModal(i);
+        }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <CircleWithLabel
+            label={
+              orders[i].recipient.name[0] + orders[i].recipient.lastname[0]
+            }
+          />
+          <Text
+            style={{
+              ...styles.headerText,
+              fontWeight: 'normal',
+              marginLeft: 10,
+            }}>
+            {trimName(orders[i].recipient.name)}
+          </Text>
+        </View>
+
+        {colorLabel(orders[i])}
+      </TouchableOpacity>,
+    );
+  }
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -32,46 +118,50 @@ function HistoryScreen({navigation, userinfo, orders}) {
         backgroundColor="#18222E"
         translucent={true}
       />
+      <Modal
+        isVisible={detailModalVisible}
+        onBackdropPress={() => setDetailModalVisible(false)}>
+        {detailIndex > -1 ? (
+          <>
+            <View style={styles.modal_container}>
+              <Text style={{color: '#959595'}}>FECHA:</Text>
+              <Text style={{color: 'white', fontSize: 18}}>
+                {orders[detailIndex].filled_at}
+              </Text>
+              <Text style={{color: '#959595'}}>BENEFICIARIO:</Text>
+              <Text style={{color: 'white', fontSize: 18}}>
+                {orders[detailIndex].recipient.name}
+              </Text>
+              <Text style={{color: '#959595'}}>MONTO ENVIADO:</Text>
+              <Text style={{color: 'white', fontSize: 18}}>
+                {orders[detailIndex].payment_amount}{' '}
+                {orders[detailIndex].pair.base.name}
+              </Text>
+              <Text style={{color: '#959595'}}>MONTO RECIBIDO:</Text>
+              <Text style={{color: 'white', fontSize: 18}}>
+                {orders[detailIndex].received_amount}{' '}
+                {orders[detailIndex].pair.quote.name}
+              </Text>
+              <Text style={{color: '#959595'}}>TASA:</Text>
+              <Text style={{color: 'white', fontSize: 18}}>
+                {orders[detailIndex].rate.toFixed(4)}{' '}
+                {orders[detailIndex].pair.name}
+              </Text>
+            </View>
+          </>
+        ) : (
+          <></>
+        )}
+      </Modal>
       <View style={styles.header}>
         <Text style={{...styles.headerText, textAlign: 'center'}}>
           Transacciones Historia
         </Text>
       </View>
       <ScrollView>
-        {orders.length > 0 &&
-          orders.map(item => {
-            return (
-              <TouchableOpacity style={styles.transactionsList} key={item.id}>
-                <Text
-                  style={{
-                    color: '#fff',
-                    fontSize: 18,
-                    flex: 2,
-                  }}>
-                  {numberWithCommas(item.payment_amount)}
-                </Text>
-                <Text style={{color: '#fff', fontSize: 18, flex: 2}}>
-                  {item.payed_at}
-                </Text>
-
-                <Text style={{...styles.btnText, fontSize: 14, flex: 1}}>
-                  {item.payout_status}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+        <Text style={{backgroundColor: '#18222E', height: 4}} />
+        {order_rows}
       </ScrollView>
-      {/* <View style={styles.footerButtonContainer}>
-        <TouchableOpacity>
-          <LinearGradient
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            colors={['#119438', '#1A9B36', '#1B9D36']}
-            style={styles.continueButton}>
-            <Text style={styles.buttonText}>Convertir</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View> */}
     </SafeAreaView>
   );
 }
@@ -222,5 +312,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
+  },
+  modal_container: {
+    backgroundColor: '#1a2138',
+    height: 'auto',
+    borderRadius: 10,
+    borderWidth: 0,
+    paddingTop: 10,
+    paddingBottom: 15,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modal_header: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#fff',
+    alignSelf: 'center',
+  },
+  nameHeader: {
+    width: 'auto',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 5,
+    borderRadius: 100,
+    backgroundColor: '#141A27',
+    borderWidth: 0,
+    flexDirection: 'row',
   },
 });
