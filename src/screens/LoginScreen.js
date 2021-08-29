@@ -206,8 +206,8 @@ function LoginScreen({
           <Formik
             validationSchema={loginFormSchema}
             initialValues={{
-              email: '',
-              password: '',
+              email: 'josechavez2006@gmail.com',
+              password: 'Test123456789$',
             }}
             onSubmit={values => loginSubmitAPI(values)}>
             {({

@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
 
   cardText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 27,
   },
 
   cardTextContainer: {
