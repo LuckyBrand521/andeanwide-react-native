@@ -57,12 +57,12 @@ const colorLabel = order => {
     <Text
       style={{
         ...styles.btnText,
-        fontSize: 18,
+        fontSize: 14,
         flex: 1,
         textAlign: 'right',
         color: '#0BCE5E',
       }}>
-      {numberWithCommas(order.payment_amount)} {order.pair.base.name}
+      {order.pair.base.name} {numberWithCommas(order.payment_amount)}
     </Text>
   );
   // }
@@ -103,7 +103,7 @@ function BalanceScreen({navigation, userinfo, orders}) {
               orders[i].recipient.name[0] + orders[i].recipient.lastname[0]
             }
           />
-          <Text style={{...styles.headerText}}>
+          <Text style={{...styles.headerText, fontSize: 12}}>
             {trimName(orders[i].recipient.name)}
           </Text>
         </View>
@@ -262,14 +262,14 @@ function BalanceScreen({navigation, userinfo, orders}) {
             </View>
             <View style={styles.cardTextContainer}>
               <Text style={styles.cardText}>CLP</Text>
-              <Text style={{...styles.cardText, fontSize: 34}}>
+              <Text style={{...styles.cardText, fontSize: 28}}>
                 {numberWithCommas(userinfo.balance)}
               </Text>
               <Text
                 style={{
                   ...styles.cardText,
                   color: '#0A9F4B',
-                  fontSize: 18,
+                  fontSize: 16,
                   marginTop: 10,
                 }}>
                 Disponsible
@@ -293,12 +293,12 @@ function BalanceScreen({navigation, userinfo, orders}) {
             </View>
             <View style={styles.cardTextContainer}>
               <Text style={styles.cardText}>USD</Text>
-              <Text style={{...styles.cardText, fontSize: 34}}>0.00</Text>
+              <Text style={{...styles.cardText, fontSize: 28}}>0.00</Text>
               <Text
                 style={{
                   ...styles.cardText,
                   color: '#0A9F4B',
-                  fontSize: 18,
+                  fontSize: 16,
                   marginTop: 10,
                 }}>
                 Disponible
@@ -322,12 +322,12 @@ function BalanceScreen({navigation, userinfo, orders}) {
             </View>
             <View style={styles.cardTextContainer}>
               <Text style={styles.cardText}>EUR</Text>
-              <Text style={{...styles.cardText, fontSize: 34}}>0.00</Text>
+              <Text style={{...styles.cardText, fontSize: 28}}>0.00</Text>
               <Text
                 style={{
                   ...styles.cardText,
                   color: '#0A9F4B',
-                  fontSize: 18,
+                  fontSize: 16,
                   marginTop: 10,
                 }}>
                 Disponible
@@ -345,6 +345,7 @@ function BalanceScreen({navigation, userinfo, orders}) {
             backgroundColor: '#141A28',
             width: wp('100%'),
             marginHorizontal: 0,
+            fontSize: 15,
           }}>
           Transacciones
         </Text>
@@ -466,7 +467,7 @@ const styles = StyleSheet.create({
 
   cardText: {
     color: '#fff',
-    fontSize: 27,
+    fontSize: 12,
   },
 
   cardTextContainer: {
