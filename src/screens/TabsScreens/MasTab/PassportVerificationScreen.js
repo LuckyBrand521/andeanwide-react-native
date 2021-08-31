@@ -40,7 +40,6 @@ export default function PassportVerificationScreen({navigation}) {
       cropping: true,
       compressImageQuality: 0.7,
     }).then(image => {
-      console.log(image);
       setImage(image.path);
       setPassportImage(image);
       sheet.current.close();
@@ -54,8 +53,6 @@ export default function PassportVerificationScreen({navigation}) {
       cropping: true,
       compressImageQuality: 0.7,
     }).then(image => {
-      console.log(image);
-      console.log('Image one called');
       setImage(image.path);
       setPassportImage(image);
       sheet.current.close();

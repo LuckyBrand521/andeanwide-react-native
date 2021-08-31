@@ -30,10 +30,10 @@ import {saveNewOrder} from '../../../../actions';
 
 function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
   const [recipientInfo, setRecipientInfo] = useState({});
+  const [purpose, setPurpose] = useState('');
   const [isSelected, setSelection] = useState(false);
   //get the data of recipient
   useEffect(() => {
-    console.log(token.value);
     if (new_order.recipient_id) {
       axios
         .get(APP.APP_URL + 'api/recipients/' + new_order.recipient_id, {
@@ -50,12 +50,10 @@ function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
   }, []);
 
   const submitOrder = () => {
-    console.log(new_order);
-    console.log(token.value);
-    console.log(APP.APP_URL + 'api/orsers');
-    if (isSelected) {
+    if (isSelected && purpose != '') {
+      const formData = {...new_order, purpose: purpose};
       axios
-        .post(APP.APP_URL + 'api/orsers', new_order, {
+        .post(APP.APP_URL + 'api/orsers', formData, {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -135,6 +133,8 @@ function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
               placeholder="Proposito del Giro"
               placeholderTextColor="#919191"
               style={styles.input}
+              value={purpose}
+              onChange={setPurpose}
             />
             <View
               style={{

@@ -67,7 +67,6 @@ function ResidanceVerificationScreen({navigation, addressVerify, userinfo}) {
     setLoading(true);
     addressVerify(values)
       .then(() => {
-        console.log(values);
         if (userinfo.account_type == 'personal') {
           navigation.navigate('CarteraDocumentTypeSCreen');
         } else if (userinfo.account_type == 'corporative') {

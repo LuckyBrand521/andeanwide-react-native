@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import {
   SafeAreaView,
@@ -9,6 +9,7 @@ import {
   StatusBar,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from 'react-native';
 
 import {
@@ -20,10 +21,13 @@ import Carousel from 'react-native-looped-carousel';
 import Octicons from 'react-native-vector-icons/Octicons';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Spinner from 'react-native-loading-spinner-overlay';
 import Modal from 'react-native-modal';
 import CircleWithLabel from '../../../components/subviews/CircleWithLabel';
 
 import {numberWithCommas} from '../../../data/helpers';
+import {getOrderHistory} from '../../../../actions';
+import {Button} from 'react-native';
 
 const formatDate = date_str => {
   const d = new Date(date_str);
@@ -68,8 +72,9 @@ const colorLabel = order => {
   // }
 };
 
-function BalanceScreen({navigation, userinfo, orders}) {
+function BalanceScreen({navigation, userinfo, orders, getOrderHistory}) {
   const [modalVisible, setModalVisible] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [detailIndex, setDetailIndex] = useState(-1);
   const toggleModal = () => {
@@ -82,8 +87,12 @@ function BalanceScreen({navigation, userinfo, orders}) {
   let date_label = '';
   let order_rows = [];
   for (let i = 0; i < orders.length; i++) {
-    if (formatDate(orders[i].filled_at) != date_label) {
-      date_label = formatDate(orders[i].filled_at);
+    let temp = orders[i].filled_at.replace(' ', 'T');
+    temp = new Date(temp).toDateString();
+    if (temp != date_label) {
+      // date_label = formatDate(orders[i].filled_at);
+      date_label = temp;
+      // console.log(orders[i].filled_at.split(' ')[0]);
       order_rows.push(
         <Text style={{color: '#919191', padding: 8, paddingHorizontal: 20}}>
           {date_label}
@@ -103,7 +112,7 @@ function BalanceScreen({navigation, userinfo, orders}) {
               orders[i].recipient.name[0] + orders[i].recipient.lastname[0]
             }
           />
-          <Text style={{...styles.headerText, fontSize: 12}}>
+          <Text style={{...styles.headerText, fontSize: 13}}>
             {trimName(orders[i].recipient.name)}
           </Text>
         </View>
@@ -113,6 +122,31 @@ function BalanceScreen({navigation, userinfo, orders}) {
     );
   }
 
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      setLoading(true);
+      getOrderHistory()
+        .then(() => {
+          setLoading(false);
+        })
+        .catch(err => {
+          console.log(err);
+          setLoading(false);
+        });
+    });
+  }, [navigation]);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={{...styles.container, alignItems: 'center'}}>
+        <Spinner
+          visible={isLoading}
+          textContent={'Envío de datos...'}
+          textStyle={styles.spinnerTextStyle}
+        />
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -144,29 +178,143 @@ function BalanceScreen({navigation, userinfo, orders}) {
         {detailIndex > -1 ? (
           <>
             <View style={styles.modal_container}>
-              <Text style={{color: '#959595'}}>FECHA:</Text>
-              <Text style={{color: 'white', fontSize: 18}}>
-                {orders[detailIndex].filled_at}
+              <Icon
+                name="times"
+                size={15}
+                color="#919191"
+                style={{position: 'absolute', left: 20, top: 15}}
+                onPress={() => setDetailModalVisible(false)}
+              />
+              <Text
+                style={{
+                  color: '#959595',
+                  marginTop: 5,
+                  marginBottom: 5,
+                  alignSelf: 'center',
+                }}>
+                Fecha: {orders[detailIndex].filled_at}
               </Text>
-              <Text style={{color: '#959595'}}>BENEFICIARIO:</Text>
-              <Text style={{color: 'white', fontSize: 18}}>
-                {orders[detailIndex].recipient.name}
-              </Text>
-              <Text style={{color: '#959595'}}>MONTO ENVIADO:</Text>
-              <Text style={{color: 'white', fontSize: 18}}>
-                {orders[detailIndex].payment_amount}{' '}
-                {orders[detailIndex].pair.base.name}
-              </Text>
-              <Text style={{color: '#959595'}}>MONTO RECIBIDO:</Text>
-              <Text style={{color: 'white', fontSize: 18}}>
-                {orders[detailIndex].received_amount}{' '}
-                {orders[detailIndex].pair.quote.name}
-              </Text>
-              <Text style={{color: '#959595'}}>TASA:</Text>
-              <Text style={{color: 'white', fontSize: 18}}>
-                {orders[detailIndex].rate.toFixed(4)}{' '}
-                {orders[detailIndex].pair.name}
-              </Text>
+              <View
+                style={{
+                  textAlign: 'left',
+                  borderBottomWidth: 2,
+                  borderBottomColor: '#aaa',
+                  paddingBottom: 15,
+                  marginBottom: 10,
+                }}>
+                <Text style={{color: 'white', fontSize: 16, marginBottom: 5}}>
+                  Envio
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                  }}>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Monto a enviar:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      {orders[detailIndex].payment_amount}{' '}
+                      {orders[detailIndex].pair.base.name}
+                    </Text>
+                  </View>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Tipo de cambio:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      1{orders[detailIndex].pair.base.name} ={' '}
+                      {orders[detailIndex].rate.toFixed(4)}{' '}
+                      {orders[detailIndex].pair.quote.name}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View>
+                <Text style={{color: 'white', fontSize: 16, marginBottom: 5}}>
+                  Beneficiario
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginBottom: 10,
+                  }}>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Nombre:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      {orders[detailIndex].recipient.name}
+                    </Text>
+                  </View>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Cuenta:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      {orders[detailIndex].payment.transaction_number}
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginBottom: 10,
+                  }}>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Banco:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      {orders[detailIndex].recipient.bank.name}
+                    </Text>
+                  </View>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Tipo de cuenta:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      {orders[detailIndex].recipient.account_type}
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                  }}>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Monto a recibir:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      {orders[detailIndex].received_amount}{' '}
+                      {orders[detailIndex].pair.quote.name}
+                      {'   '}
+                      <Image
+                        source={{
+                          uri:
+                            'https://flagcdn.com/w20/' +
+                            orders[
+                              detailIndex
+                            ].recipient.country.abbr.toLowerCase() +
+                            '.png',
+                        }}
+                        style={{
+                          height: 25,
+                          width: 25,
+                          borderColor: 'transparent',
+                          overflow: 'hidden',
+                        }}
+                      />
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View
+                style={{
+                  marginTop: hp('14%'),
+                  alignItems: 'center',
+                  marginBottom: 5,
+                }}>
+                <Text
+                  style={{
+                    padding: 5,
+                    fontSize: 10,
+                    paddingHorizontal: 30,
+                    color: '#12CF38',
+                    borderColor: '#12CF38',
+                    borderWidth: 1,
+                    borderRadius: 20,
+                  }}>
+                  {orders[detailIndex].status}
+                </Text>
+              </View>
             </View>
           </>
         ) : (
@@ -176,9 +324,9 @@ function BalanceScreen({navigation, userinfo, orders}) {
 
       <View style={styles.header}>
         <Octicons
-          onPress={() => {
-            navigation.navigate('LoginScreen');
-          }}
+          // onPress={() => {
+          //   navigation.navigate('LoginScreen');
+          // }}
           name="gear"
           size={24}
           color="#fff"
@@ -186,6 +334,7 @@ function BalanceScreen({navigation, userinfo, orders}) {
             flex: 1,
             textAlign: 'left',
           }}
+          onPress={toggleModal}
         />
         <View style={{flex: 5, alignItems: 'center'}}>
           <View style={styles.nameHeader}>
@@ -202,6 +351,7 @@ function BalanceScreen({navigation, userinfo, orders}) {
           style={{flex: 1, textAlign: 'right'}}
           size={24}
           color="#fff"
+          onPress={toggleModal}
         />
         {/* <Octicons
           onPress={() => {
@@ -373,11 +523,12 @@ const mapStateToProps = state => ({
   orders: state.root.orders,
 });
 
-// const mapDispatchToProps = dispatch => ({
-//   removeUserToken: values => dispatch(removeUserToken(null)),
-// });
+const mapDispatchToProps = dispatch => ({
+  // removeUserToken: values => dispatch(removeUserToken(null)),
+  getOrderHistory: () => dispatch(getOrderHistory()),
+});
 
-export default connect(mapStateToProps)(BalanceScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(BalanceScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -400,7 +551,7 @@ const styles = StyleSheet.create({
 
   headerText: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 14,
     paddingHorizontal: 10,
   },
 
@@ -467,7 +618,7 @@ const styles = StyleSheet.create({
 
   cardText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 14,
   },
 
   cardTextContainer: {
@@ -514,15 +665,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   modal_container: {
-    backgroundColor: '#1a2138',
+    backgroundColor: '#141B28',
     height: 'auto',
-    borderRadius: 10,
+    width: wp('85%'),
+    alignSelf: 'center',
+    borderRadius: 35,
     borderWidth: 0,
     paddingTop: 10,
     paddingBottom: 15,
+    paddingHorizontal: 20,
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   modal_header: {
     marginTop: 10,
@@ -539,5 +691,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#141A27',
     borderWidth: 0,
     flexDirection: 'row',
+  },
+  spinnerTextStyle: {
+    color: '#FFF',
   },
 });

@@ -115,7 +115,6 @@ function DepositScreen({navigation, setAccountType, userinfo, token}) {
       setError(true);
     } else {
       setLoading(true);
-      console.log(APP.APP_URL + `api/${method}/payins`);
       axios
         .post(APP.APP_URL + `api/${method}/payins`, values, {
           headers: {

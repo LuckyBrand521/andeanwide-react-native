@@ -118,11 +118,6 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
 
   //deletes the current beneficiary
   const deleteUser = () => {
-    console.log(
-      'deleted requested',
-      APP.APP_URL + `api/recipients/${user_id}`,
-      token.value,
-    );
     axios
       .delete(
         APP.APP_URL + `api/recipients/${user_id}`,
@@ -375,7 +370,6 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
                     onSelectedStyle={{color: '#999999'}}
                     onValueChange={res => {
                       values.bank_id = res ? res : 0;
-                      console.log(values.bank_id);
                     }}
                     onBlur={handleBlur('bank_id')}
                     selected={values.bank_id}>

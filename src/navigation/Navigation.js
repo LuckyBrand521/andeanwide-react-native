@@ -14,6 +14,7 @@ import PinCodeScreen from '../screens/PinCodeScreen';
 import FaceConfigurationScreen from '../screens/FaceConfigurationScreen';
 import CarteraVerifyAccountScreen from '../screens/TabsScreens/MasTab/CarteraVerifyAccountScreen';
 import HistoryScreen from '../screens/TabsScreens/HistoryScreen';
+import MasMenuScreen from '../screens/TabsScreens/MasTab/MasMenuScreen';
 import CarteraAccountTypeScreen from '../screens/TabsScreens/MasTab/CarteraAccountTypeScreen';
 import CarteraDocumentTypeSCreen from '../screens/TabsScreens/MasTab/CarteraDocumentTypeSCreen';
 import CarteraAddPersonnelDetails from '../screens/TabsScreens/MasTab/CarteraAddPersonnelDetails';
@@ -29,6 +30,7 @@ import EmpresaVerficationMenuScreen from '../screens/TabsScreens/MasTab/EmpresaV
 import BalanceScreen from '../screens/TabsScreens/BalanceHomeTab/BalanceScreen';
 import DepositScreen from '../screens/TabsScreens/BalanceHomeTab/DepositScreen';
 import EnviarScreen from '../screens/TabsScreens/EnviarTab/EnviarScreen';
+import EnviarTypeScreen from '../screens/TabsScreens/EnviarTab/EnviarTypeScreen';
 import ReviewEnviarScreen from '../screens/TabsScreens/EnviarTab/ReviewEnviarScreen';
 import PriorityScreen from '../screens/TabsScreens/EnviarTab/PriorityScreen';
 import BeneficiariosScreen from '../screens/TabsScreens/BeneficiaryTab/BeneficiariosScreen';
@@ -242,7 +244,7 @@ function MyTabs() {
 
       <Tab.Screen
         options={{
-          tabBarLabel: 'Verificar Cuenta',
+          tabBarLabel: 'Mas',
 
           tabBarIcon: ({focused, tintColor, color}) => {
             if (focused) {
@@ -259,7 +261,7 @@ function MyTabs() {
                     alignItems: 'center',
                   }}>
                   <Image
-                    source={require('../icons/icons/15.png')}
+                    source={require('../icons/icons/5.png')}
                     style={{width: 40, height: 40}}
                   />
                 </View>
@@ -267,7 +269,7 @@ function MyTabs() {
             } else {
               return (
                 <Image
-                  source={require('../icons/icons/15.png')}
+                  source={require('../icons/icons/5.png')}
                   style={{width: 34, height: 34}}
                 />
               );
@@ -287,11 +289,12 @@ function MasStack() {
     <Stack1.Navigator
       headerMode="none"
       // initialRouteName={CarteraVerifyAccountScreen}
-      initialRouteName={CarteraAccountTypeScreen}>
+      initialRouteName={MasMenuScreen}>
       {/* <Stack1.Screen
           name="CarteraVerifyAccountScreen"
           component={CarteraVerifyAccountScreen}
         /> */}
+      <Stack1.Screen name="MasMenuScreen" component={MasMenuScreen} />
       <Stack1.Screen
         name="CarteraAccountTypeScreen"
         component={CarteraAccountTypeScreen}
@@ -371,7 +374,8 @@ function BalanceStack() {
 function EnviarStack() {
   return (
     // <NavigationContainer independent={true} headerMode>
-    <Stack3.Navigator headerMode="none" initialRouteName={EnviarScreen}>
+    <Stack3.Navigator headerMode="none" initialRouteName={EnviarTypeScreen}>
+      <Stack3.Screen name="EnviarTypeScreen" component={EnviarTypeScreen} />
       <Stack3.Screen name="EnviarScreen" component={EnviarScreen} />
       <Stack3.Screen name="PriorityScreen" component={PriorityScreen} />
       <Stack3.Screen name="ReviewEnviarScreen" component={ReviewEnviarScreen} />

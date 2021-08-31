@@ -148,7 +148,6 @@ export const getRecipientList = () => dispatch => {
 
 export const setAccountType = values => dispatch => {
   const accessToken = store.getState().root.token.value;
-  console.log(values, accessToken);
   return axios
     .post(APP.APP_URL + 'api/users/set-account-type', values, {
       headers: {
@@ -216,7 +215,6 @@ export const getPairs = () => dispatch => {
   return axios
     .get(APP.APP_URL + 'api/pairs')
     .then(res => {
-      console.log(res.data);
       dispatch(saveCurrencyPairs(res.data.data));
       return Promise.resolve(res.data.data[0]);
     })

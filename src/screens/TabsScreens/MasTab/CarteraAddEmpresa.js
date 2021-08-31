@@ -59,7 +59,6 @@ const option_size = ['Pequeño', 'Medio', 'Grande'];
 const option_origin = ['utilidades retenidas', 'deuda', 'patrimonio'];
 
 function CarteraAddEmpresa({navigation, token, userinfo}) {
-  console.log(userinfo);
   //inputs are in the same pattern as UI
   // is initial state for country name as Chile
   const [mycountry, setMyCountry] = useState('');
@@ -70,8 +69,6 @@ function CarteraAddEmpresa({navigation, token, userinfo}) {
       ...values,
       country_id: mycountry,
     };
-    console.log(token.value);
-    console.log(values);
     setLoading(true);
     axios
       .post(APP.APP_URL + 'api/users/company', values, {

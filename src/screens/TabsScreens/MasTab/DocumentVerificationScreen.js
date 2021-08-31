@@ -85,7 +85,6 @@ function DocumentVerificationScreen({navigation, token}) {
 
   // uploads image to the server based on passed in url and image
   const uploadIDImage = (image, api_url) => {
-    console.log('image:;;;;;;', image);
     let formData = new FormData();
     formData.append('image', {
       name: image.path.split('/').pop(),
@@ -105,7 +104,7 @@ function DocumentVerificationScreen({navigation, token}) {
           },
         })
         .then(response => {
-          console.log(JSON.parse(JSON.stringify(response.status)));
+          // console.log(JSON.parse(JSON.stringify(response.status)));
           // Toast.show('Successfully uploaded!', Toast.LONG, ['UIAlertController']);
           resolve(response);
         })

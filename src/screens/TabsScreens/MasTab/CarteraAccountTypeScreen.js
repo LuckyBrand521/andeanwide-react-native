@@ -29,17 +29,13 @@ function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
   // if(navigation.curr)
   useEffect(() => {
     navigation.addListener('focus', () => {
-      console.log(userinfo.veracity_declaration_at);
-      console.log(modalVisible);
       if (userinfo.veracity_declaration_at == 'null') {
         setModalVisible(false);
       } else {
-        console.log('Ok');
         setModalVisible(true);
       }
     });
   }, [navigation]);
-  console.log('------------', modalVisible);
   // submits the account type to /api/users/set-account-type
   const accTypeSubmit = value => {
     const values = {account_type: value};

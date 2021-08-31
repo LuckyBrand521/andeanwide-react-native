@@ -12,9 +12,12 @@ import {
   Platform,
   TextInput,
   TouchableOpacity,
+  ScrollView,
+  Image,
 } from 'react-native';
 import {Switch} from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import SelectPicker from 'react-native-form-select-picker';
 import RNPickerSelect from 'react-native-picker-select';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -27,6 +30,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {getPairs, saveNewOrder} from '../../../../actions';
+import CircleWithLabel from '../../../components/subviews/CircleWithLabel';
 
 const options = ['CLP', 'USD', 'PEN', 'COP'];
 const trimDigit = value => {
@@ -37,64 +41,186 @@ const trimDigit = value => {
     return number.toFixed(2);
   }
 };
+let sendOptions = [];
+let recvOptions = [];
+let sendCurrencies = [];
+let recvCurrencies = [];
 function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [sendModalVisible, setSendModalVisible] = useState(false);
+  const [recvModalVisible, setRecvModalVisible] = useState(false);
   const [cost, setCost] = useState(1.19);
   const [rate, setRate] = useState(1.0);
-  const [sendOptions, setSendOptions] = useState(['CLP', 'USD', 'PEN', 'COP']);
-  const [recvOptions, setRecvOptions] = useState([
-    'COP',
-    'USD',
-    'PEN',
-    'MXN',
-    'VES',
-  ]);
 
-  const [currency1, setCurrency1] = useState('CLP');
-  const [currency2, setCurrency2] = useState('COP');
-  //states for color tab change
-  const [colorP, setColorP] = useState('#fff');
-  const [colorE, setColorE] = useState('gray');
-
-  const [bgColorP, setbgColorP] = useState('#09A04E');
-  const [bgColorE, setbgColorE] = useState('#fff');
-
-  const [selected, setSelected] = useState(0);
+  const [currency1, setCurrency1] = useState(null);
+  const [currency2, setCurrency2] = useState(null);
 
   //Textinputs for curreny
-  const [number1, setNumber1] = useState(null);
-  const [number2, setNumber2] = useState(null);
+  const [number1, setNumber1] = useState(0);
+  const [number2, setNumber2] = useState(0);
 
   //priority toggle
   const [intPriority, setIntPriority] = useState(false);
-  const [andPriority, setAndPriority] = useState(false);
+  //set send and receive currencies lists
 
-  const onpresstab1 = () => {
-    setSelected(0);
-    setColorE('#6D7782');
-    setbgColorE('#fff');
-
-    setColorP('#fff');
-    setbgColorP('#09A04E');
-  };
-
-  const onpresstab2 = () => {
-    //for  tab1
-    setSelected(1);
-    setColorE('#fff');
-    setbgColorE('#fff');
-
-    setColorP('gray');
-    setbgColorP('#09A04E');
-
-    //for tab2
-
-    setColorP('#6D7782');
-    setbgColorP('#fff');
-
-    setColorE('#fff');
-    setbgColorE('#09A04E');
-  };
+  pairs.map(item => {
+    if (sendOptions.indexOf(item.base.name) == -1) {
+      sendOptions.push(item.base.name);
+    }
+    if (recvOptions.indexOf(item.quote.name) == -1) {
+      recvOptions.push(item.quote.name);
+    }
+  });
+  sendCurrencies = [];
+  recvCurrencies = [];
+  sendOptions.map(item => {
+    sendCurrencies.push(
+      <TouchableOpacity
+        key={item}
+        onPress={() => {
+          handleCurrency1Change(item);
+          setSendModalVisible(false);
+        }}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: 15,
+          paddingHorizontal: 20,
+          backgroundColor: '#18222E',
+        }}>
+        <View
+          style={{
+            flex: 4,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          <Image
+            source={{
+              uri:
+                'https://flagcdn.com/w40/' +
+                item.slice(0, 2).toLowerCase() +
+                '.png',
+            }}
+            style={{
+              borderRadius: 10,
+              height: 30,
+              width: 30,
+              borderColor: 'transparent',
+              resizeMode: 'stretch',
+              flex: 2,
+              alignItems: 'center',
+            }}
+          />
+          <View style={{flex: 4, paddingLeft: 10}}>
+            <Text
+              style={{
+                color: '#fff',
+                fontSize: 18,
+                fontWeight: 'bold',
+                paddingLeft: 10,
+              }}>
+              {item}
+            </Text>
+          </View>
+        </View>
+        <Text
+          style={{
+            flex: 6,
+            textAlign: 'right',
+            fontSize: 26,
+            color: '#00AA23',
+            paddingRight: 10,
+          }}>
+          {item == 'CLP' ? userinfo.balance : 0}
+        </Text>
+      </TouchableOpacity>,
+    );
+  });
+  recvOptions.map(item => {
+    recvCurrencies.push(
+      <TouchableOpacity
+        key={item}
+        onPress={() => {
+          handleCurrency2Change(item);
+          setRecvModalVisible(false);
+        }}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: 15,
+          paddingHorizontal: 20,
+          backgroundColor: '#18222E',
+        }}>
+        <View
+          style={{
+            flex: 4,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          <Image
+            source={{
+              uri:
+                'https://flagcdn.com/w40/' +
+                item.slice(0, 2).toLowerCase() +
+                '.png',
+            }}
+            style={{
+              borderRadius: 10,
+              height: 30,
+              width: 30,
+              borderColor: 'transparent',
+              resizeMode: 'stretch',
+              flex: 2,
+              alignItems: 'center',
+            }}
+          />
+          <View style={{flex: 4, paddingLeft: 10}}>
+            <Text
+              style={{
+                color: '#fff',
+                fontSize: 18,
+                fontWeight: 'bold',
+                paddingLeft: 10,
+              }}>
+              {item}
+            </Text>
+          </View>
+        </View>
+        <Text
+          style={{
+            flex: 6,
+            textAlign: 'right',
+            fontSize: 26,
+            color: '#00AA23',
+            paddingRight: 10,
+          }}>
+          0
+        </Text>
+      </TouchableOpacity>,
+    );
+  });
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      setLoading(true);
+      getPairs()
+        .then(res => {
+          setCurrency1(res.base.name);
+          setCurrency2(res.quote.name);
+          axios
+            .get(
+              `https://api.andeanwide.com/api/exchange-rate/${res.base.name}/${res.quote.name}`,
+            )
+            .then(res => {
+              setLoading(false);
+              const new_rate = parseFloat(res.data.data.bid);
+              setRate(new_rate);
+            });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    });
+  }, [navigation]);
 
   const handleNumber1Change = val => {
     setNumber1(val);
@@ -111,60 +237,48 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
     setNumber2(trimDigit(number1 * rate * (!intPriority ? 0.95 : 0.9881)));
   };
 
-  const handleCurrency1Change = res => {
-    if (res != '') {
-      setCurrency1(res);
-      if (pairs.length > 0) {
-        let seconds = [];
-        pairs.map(item => {
-          if (item.base.name == res) {
-            seconds.push(item.quote.name);
-          }
+  const handleCurrency1Change = val => {
+    if (val == currency2) {
+      Toast.show('Please select the different currency!', Toast.LONG);
+    } else {
+      setLoading(true);
+      axios
+        .get(`https://api.andeanwide.com/api/exchange-rate/${val}/${currency2}`)
+        .then(response => {
+          const new_rate = parseFloat(response.data.data.bid);
+          setRate(new_rate);
+          setCurrency1(val);
+          setNumber2(
+            trimDigit(number1 * new_rate * (intPriority ? 0.95 : 0.9881)),
+          );
+          setLoading(false);
+        })
+        .catch(err => {
+          setLoading(false);
+          Toast.show('Ocurrió un error!');
         });
-        setRecvOptions(seconds);
-        if (seconds.indexOf(currency2) == -1) {
-          setCurrency2(seconds[0]);
-          axios
-            .get(
-              `https://api.andeanwide.com/api/exchange-rate/${res}/${seconds[0]}`,
-            )
-            .then(res => {
-              const new_rate = parseFloat(res.data.data.bid);
-              setRate(new_rate);
-              setNumber2(
-                trimDigit(number1 * new_rate * (intPriority ? 0.95 : 0.9881)),
-              );
-            });
-        } else {
-          axios
-            .get(
-              `https://api.andeanwide.com/api/exchange-rate/${res}/${currency2}`,
-            )
-            .then(res => {
-              console.log(res.data);
-              const new_rate = parseFloat(res.data.data.bid);
-              setRate(new_rate);
-              setNumber2(
-                trimDigit(number1 * new_rate * (intPriority ? 0.95 : 0.9881)),
-              );
-            });
-        }
-      }
     }
   };
 
-  const handleCurrency2Change = res => {
-    if (res != '') {
-      setCurrency2(res);
+  const handleCurrency2Change = val => {
+    if (val == currency1) {
+      Toast.show('Seleccione la moneda diferente!', Toast.LONG);
+    } else {
+      setLoading(true);
       axios
-        .get(`https://api.andeanwide.com/api/exchange-rate/${currency1}/${res}`)
+        .get(`https://api.andeanwide.com/api/exchange-rate/${currency1}/${val}`)
         .then(res => {
-          console.log(res.data);
           const new_rate = parseFloat(res.data.data.bid);
+          setCurrency2(val);
           setRate(new_rate);
           setNumber1(
             trimDigit(number2 / new_rate / (intPriority ? 0.95 : 0.9881)),
           );
+          setLoading(false);
+        })
+        .catch(err => {
+          setLoading(false);
+          Toast.show('Ocurrió un error!');
         });
     }
   };
@@ -173,16 +287,16 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
    * useEffect called as componentdidmount once
    * updates the currency pairs according to the values passed in from API
    */
-  useEffect(() => {
-    getPairs()
-      .then(res => {
-        setCurrency1(res.base.name);
-        setCurrency2(res.quote.name);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, []);
+  // useEffect(() => {
+  //   getPairs()
+  //     .then(res => {
+  //       setCurrency1(res.base.name);
+  //       setCurrency2(res.quote.name);
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //     });
+  // }, []);
 
   const continueOrder = () => {
     //validate the currency and payment_amount
@@ -210,7 +324,7 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
         pair_id: pair_id,
         currency1: currency1,
         currency2: currency2,
-        cost: cost,
+        cost: trimDigit(cost),
         receive_amount: Number(number2),
       };
       saveNewOrder(data);
@@ -221,8 +335,20 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
     }
   };
   const toggleModal = () => {
-    setModalVisible(!modalVisible);
+    setSendModalVisible(!sendModalVisible);
   };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Spinner
+          visible={isLoading}
+          textContent={'Envío de datos...'}
+          textStyle={{color: '#fff'}}
+        />
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -232,460 +358,256 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
         translucent={true}
       />
       <Modal
-        isVisible={modalVisible}
-        onBackdropPress={() => setModalVisible(false)}>
+        isVisible={sendModalVisible}
+        onBackdropPress={() => setSendModalVisible(false)}>
         <View style={styles.modal_container}>
-          <Icon
-            name="bullhorn"
-            style={{
-              textAlign: 'center',
-            }}
-            size={40}
-            color="#fff"
-          />
-          <Text style={styles.modal_header}>
-            Próximamente, en breve, pronto
-          </Text>
+          <View style={{alignItems: 'center', paddingBottom: 10}}>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 16,
+                fontWeight: 'bold',
+                alignItems: 'center',
+              }}>
+              Selecciona
+            </Text>
+            <Icon
+              name="times-circle-o"
+              size={25}
+              style={{position: 'absolute', left: 10, color: 'white'}}
+              onPress={() => setSendModalVisible(false)}
+            />
+          </View>
+          <ScrollView>{sendCurrencies}</ScrollView>
+        </View>
+      </Modal>
+      <Modal
+        isVisible={recvModalVisible}
+        onBackdropPress={() => setRecvModalVisible(false)}>
+        <View style={styles.modal_container}>
+          <View style={{alignItems: 'center', paddingBottom: 10}}>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 16,
+                fontWeight: 'bold',
+                alignItems: 'center',
+              }}>
+              Selecciona
+            </Text>
+            <Icon
+              name="times-circle-o"
+              size={25}
+              style={{position: 'absolute', left: 10, color: 'white'}}
+              onPress={() => setRecvModalVisible(false)}
+            />
+          </View>
+          <ScrollView>{recvCurrencies}</ScrollView>
         </View>
       </Modal>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Enviar</Text>
+        <View style={{alignItems: 'center'}}>
+          <View style={styles.nameHeader}>
+            <CircleWithLabel
+              label={
+                userinfo.identity.firstname[0] + userinfo.identity.lastname[0]
+              }
+            />
+            <Text style={{...styles.headerText}}>{userinfo.name}</Text>
+          </View>
+        </View>
       </View>
       <View style={styles.contentContainer}>
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            width: wp('80%'),
-            alignSelf: 'center',
-            justifyContent: 'space-around',
-            marginTop: hp('1%'),
+            padding: 15,
+            paddingHorizontal: 20,
+            backgroundColor: '#18222E',
           }}>
-          <TouchableWithoutFeedback onPress={onpresstab1}>
-            <View>
-              <Text
-                style={{color: colorP, textAlign: 'center', marginBottom: 4}}>
-                Internacional
-              </Text>
-              <View
-                style={{width: 150, height: 5, backgroundColor: bgColorP}}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-
-          <TouchableWithoutFeedback onPress={toggleModal}>
-            <View>
-              <Text
-                style={{color: colorE, textAlign: 'center', marginBottom: 4}}>
-                Andean Wide
-              </Text>
-              <View
-                style={{width: 150, height: 5, backgroundColor: bgColorE}}
-              />
-            </View>
-          </TouchableWithoutFeedback>
+          <TouchableOpacity
+            style={{
+              flex: 4,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+            onPress={() => {
+              setSendModalVisible(true);
+            }}>
+            {currency1 && (
+              <>
+                <Image
+                  source={{
+                    uri:
+                      'https://flagcdn.com/w40/' +
+                      currency1.slice(0, 2).toLowerCase() +
+                      '.png',
+                  }}
+                  style={{
+                    borderRadius: 10,
+                    height: 30,
+                    width: 30,
+                    borderColor: 'transparent',
+                    resizeMode: 'stretch',
+                    flex: 2,
+                    alignItems: 'center',
+                  }}
+                />
+                <View style={{flex: 4, paddingLeft: 10}}>
+                  <Text style={{color: '#fff', fontSize: 10, paddingLeft: 10}}>
+                    Enviar
+                  </Text>
+                  <Text
+                    style={{
+                      color: '#fff',
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                      paddingLeft: 10,
+                    }}>
+                    {currency1}
+                  </Text>
+                </View>
+                <AntDesign
+                  style={{flex: 1, alignSelf: 'center', paddingLeft: 10}}
+                  name="down"
+                  color="#fff"
+                  size={14}
+                />
+              </>
+            )}
+          </TouchableOpacity>
+          <TextInput
+            style={{
+              flex: 6,
+              textAlign: 'right',
+              fontSize: 26,
+              color: '#00AA23',
+              paddingRight: 10,
+            }}
+            keyboardType="numeric"
+            maxLength={10}
+            value={number1}
+            placeholder="0"
+            placeholderTextColor="#00AA23"
+            onChangeText={res => {
+              handleNumber1Change(res);
+            }}
+          />
         </View>
-
-        {selected === 0 ? (
-          <View style={styles.mainContainer}>
-            <View style={styles.priceInputContainer}>
-              <View>
-                <Text
-                  style={{
-                    color: '#919191',
-                    fontSize: 17,
-                    position: 'absolute',
-                    top: 0,
-                  }}>
-                  Envias
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  onChangeText={res => {
-                    handleNumber1Change(res);
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            padding: 15,
+            paddingHorizontal: 20,
+            marginTop: 5,
+            backgroundColor: '#18222E',
+          }}>
+          <TouchableOpacity
+            style={{
+              flex: 4,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+            onPress={() => {
+              setRecvModalVisible(true);
+            }}>
+            {currency2 && (
+              <>
+                <Image
+                  source={{
+                    uri:
+                      'https://flagcdn.com/w40/' +
+                      currency2.slice(0, 2).toLowerCase() +
+                      '.png',
                   }}
-                  value={number1}
-                  placeholder="0"
-                  placeholderTextColor="#fff"
-                  keyboardType="numeric"
-                  maxLength={10}
+                  style={{
+                    borderRadius: 10,
+                    height: 30,
+                    width: 30,
+                    borderColor: 'transparent',
+                    resizeMode: 'stretch',
+                    flex: 2,
+                    alignItems: 'center',
+                  }}
                 />
-              </View>
-
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#099E4D', '#2BCF6C']}
-                style={{
-                  width: wp('35%'),
-                  height: hp('8%'),
-                  borderTopLeftRadius: 10,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                {/* <SelectPicker
-                  placeholder="Currency"
-                  placeholderStyle={{
-                    color: '#fff',
-                    fontWeight: 'bold',
-                    fontSize: 20,
-                  }}
-                  style={{right: wp('1%')}}
-                  onSelectedStyle={{
-                    color: '#fff',
-                    fontSize: 20,
-                    fontWeight: 'bold',
-                  }}
-                  onValueChange={value => {
-                    // Do anything you want with the value.
-                    // For example, save in state.
-                    handleCurrency1Change(value);
-                  }}
-                  selected={currency1}>
-                  {Object.values(sendOptions).map((val, index) => (
-                    <SelectPicker.Item label={val} value={val} key={index} />
-                  ))}
-                </SelectPicker> */}
-                <RNPickerSelect
-                  placeholder={{
-                    label: 'Currency',
-                    value: '',
-                  }}
-                  style={{
-                    // color: 'white',
-                    // fontSize: 20,
-                    // fontWeight: 'bold',
-                    inputAndroid: {
-                      color: 'white',
-                      fontSize: 20,
+                <View style={{flex: 4, paddingLeft: 10}}>
+                  <Text style={{color: '#fff', fontSize: 10, paddingLeft: 10}}>
+                    Recibir
+                  </Text>
+                  <Text
+                    style={{
+                      color: '#fff',
+                      fontSize: 18,
                       fontWeight: 'bold',
-                    },
-                  }}
-                  useNativeAndroidPickerStyle={false}
-                  placeholderTextColor="white"
-                  onValueChange={value => {
-                    handleCurrency1Change(value);
-                  }}
-                  items={sendOptions.map((val, index) => {
-                    return {value: val, label: val};
-                  })}
-                  value={currency1}
+                      paddingLeft: 10,
+                    }}>
+                    {currency2}
+                  </Text>
+                </View>
+                <AntDesign
+                  style={{flex: 1, alignSelf: 'center', paddingLeft: 10}}
+                  name="down"
+                  color="#fff"
+                  size={14}
                 />
-              </LinearGradient>
-            </View>
-            <View>
-              <View style={styles.textContainer}>
-                <Text
-                  style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  {trimDigit(number1 * (intPriority ? 0.05 : 0.0119))}{' '}
-                  {currency1}
-                </Text>
-                <Text style={styles.text}>Transferencia de bajo costo</Text>
-              </View>
-
-              <View style={styles.textContainer}>
-                <Text
-                  style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  {trimDigit(number1 * (intPriority ? 0.95 : 0.9881))}
-                </Text>
-                <Text style={styles.text}>
-                  Importe de {currency1} convertido
-                </Text>
-              </View>
-
-              <View style={styles.textContainer}>
-                <Text
-                  style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  {trimDigit(rate)}
-                </Text>
-                <Text style={styles.text}>
-                  Tipo de cambio {currency1}/{currency2}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.priceInputContainer}>
-              <View>
+              </>
+            )}
+          </TouchableOpacity>
+          <View style={{flex: 6, justifyContent: 'center'}}>
+            <TextInput
+              style={{
+                textAlign: 'right',
+                fontSize: 26,
+                color: '#00AA23',
+                paddingRight: 10,
+              }}
+              keyboardType="numeric"
+              maxLength={10}
+              value={number2}
+              placeholder="0"
+              placeholderTextColor="#00AA23"
+              onChangeText={res => {
+                handleNumber2Change(res);
+              }}
+            />
+            {currency1 && currency2 && (
+              <>
                 <Text
                   style={{
-                    color: '#919191',
-                    fontSize: 17,
                     position: 'absolute',
-                    top: 0,
+                    right: 0,
+                    bottom: -5,
+                    color: '#919191',
+                    textAlign: 'right',
+                    fontSize: 14,
+                    paddingRight: 10,
                   }}>
-                  Recibes
+                  1 {currency1} = {trimDigit(rate)} {currency2}
                 </Text>
-                <TextInput
-                  style={styles.input}
-                  onChangeText={res => {
-                    handleNumber2Change(res);
-                  }}
-                  value={number2}
-                  placeholder=""
-                  placeholderTextColor="#fff"
-                  keyboardType="numeric"
-                  maxLength={10}
-                />
-              </View>
-
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#099E4D', '#2BCF6C']}
-                style={{
-                  width: wp('35%'),
-                  height: hp('8%'),
-                  borderTopLeftRadius: 10,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                {/* <SelectPicker
-                  placeholderStyle={{
-                    color: '#fff',
-                    fontWeight: 'bold',
-                    fontSize: 20,
-                  }}
-                  placeholder="Currency"
-                  style={{right: wp('1%')}}
-                  onSelectedStyle={{
-                    color: '#fff',
-                    fontSize: 20,
-                    fontWeight: 'bold',
-                  }}
-                  onValueChange={value => {
-                    // Do anything you want with the value.
-                    // For example, save in state.
-                    handleCurrency2Change(value);
-                  }}
-                  selected={currency2}>
-                  {Object.values(recvOptions).map((val, index) => (
-                    <SelectPicker.Item label={val} value={val} key={index} />
-                  ))}
-                </SelectPicker> */}
-                <RNPickerSelect
-                  placeholder={{
-                    label: 'Currency',
-                    value: '',
-                  }}
-                  style={{
-                    // color: 'white',
-                    // fontSize: 20,
-                    // fontWeight: 'bold',
-                    inputAndroid: {
-                      color: 'white',
-                      fontSize: 20,
-                      fontWeight: 'bold',
-                    },
-                  }}
-                  useNativeAndroidPickerStyle={false}
-                  placeholderTextColor="white"
-                  onValueChange={value => {
-                    handleCurrency2Change(value);
-                  }}
-                  items={recvOptions.map((val, index) => {
-                    return {value: val, label: val};
-                  })}
-                  value={currency2}
-                />
-              </LinearGradient>
-            </View>
-            <View>
-              <View style={styles.textContainer}>
-                <Text
-                  style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  Debe llegar para el{' '}
-                </Text>
-                <Text style={styles.text}>12 de Mayo</Text>
-              </View>
-            </View>
-            <View style={styles.switchContainer}>
-              <Switch
-                isChecked={intPriority}
-                style={{textAlign: 'center', width: wp('30%')}}
-                onToggle={res => {
-                  handleSwitchChange();
-                }}
-              />
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontSize: 18,
-                  color: '#fff',
-                  width: wp('50%'),
-                }}>
-                Immediata Prioridad
-              </Text>
-            </View>
+              </>
+            )}
           </View>
-        ) : (
-          <View style={styles.mainContainer}>
-            <View style={styles.priceInputContainer}>
-              <View>
-                <Text
-                  style={{
-                    color: '#919191',
-                    fontSize: 15,
-                    position: 'absolute',
-                    top: 0,
-                  }}>
-                  Destinatario recibira
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  // onChangeText={}
-                  // value={}
-                  placeholder="1.0 $"
-                  placeholderTextColor="#fff"
-                  keyboardType="numeric"
-                />
-              </View>
-
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#099E4D', '#2BCF6C']}
-                style={{
-                  width: wp('35%'),
-                  height: hp('8%'),
-                  borderTopLeftRadius: 10,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <SelectPicker
-                  placeholderStyle={{
-                    color: '#fff',
-                    fontWeight: 'bold',
-                    fontSize: 20,
-                  }}
-                  style={{right: wp('1%')}}
-                  placeholder="CLP"
-                  onSelectedStyle={{
-                    color: '#fff',
-                    fontSize: 20,
-                    fontWeight: 'bold',
-                  }}
-                  onValueChange={value => {
-                    // Do anything you want with the value.
-                    // For example, save in state.
-                    setCurrency1(value);
-                  }}
-                  selected={currency1}>
-                  {Object.values(options).map((val, index) => (
-                    <SelectPicker.Item label={val} value={val} key={index} />
-                  ))}
-                </SelectPicker>
-              </LinearGradient>
-            </View>
-            <View>
-              <View style={styles.textContainer}>
-                <Text
-                  style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  5,34 USD
-                </Text>
-                <Text style={styles.text}>Comisión “wire” Internacional</Text>
-              </View>
-
-              <View style={styles.textContainer}>
-                <Text
-                  style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  1,16 USD
-                </Text>
-                <Text style={styles.text}>Nuestra comisión</Text>
-              </View>
-
-              <View style={styles.textContainer}>
-                <Text
-                  style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  6,47 USD
-                </Text>
-                <Text style={styles.text}>Comisión Total</Text>
-              </View>
-            </View>
-
-            <View style={styles.priceInputContainer}>
-              <View>
-                <Text
-                  style={{
-                    color: '#919191',
-                    fontSize: 17,
-                    position: 'absolute',
-                    top: 0,
-                  }}>
-                  Envias
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  // onChangeText={onChangeNumber2}
-                  // value={number2}
-                  placeholder="$ 1,006.47"
-                  placeholderTextColor="#fff"
-                  keyboardType="numeric"
-                />
-              </View>
-
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#099E4D', '#2BCF6C']}
-                style={{
-                  width: wp('35%'),
-                  height: hp('8%'),
-                  borderTopLeftRadius: 10,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <SelectPicker
-                  placeholderStyle={{
-                    color: '#fff',
-                    fontWeight: 'bold',
-                    fontSize: 20,
-                  }}
-                  style={{right: wp('1%')}}
-                  placeholder="CLP"
-                  onSelectedStyle={{
-                    color: '#fff',
-                    fontSize: 20,
-                    fontWeight: 'bold',
-                  }}
-                  onValueChange={value => {
-                    // Do anything you want with the value.
-                    // For example, save in state.
-                    setCurrency2(value);
-                  }}
-                  selected={currency2}>
-                  {Object.values(recvOptions).map((val, index) => (
-                    <SelectPicker.Item label={val} value={val} key={index} />
-                  ))}
-                </SelectPicker>
-              </LinearGradient>
-            </View>
-            <View>
-              <View style={styles.textContainer}>
-                <Text
-                  style={{...styles.text, color: '#919191', marginRight: 10}}>
-                  Debe llegar para el{' '}
-                </Text>
-                <Text style={styles.text}>12 de Mayo</Text>
-              </View>
-            </View>
-            <View style={styles.switchContainer}>
-              <Switch
-                isChecked={andPriority}
-                style={{textAlign: 'center', width: wp('30%')}}
-                onToggle={setAndPriority}
-              />
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontSize: 18,
-                  color: '#fff',
-                  width: wp('50%'),
-                }}>
-                Immediata Prioridad
-              </Text>
-            </View>
-          </View>
-        )}
+        </View>
+        <Icon
+          name="angle-double-down"
+          size={20}
+          color="#000"
+          style={{
+            position: 'absolute',
+            backgroundColor: '#fff',
+            borderRadius: 100,
+            alignItems: 'center',
+            paddingTop: 3,
+            textAlign: 'center',
+            width: '6%',
+            height: '14%',
+            borderWidth: 0,
+            bottom: '44%',
+            left: '48%',
+          }}
+        />
       </View>
 
       <View style={styles.footerButtonContainer}>
@@ -739,23 +661,21 @@ const styles = StyleSheet.create({
     marginTop: hp('5%'),
   },
 
-  contentContainer: {
-    backgroundColor: '#18222E',
-    height: hp('52%'),
-  },
+  contentContainer: {},
   header: {
     width: wp('100%'),
-    height: hp('6%'),
+    height: hp('8%'),
     backgroundColor: '#18222E',
     justifyContent: 'flex-end',
     paddingBottom: 10,
     alignItems: 'center',
+    marginBottom: 5,
   },
 
   headerText: {
     color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 14,
+    marginHorizontal: 10,
     alignSelf: 'center',
     textAlign: 'center',
   },
@@ -839,5 +759,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
     alignSelf: 'center',
+  },
+  nameHeader: {
+    width: 'auto',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 5,
+    borderRadius: 100,
+    backgroundColor: '#141A27',
+    borderWidth: 0,
+    flexDirection: 'row',
   },
 });

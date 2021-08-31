@@ -40,7 +40,6 @@ export default function PinCodeScreen({route, navigation}) {
       pin_confirmation: code,
       old_pin: '',
     };
-    console.log(requestData);
     // const hasPin = await hasUserSetPinCode();
     // if (hasPin) {
     //   Alert.alert(null, 'You have successfully set/entered your pin.', [

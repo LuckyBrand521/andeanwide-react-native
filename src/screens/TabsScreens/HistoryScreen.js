@@ -9,6 +9,7 @@ import {
   StatusBar,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from 'react-native';
 
 import {
@@ -20,6 +21,7 @@ import Carousel from 'react-native-looped-carousel';
 import Octicons from 'react-native-vector-icons/Octicons';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import CircleWithLabel from '../../components/subviews/CircleWithLabel';
 import {numberWithCommas} from '../../data/helpers';
 
@@ -124,29 +126,143 @@ function HistoryScreen({navigation, userinfo, orders}) {
         {detailIndex > -1 ? (
           <>
             <View style={styles.modal_container}>
-              <Text style={{color: '#959595'}}>FECHA:</Text>
-              <Text style={{color: 'white', fontSize: 18}}>
-                {orders[detailIndex].filled_at}
+              <Icon
+                name="times"
+                size={15}
+                color="#919191"
+                style={{position: 'absolute', left: 20, top: 15}}
+                onPress={() => setDetailModalVisible(false)}
+              />
+              <Text
+                style={{
+                  color: '#959595',
+                  marginTop: 5,
+                  marginBottom: 5,
+                  alignSelf: 'center',
+                }}>
+                Fecha: {orders[detailIndex].filled_at}
               </Text>
-              <Text style={{color: '#959595'}}>BENEFICIARIO:</Text>
-              <Text style={{color: 'white', fontSize: 18}}>
-                {orders[detailIndex].recipient.name}
-              </Text>
-              <Text style={{color: '#959595'}}>MONTO ENVIADO:</Text>
-              <Text style={{color: 'white', fontSize: 18}}>
-                {orders[detailIndex].payment_amount}{' '}
-                {orders[detailIndex].pair.base.name}
-              </Text>
-              <Text style={{color: '#959595'}}>MONTO RECIBIDO:</Text>
-              <Text style={{color: 'white', fontSize: 18}}>
-                {orders[detailIndex].received_amount}{' '}
-                {orders[detailIndex].pair.quote.name}
-              </Text>
-              <Text style={{color: '#959595'}}>TASA:</Text>
-              <Text style={{color: 'white', fontSize: 18}}>
-                {orders[detailIndex].rate.toFixed(4)}{' '}
-                {orders[detailIndex].pair.name}
-              </Text>
+              <View
+                style={{
+                  textAlign: 'left',
+                  borderBottomWidth: 2,
+                  borderBottomColor: '#aaa',
+                  paddingBottom: 15,
+                  marginBottom: 10,
+                }}>
+                <Text style={{color: 'white', fontSize: 16, marginBottom: 5}}>
+                  Envio
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                  }}>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Monto a enviar:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      {orders[detailIndex].payment_amount}{' '}
+                      {orders[detailIndex].pair.base.name}
+                    </Text>
+                  </View>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Tipo de cambio:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      1{orders[detailIndex].pair.base.name} ={' '}
+                      {orders[detailIndex].rate.toFixed(4)}{' '}
+                      {orders[detailIndex].pair.quote.name}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View>
+                <Text style={{color: 'white', fontSize: 16, marginBottom: 5}}>
+                  Beneficiario
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginBottom: 10,
+                  }}>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Nombre:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      {orders[detailIndex].recipient.name}
+                    </Text>
+                  </View>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Cuenta:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      {orders[detailIndex].payment.transaction_number}
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginBottom: 10,
+                  }}>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Banco:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      {orders[detailIndex].recipient.bank.name}
+                    </Text>
+                  </View>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Tipo de cuenta:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      {orders[detailIndex].recipient.account_type}
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                  }}>
+                  <View style={{flex: 1}}>
+                    <Text style={{color: '#959595'}}>Monto a recibir:</Text>
+                    <Text style={{color: 'white', fontSize: 16}}>
+                      {orders[detailIndex].received_amount}{' '}
+                      {orders[detailIndex].pair.quote.name}
+                      {'   '}
+                      <Image
+                        source={{
+                          uri:
+                            'https://flagcdn.com/w20/' +
+                            orders[
+                              detailIndex
+                            ].recipient.country.abbr.toLowerCase() +
+                            '.png',
+                        }}
+                        style={{
+                          height: 25,
+                          width: 25,
+                          borderColor: 'transparent',
+                          overflow: 'hidden',
+                        }}
+                      />
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View
+                style={{
+                  marginTop: hp('14%'),
+                  alignItems: 'center',
+                  marginBottom: 5,
+                }}>
+                <Text
+                  style={{
+                    padding: 5,
+                    fontSize: 10,
+                    paddingHorizontal: 30,
+                    color: '#12CF38',
+                    borderColor: '#12CF38',
+                    borderWidth: 1,
+                    borderRadius: 20,
+                  }}>
+                  {orders[detailIndex].status}
+                </Text>
+              </View>
             </View>
           </>
         ) : (
@@ -314,15 +430,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   modal_container: {
-    backgroundColor: '#1a2138',
+    backgroundColor: '#141B28',
     height: 'auto',
-    borderRadius: 10,
+    width: wp('85%'),
+    alignSelf: 'center',
+    borderRadius: 35,
     borderWidth: 0,
     paddingTop: 10,
     paddingBottom: 15,
+    paddingHorizontal: 20,
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   modal_header: {
     marginTop: 10,

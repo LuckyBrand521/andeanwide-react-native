@@ -72,7 +72,6 @@ function CarteraAddPersonnelDetails({
   personalAccountVerfify,
   userinfo,
 }) {
-  console.log(userinfo.account_type);
   if (userinfo != null) {
     initial_form_data.firstname = userinfo.identity.firstname;
     initial_form_data.lastname = userinfo.identity.lastname;

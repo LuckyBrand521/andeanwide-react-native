@@ -72,7 +72,6 @@ function LoginScreen({
               .then(() => {
                 setLoading(false);
                 Toast.show('Welcome!', Toast.LONG);
-                console.log(userinfo.email_verified_at);
                 if (userinfo.email_verified_at != null) {
                   navigation.navigate('tabs', {screen: 'BalanceScreen'});
                 } else {
@@ -206,8 +205,8 @@ function LoginScreen({
           <Formik
             validationSchema={loginFormSchema}
             initialValues={{
-              email: 'josechavez2006@gmail.com',
-              password: 'Test123456789$',
+              email: '',
+              password: '',
             }}
             onSubmit={values => loginSubmitAPI(values)}>
             {({
