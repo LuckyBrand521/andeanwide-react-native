@@ -34,10 +34,12 @@ function BeneficiariosScreen({
   getRecipientList,
   saveNewOrder,
 }) {
-  const ordering = route.params ? route.params.params.ordering : null;
+  // let ordering = route.params ? route.params.params.ordering : null;
   const [isLoading, setIsLoading] = useState(false);
+  const [ordering, setOrdering] = useState(false);
   useEffect(() => {
     navigation.addListener('focus', () => {
+      setIsLoading(true);
       getRecipientList()
         .then(() => {
           setIsLoading(false);
@@ -48,6 +50,10 @@ function BeneficiariosScreen({
         });
     });
   }, [navigation]);
+
+  useEffect(() => {
+    setOrdering(route?.params?.params?.ordering);
+  }, [route?.params?.params?.ordering]);
 
   const detailView = id => {
     axios
@@ -72,6 +78,7 @@ function BeneficiariosScreen({
           account_type: val.account_type,
           address: val.address,
           document_type: val.document_type,
+          type: val.type,
         };
         navigation.navigate('CrearBeneficiarioScreen', {
           isNew: false,
@@ -86,6 +93,9 @@ function BeneficiariosScreen({
   };
 
   const goOrderReviewPage = id => {
+    // navigation.reset({
+    //   routes: [{name: BeneficiariosScreen}],
+    // });
     const order = {...new_order, recipient_id: id};
     saveNewOrder(order);
     navigation.navigate('ReviewEnviarScreen');
@@ -96,7 +106,7 @@ function BeneficiariosScreen({
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          // textContent={'Recolectando datos...'}
+          textContent={'Recolectando datos...'}
           textStyle={{color: '#fff'}}
         />
       </SafeAreaView>
@@ -169,7 +179,12 @@ function BeneficiariosScreen({
               return (
                 <TouchableOpacity
                   onPress={() => {
-                    ordering ? goOrderReviewPage(item.id) : detailView(item.id);
+                    if (ordering) {
+                      goOrderReviewPage(item.id);
+                      setOrdering(false);
+                    } else {
+                      detailView(item.id);
+                    }
                   }}>
                   <View
                     style={{
@@ -177,13 +192,13 @@ function BeneficiariosScreen({
                       backgroundColor: '#185341',
                       flex: 1,
                     }}>
-                    <View style={{...styles.plusCircle, flex: 1}}>
+                    <View style={{...styles.plusCircle}}>
                       <Text style={{...styles.headerText, ...styles.listTitle}}>
                         {item.name[0] + ' ' + item.lastname[0]}
                       </Text>
                     </View>
 
-                    <View style={{flex: 4}}>
+                    <View style={{flex: 6}}>
                       <Text style={{...styles.headerText, ...styles.listTitle}}>
                         {item.name}
                       </Text>
@@ -195,7 +210,23 @@ function BeneficiariosScreen({
                         {item.type + ' ' + item.phone}
                       </Text>
                     </View>
-                    <View style={{flex: 1}} />
+                    <View style={{flex: 1}}>
+                      <Image
+                        source={{
+                          uri:
+                            'https://flagcdn.com/h60/' +
+                            item.country.abbr.toLowerCase() +
+                            '.png',
+                        }}
+                        style={{
+                          height: 35,
+                          width: 35,
+                          borderRadius: 50,
+                          borderColor: 'transparent',
+                          overflow: 'hidden',
+                        }}
+                      />
+                    </View>
 
                     {/* <Image source={item.country} style={styles.country} /> */}
                   </View>
@@ -269,9 +300,9 @@ const styles = StyleSheet.create({
   },
 
   plusCircle: {
-    width: 45,
-    height: 45,
-    borderRadius: 25,
+    width: 40,
+    height: 40,
+    borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: wp('4%'),

@@ -17,9 +17,6 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import Carousel from 'react-native-looped-carousel';
-import Octicons from 'react-native-vector-icons/Octicons';
-import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import CircleWithLabel from '../../components/subviews/CircleWithLabel';
@@ -30,7 +27,14 @@ const formatDate = date_str => {
   const d_str = d.toDateString();
   return d_str.substr(4);
 };
-
+const trimDigit = value => {
+  let number = Number(value);
+  if (Number.isInteger(number)) {
+    return number;
+  } else {
+    return number.toFixed(2);
+  }
+};
 const trimName = name => {
   if (name.length > 15) {
     return name.substr(0, 14) + '...';
@@ -47,12 +51,13 @@ const colorLabel = order => {
   //         fontSize: 18,
   //         flex: 1,
   //         textAlign: 'right',
-  //         color: '#D21019',
+  //         color: '#0BCE5E',
   //       }}>
-  //       {numberWithCommas(order.payment_amount)} {order.pair.base.name}
+  //       {order.pair.base.name} {numberWithCommas(order.payment_amount)}
   //     </Text>
   //   );
-  // } else if (order.status == 'PAYOUT_RECEIVED') {
+  //   // } else if (order.status == 'PAYOUT_RECEIVED') {
+  // } else {
   return (
     <Text
       style={{
@@ -62,7 +67,8 @@ const colorLabel = order => {
         textAlign: 'right',
         color: '#0BCE5E',
       }}>
-      {numberWithCommas(order.payment_amount)} {order.pair.base.name}
+      {order.pair.quote.name}{' '}
+      {numberWithCommas(trimDigit(order.received_amount))}
     </Text>
   );
   // }
@@ -77,10 +83,14 @@ function HistoryScreen({navigation, userinfo, orders}) {
   let date_label = '';
   let order_rows = [];
   for (let i = 0; i < orders.length; i++) {
-    if (formatDate(orders[i].filled_at) != date_label) {
-      date_label = formatDate(orders[i].filled_at);
+    let temp = orders[i].filled_at.replace(' ', 'T');
+    temp = new Date(temp).toDateString();
+    if (temp != date_label) {
+      date_label = temp;
       order_rows.push(
-        <Text style={{color: '#919191', padding: 8, paddingHorizontal: 20}}>
+        <Text
+          style={{color: '#919191', padding: 8, paddingHorizontal: 20}}
+          key={temp}>
           {date_label}
         </Text>,
       );
@@ -127,8 +137,8 @@ function HistoryScreen({navigation, userinfo, orders}) {
           <>
             <View style={styles.modal_container}>
               <Icon
-                name="times"
-                size={15}
+                name="times-circle-o"
+                size={20}
                 color="#919191"
                 style={{position: 'absolute', left: 20, top: 15}}
                 onPress={() => setDetailModalVisible(false)}
@@ -221,13 +231,13 @@ function HistoryScreen({navigation, userinfo, orders}) {
                   <View style={{flex: 1}}>
                     <Text style={{color: '#959595'}}>Monto a recibir:</Text>
                     <Text style={{color: 'white', fontSize: 16}}>
-                      {orders[detailIndex].received_amount}{' '}
+                      {orders[detailIndex].received_amount.toFixed(2)}{' '}
                       {orders[detailIndex].pair.quote.name}
                       {'   '}
                       <Image
                         source={{
                           uri:
-                            'https://flagcdn.com/w20/' +
+                            'https://flagcdn.com/h60/' +
                             orders[
                               detailIndex
                             ].recipient.country.abbr.toLowerCase() +

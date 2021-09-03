@@ -31,6 +31,7 @@ import {
 } from 'react-native-responsive-screen';
 import {getPairs, saveNewOrder} from '../../../../actions';
 import CircleWithLabel from '../../../components/subviews/CircleWithLabel';
+import {numberWithCommas} from '../../../data/helpers';
 
 const options = ['CLP', 'USD', 'PEN', 'COP'];
 const trimDigit = value => {
@@ -97,7 +98,7 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
           <Image
             source={{
               uri:
-                'https://flagcdn.com/w40/' +
+                'https://flagcdn.com/h60/' +
                 item.slice(0, 2).toLowerCase() +
                 '.png',
             }}
@@ -160,7 +161,7 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
           <Image
             source={{
               uri:
-                'https://flagcdn.com/w40/' +
+                'https://flagcdn.com/h60/' +
                 item.slice(0, 2).toLowerCase() +
                 '.png',
             }}
@@ -235,6 +236,29 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
   const handleSwitchChange = res => {
     setIntPriority(!intPriority);
     setNumber2(trimDigit(number1 * rate * (!intPriority ? 0.95 : 0.9881)));
+  };
+
+  const swapCurrency = () => {
+    setLoading(true);
+    let temp = currency1;
+    axios
+      .get(
+        `https://api.andeanwide.com/api/exchange-rate/${currency2}/${currency1}`,
+      )
+      .then(response => {
+        const new_rate = parseFloat(response.data.data.bid);
+        setRate(new_rate);
+        setNumber2(
+          trimDigit(number1 * new_rate * (intPriority ? 0.95 : 0.9881)),
+        );
+        setCurrency1(currency2);
+        setCurrency2(temp);
+        setLoading(false);
+      })
+      .catch(err => {
+        setLoading(false);
+        Toast.show('Ocurrió un error!');
+      });
   };
 
   const handleCurrency1Change = val => {
@@ -440,7 +464,7 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
                 <Image
                   source={{
                     uri:
-                      'https://flagcdn.com/w40/' +
+                      'https://flagcdn.com/h60/' +
                       currency1.slice(0, 2).toLowerCase() +
                       '.png',
                   }}
@@ -487,11 +511,11 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
             }}
             keyboardType="numeric"
             maxLength={10}
-            value={number1}
+            value={numberWithCommas(number1.toString())}
             placeholder="0"
             placeholderTextColor="#00AA23"
             onChangeText={res => {
-              handleNumber1Change(res);
+              handleNumber1Change(res.replace(/\,/g, ''));
             }}
           />
         </View>
@@ -518,7 +542,7 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
                 <Image
                   source={{
                     uri:
-                      'https://flagcdn.com/w40/' +
+                      'https://flagcdn.com/h60/' +
                       currency2.slice(0, 2).toLowerCase() +
                       '.png',
                   }}
@@ -565,11 +589,11 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
               }}
               keyboardType="numeric"
               maxLength={10}
-              value={number2}
+              value={numberWithCommas(number2.toString())}
               placeholder="0"
               placeholderTextColor="#00AA23"
               onChangeText={res => {
-                handleNumber2Change(res);
+                handleNumber2Change(res.replace(/\,/g, ''));
               }}
             />
             {currency1 && currency2 && (
@@ -591,7 +615,7 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
           </View>
         </View>
         <Icon
-          name="angle-double-down"
+          name="refresh"
           size={20}
           color="#000"
           style={{
@@ -606,6 +630,9 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
             borderWidth: 0,
             bottom: '44%',
             left: '48%',
+          }}
+          onPress={() => {
+            swapCurrency();
           }}
         />
       </View>

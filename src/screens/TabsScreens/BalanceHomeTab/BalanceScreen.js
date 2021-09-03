@@ -34,7 +34,14 @@ const formatDate = date_str => {
   const d_str = d.toDateString();
   return d_str.substr(4);
 };
-
+const trimDigit = value => {
+  let number = Number(value);
+  if (Number.isInteger(number)) {
+    return number;
+  } else {
+    return number.toFixed(2);
+  }
+};
 const trimName = name => {
   if (name.length > 15) {
     return name.substr(0, 14) + '...';
@@ -48,15 +55,16 @@ const colorLabel = order => {
   //     <Text
   //       style={{
   //         ...styles.btnText,
-  //         fontSize: 18,
+  //         fontSize: 14,
   //         flex: 1,
   //         textAlign: 'right',
-  //         color: '#D21019',
+  //         color: '#0BCE5E',
   //       }}>
-  //       {numberWithCommas(order.payment_amount)} {order.pair.base.name}
+  //       {order.pair.quote.name} {numberWithCommas(order.payment_amount)}
   //     </Text>
   //   );
-  // } else if (order.status == 'PAYOUT_RECEIVED') {
+  //   // } else if (order.status == 'PAYOUT_RECEIVED') {
+  // } else {
   return (
     <Text
       style={{
@@ -66,7 +74,8 @@ const colorLabel = order => {
         textAlign: 'right',
         color: '#0BCE5E',
       }}>
-      {order.pair.base.name} {numberWithCommas(order.payment_amount)}
+      {order.pair.quote.name}{' '}
+      {numberWithCommas(order.received_amount.toFixed(0))}
     </Text>
   );
   // }
@@ -94,7 +103,9 @@ function BalanceScreen({navigation, userinfo, orders, getOrderHistory}) {
       date_label = temp;
       // console.log(orders[i].filled_at.split(' ')[0]);
       order_rows.push(
-        <Text style={{color: '#919191', padding: 8, paddingHorizontal: 20}}>
+        <Text
+          style={{color: '#919191', padding: 8, paddingHorizontal: 20}}
+          key={temp}>
           {date_label}
         </Text>,
       );
@@ -179,8 +190,8 @@ function BalanceScreen({navigation, userinfo, orders, getOrderHistory}) {
           <>
             <View style={styles.modal_container}>
               <Icon
-                name="times"
-                size={15}
+                name="times-circle-o"
+                size={20}
                 color="#919191"
                 style={{position: 'absolute', left: 20, top: 15}}
                 onPress={() => setDetailModalVisible(false)}
@@ -273,13 +284,13 @@ function BalanceScreen({navigation, userinfo, orders, getOrderHistory}) {
                   <View style={{flex: 1}}>
                     <Text style={{color: '#959595'}}>Monto a recibir:</Text>
                     <Text style={{color: 'white', fontSize: 16}}>
-                      {orders[detailIndex].received_amount}{' '}
+                      {orders[detailIndex].received_amount.toFixed(2)}{' '}
                       {orders[detailIndex].pair.quote.name}
                       {'   '}
                       <Image
                         source={{
                           uri:
-                            'https://flagcdn.com/w20/' +
+                            'https://flagcdn.com/h60/' +
                             orders[
                               detailIndex
                             ].recipient.country.abbr.toLowerCase() +
@@ -422,7 +433,7 @@ function BalanceScreen({navigation, userinfo, orders, getOrderHistory}) {
                   fontSize: 16,
                   marginTop: 10,
                 }}>
-                Disponsible
+                Disponible
               </Text>
             </View>
           </View>

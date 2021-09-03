@@ -12,12 +12,16 @@ import {
   Platform,
   ScrollView,
   TextInput,
+  FlatList,
+  Image,
   TouchableOpacity,
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-simple-toast';
+import RNPickerSelect from 'react-native-picker-select';
 import SelectPicker from 'react-native-form-select-picker';
+import SearchableDropdown from 'react-native-searchable-dropdown';
 
 import {
   widthPercentageToDP as wp,
@@ -28,9 +32,30 @@ import {
 import TwoTextView from '../../../components/subviews/TwoTextView';
 import {saveNewOrder} from '../../../../actions';
 
+const purposeList = [
+  {value: 'EPFAMT', label: 'Family Maintenance'},
+  {value: 'ISMDCS', label: 'Medical Services'},
+  {value: 'ISSTDY', label: 'Estudios y/o Tutorias'},
+  {value: 'ISCHAR', label: 'Charity'},
+  {value: 'EPPROP', label: 'Purchase of Properties'},
+  {value: 'EPSHAR', label: 'Dividends'},
+  {value: 'ISUBIL', label: 'Public Service Providers'},
+  {value: 'ISTAXS', label: 'Taxes'},
+  {value: 'EPTOUR', label: 'Tourism'},
+  {value: 'EPTKAG', label: 'Passages or Tourist Agencies'},
+  {value: 'ISSAVG', label: 'Savings'},
+  {value: 'ISPENS', label: 'Pensions'},
+  {value: 'ISGDDS', label: 'Purchase of Goods'},
+  {value: 'ISSUPP', label: 'Suppliers'},
+  {value: 'EPREMT', label: 'Remesa'},
+  {value: 'ISSCVE', label: 'Purchase of Services'},
+  {value: 'EPRENT', label: 'Rental of Movable Property'},
+];
+
+let country_abbr = '';
 function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
   const [recipientInfo, setRecipientInfo] = useState({});
-  const [purpose, setPurpose] = useState('');
+  const [purpose, setPurpose] = useState(null);
   const [isSelected, setSelection] = useState(false);
   //get the data of recipient
   useEffect(() => {
@@ -45,6 +70,10 @@ function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
         })
         .then(res => {
           setRecipientInfo(res.data.data);
+          country_abbr = res.data.data.country.abbr;
+        })
+        .catch(err => {
+          console.log(err);
         });
     }
   }, []);
@@ -73,6 +102,16 @@ function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
         });
     }
   };
+
+  const getSuggestions = q => {
+    let temp = [];
+    purposeList.map(item => {
+      if (item.title.toLowerCase().indexOf(q.toLowerCase()) > -1) {
+        temp.push(item);
+      }
+    });
+    setSuggestions(temp);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -88,7 +127,7 @@ function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
       <View style={styles.middleInputsContainer}>
         <ScrollView
           contentContainerStyle={{flexGrow: 1}}
-          style={styles.scrollView}>
+          style={{...styles.infoContainer, flex: 1}}>
           <Text
             style={{...styles.headerText, fontSize: 18, marginTop: hp('0.8%')}}>
             Orden
@@ -103,39 +142,44 @@ function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
             <TwoTextView
               text_gray="Monto a pagar"
               text_white={`${new_order.payment_amount} ${new_order.currency1}`}
-              styles={{width: wp('50%')}}
+              styles={{width: '45%'}}
             />
             <TwoTextView
               text_gray="Tip de Cambio"
               text_white={`${new_order.rate}`}
-              styles={{width: wp('50%')}}
+              styles={{width: '45%'}}
             />
             <TwoTextView
               text_gray="Costo Transaccion"
               text_white={`${new_order.cost}`}
-              styles={{width: wp('50%')}}
+              styles={{width: '45%'}}
             />
             <TwoTextView
               text_gray="Monto a recibir"
               text_white={`${new_order.receive_amount} ${new_order.currency2}`}
-              styles={{width: wp('50%')}}
+              styles={{width: '45%'}}
             />
             <TwoTextView
               text_gray="Importe Convertido"
               text_white={`${new_order.payment_amount - new_order.cost} ${
                 new_order.currency1
               }`}
-              styles={{width: wp('50%')}}
+              styles={{width: '45%'}}
             />
           </View>
           <View>
-            <TextInput
-              placeholder="Proposito del Giro"
-              placeholderTextColor="#919191"
-              style={styles.input}
-              value={purpose}
-              onChange={setPurpose}
-            />
+            <View>
+              <RNPickerSelect
+                onValueChange={value => {
+                  setPurpose(value);
+                }}
+                style={{inputAndroid: {color: 'white'}}}
+                value={purpose}
+                placeholder={{label: 'Seleccione el propósito', value: null}}
+                items={purposeList}
+                mode="dropdown"
+              />
+            </View>
             <View
               style={{
                 display: 'flex',
@@ -189,6 +233,23 @@ function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
               <TwoTextView
                 text_gray="Direccion"
                 text_white={recipientInfo.address}
+              />
+
+              <Image
+                source={{
+                  uri:
+                    'https://flagcdn.com/h60/' +
+                    recipientInfo.country?.abbr?.toLowerCase() +
+                    '.png',
+                }}
+                style={{
+                  borderRadius: 10,
+                  height: 30,
+                  width: 30,
+                  borderColor: 'transparent',
+                  resizeMode: 'stretch',
+                  alignItems: 'center',
+                }}
               />
             </View>
           </View>
@@ -250,6 +311,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flex: 1,
   },
+  autocomplete: {
+    borderRadius: 0,
+    backgroundColor: 'transparent',
+  },
 
   input: {
     marginTop: hp('1%'),
@@ -265,8 +330,9 @@ const styles = StyleSheet.create({
     flex: 18,
     marginLeft: 15,
   },
-
-  scrollView: {},
+  infoContainer: {
+    overflow: 'hidden',
+  },
   buttonText: {
     color: '#fff',
     fontSize: 18,

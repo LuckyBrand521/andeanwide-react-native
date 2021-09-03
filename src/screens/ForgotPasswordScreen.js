@@ -28,12 +28,12 @@ function ForgotPasswordScreen({navigation, token}) {
 
   const submitForm = value => {
     setLoading(true);
+    const formData = {email: mail};
     axios
-      .post(APP.APP_URL + 'api/forgot-password', value, {
+      .post(APP.APP_URL + 'api/forgot-password', formData, {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token.value}`,
         },
       })
       .then(res => {
@@ -46,6 +46,8 @@ function ForgotPasswordScreen({navigation, token}) {
       })
       .catch(err => {
         Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
+        setLoading(false);
+        console.log(formData);
       });
   };
 
@@ -55,12 +57,11 @@ function ForgotPasswordScreen({navigation, token}) {
         <Spinner
           visible={isLoading}
           textContent={'Envío de datos...'}
-          textStyle={styles.spinnerTextStyle}
+          textStyle={{color: 'white'}}
         />
       </SafeAreaView>
     );
   }
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.contentContainer}>

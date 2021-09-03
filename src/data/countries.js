@@ -1,5 +1,49 @@
 const countryList = [
   {
+    value: 28,
+    label: 'Chile',
+    abbr: 'CL',
+    currency: 'Chilean Peso',
+    currency_code: 'CLP',
+  },
+  {
+    value: 30,
+    label: 'Colombia',
+    abbr: 'CO',
+    currency: 'Colombian Peso',
+    currency_code: 'COP',
+  },
+  {
+    value: 96,
+    label: 'Mexico',
+    abbr: 'MX',
+    currency: 'Mexican Nuevo Peso',
+    currency_code: 'MXN',
+  },
+  {
+    value: 118,
+    label: 'Peru',
+    abbr: 'PE',
+    currency: 'Peruvian Nuevo Sol',
+    currency_code: 'PEN',
+  },
+  {
+    value: 155,
+    label: 'Venezuela',
+    abbr: 'VE',
+    currency: 'Venezuelan Bolivar',
+    currency_code: 'VEF',
+  },
+  {
+    value: 151,
+    label: 'United State Of America',
+    abbr: 'US',
+    currency: 'US Dollar',
+    currency_code: 'USD',
+  },
+];
+const allCountryList = [
+  {
     value: 1,
     label: 'Algeria',
     abbr: 'DZ',

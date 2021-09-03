@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {connect} from 'react-redux';
 import APP from '../../../../app.json';
 import axios from 'axios';
@@ -30,6 +30,8 @@ import {
 
 import LinearGradient from 'react-native-linear-gradient';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import PhoneInput from 'react-native-phone-number-input';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import countryList from '../../../data/countries';
 import {ThemeConsumer} from 'styled-components';
 import {set} from 'react-hook-form';
@@ -40,7 +42,7 @@ const infoFormSchema = yup.object().shape({
   dni: yup.string().required('This field is requried'),
   country_id: yup.number().required('This field is requried'),
   bank_id: yup.number().required('This field is requried'),
-  phone: yup.number().required('This field is requried'),
+  phone: yup.string().required('This field is requried'),
   email: yup
     .string()
     .email('Please input valid email')
@@ -57,40 +59,70 @@ let initial_form_data = {
   dni: '',
   country_id: 0,
   bank_id: 0,
-  phone: 0,
+  phone: '',
   email: '',
   bank_account: '',
   account_type: '',
   address: '',
   document_type: '',
+  type: '',
 };
-
-const accountTypes = [
-  {name: 'S', label: 'Persona Natural'},
-  {name: 'C', label: 'Persona Juridica'},
+const types = [
+  {name: 'personal', label: 'Persona Natural'},
+  {name: 'legal', label: 'Persona Juridica'},
 ];
-const dniOptions = ['DNI', 'RUC', 'Carnet Extranjeria', 'Paraporte'];
+const accountTypes = [
+  {name: 'S', label: 'Ahorros'},
+  {name: 'C', label: 'Corriente'},
+  {name: 'V', label: 'Vista'},
+];
+const dniOptions = [
+  {name: 'DNI', label: 'DNI'},
+  {name: 'RUC', label: 'RUC'},
+  {name: 'Carnet Extranjeria', label: 'Carnet Extranjeria'},
+  {name: 'PASS', label: 'Pasaporte'},
+];
+
 export default function CrearBeneficiarioScreen({route, navigation}) {
   const {isNew, userinfo, token, user_id} = route.params;
   const [isLoading, setLoading] = useState(false);
   const [country, setCountry] = useState(userinfo ? userinfo.country_id : 0);
   const [banks, setBanks] = useState([]);
+  const [bankListState, setBankListState] = useState([]);
+  const phoneInput = useRef();
+  const [value, setValue] = useState('');
+  const [formattedValue, setFormattedValue] = useState('');
+
   useEffect(() => {
-    axios
-      .get(
-        APP.APP_URL + `api/countries/${country}/banks`,
-        {},
-        {
+    if (country > 0) {
+      setBankListState([]);
+      let bankList = [];
+      axios
+        .get(APP.APP_URL + `api/countries/${country}/banks`, {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token.value}`,
           },
-        },
-      )
-      .then(res => {
-        setBanks(res.data.data);
-      });
+        })
+        .then(res => {
+          setBanks(res.data.data);
+          let temp = res.data.data;
+          temp.map(item => {
+            bankList.push(
+              <SelectPicker.Item
+                label={item.name}
+                value={item.id}
+                key={item.id}
+              />,
+            );
+          });
+          setBankListState(bankList);
+        })
+        .catch(err => {
+          console.log('err----------------------', err);
+        });
+    }
   }, [country]);
   //inputs are in the same pattern as UI
   //submits the form with new beneficiary insertion
@@ -151,12 +183,15 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
         },
       })
       .then(res => {
-        Toast.show('Successfully saved!', Toast.LONG);
+        Toast.show('Actualizado exitosamente', Toast.LONG);
         navigation.goBack();
+      })
+      .catch(err => {
+        Toast.show('Ocurrió un error!', Toast.LONG);
       });
   };
 
-  if (isLoading) {
+  if (isLoading || bankListState.length === 0) {
     return (
       <SafeAreaView style={styles.container}>
         <Spinner
@@ -205,199 +240,279 @@ export default function CrearBeneficiarioScreen({route, navigation}) {
             </View>
 
             <View style={styles.middleInputsContainer}>
-              <ScrollView>
-                <View
-                  style={{
-                    ...styles.input,
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                  }}>
-                  <SelectPicker
-                    placeholderStyle={{color: '#999999'}}
-                    style={{right: wp('1%')}}
-                    placeholder="Tipo de Persona"
-                    onSelectedStyle={{color: '#999999'}}
-                    onValueChange={value => {
-                      // Do anything you want with the value.
-                      // For example, save in state.
-                      values.account_type = value;
-                    }}
-                    selected={values.account_type}>
-                    {Object.values(accountTypes).map((item, index) => (
+              <KeyboardAwareScrollView>
+                <ScrollView>
+                  <View
+                    style={{
+                      ...styles.input,
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                    }}>
+                    <SelectPicker
+                      placeholderStyle={{color: '#999999'}}
+                      style={{right: wp('1%')}}
+                      placeholder="Tipo de Persona"
+                      onSelectedStyle={{color: '#999999'}}
+                      onValueChange={value => {
+                        // Do anything you want with the value.
+                        // For example, save in state.
+                        values.type = value;
+                      }}
+                      doneButtonText="Hecho"
+                      selected={values.type}>
+                      {Object.values(types).map((item, index) => (
+                        <SelectPicker.Item
+                          label={item.label}
+                          value={item.name}
+                          key={index}
+                          id={index}
+                        />
+                      ))}
+                    </SelectPicker>
+                    <AntDesign
+                      style={{position: 'absolute', right: 10}}
+                      name="caretdown"
+                      color="#919191"
+                      size={14}
+                    />
+                  </View>
+                  <View>
+                    <Select
+                      // mode="dropdown"
+                      style={styles.countryPicker}
+                      minWidth={wp('75%')}
+                      paddingLeft={1}
+                      borderWidth="0"
+                      borderBottomWidth={2}
+                      borderRadius="0"
+                      borderColor="#919191"
+                      alignSelf="center"
+                      placeholder="País"
+                      selectedValue={values.country_id}
+                      onValueChange={id => {
+                        setCountry(id);
+                        values.country_id = id;
+                      }}
+                      _selectedItem={{
+                        bg: 'cyan.600',
+                        endIcon: <CheckIcon size={4} />,
+                      }}>
+                      {Object.values(countryList).map((item, index) => {
+                        return (
+                          <Select.Item label={item.label} value={item.value} />
+                        );
+                      })}
+                    </Select>
+                    <AntDesign
+                      style={{
+                        position: 'absolute',
+                        right: '15%',
+                        bottom: '40%',
+                      }}
+                      name="caretdown"
+                      color="#919191"
+                      size={14}
+                    />
+                  </View>
+                  <TextInput
+                    placeholder="Nombres"
+                    name="name"
+                    placeholderTextColor="#919191"
+                    style={styles.input}
+                    onChangeText={handleChange('name')}
+                    onBlur={handleBlur('name')}
+                    value={values.name}
+                  />
+                  <TextInput
+                    placeholder="Apellidos"
+                    name="lastname"
+                    placeholderTextColor="#919191"
+                    style={styles.input}
+                    onChangeText={handleChange('lastname')}
+                    onBlur={handleBlur('lastname')}
+                    value={values.lastname}
+                  />
+                  <View
+                    style={{
+                      ...styles.input,
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                    }}>
+                    <SelectPicker
+                      placeholderStyle={{color: '#999999'}}
+                      style={{right: wp('1%')}}
+                      placeholder="Tipo de Documento"
+                      onSelectedStyle={{color: '#999999'}}
+                      onValueChange={res => {
+                        values.document_type = res;
+                      }}
+                      onBlur={handleBlur('document_type')}
+                      doneButtonText="Hecho"
+                      selected={
+                        values.document_type ? values.document_type : null
+                      }>
+                      <SelectPicker.Item label="DNI" value="DNI" />
+                      <SelectPicker.Item label="RUC" value="RUC" />
+                      <SelectPicker.Item
+                        label="Carnet Extranjeria"
+                        value="Carnet Extranjeria"
+                      />
+                      <SelectPicker.Item label="Pasaporte" value="PASS" />
+                      {/* {Object.values(dniOptions).map((item, index) => (
                       <SelectPicker.Item
                         label={item.label}
-                        value={item.name}
-                        key={item.index}
-                      />
-                    ))}
-                  </SelectPicker>
-                  <AntDesign
-                    style={{position: 'absolute', right: 10}}
-                    name="caretdown"
-                    color="#919191"
-                    size={14}
-                  />
-                </View>
-                <TextInput
-                  placeholder="Nombres"
-                  name="name"
-                  placeholderTextColor="#919191"
-                  style={styles.input}
-                  onChangeText={handleChange('name')}
-                  onBlur={handleBlur('name')}
-                  value={values.name}
-                />
-                <TextInput
-                  placeholder="Apellidos"
-                  name="lastname"
-                  placeholderTextColor="#919191"
-                  style={styles.input}
-                  onChangeText={handleChange('lastname')}
-                  onBlur={handleBlur('lastname')}
-                  value={values.lastname}
-                />
-                <View
-                  style={{
-                    ...styles.input,
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                  }}>
-                  <SelectPicker
-                    placeholderStyle={{color: '#999999'}}
-                    style={{right: wp('1%')}}
-                    placeholder="Tipo de Documento"
-                    onSelectedStyle={{color: '#999999'}}
-                    onValueChange={res => {
-                      values.document_type = res;
-                    }}
-                    onBlur={handleBlur('document_type')}
-                    selected={values.document_type}>
-                    {Object.values(dniOptions).map((item, index) => (
-                      <SelectPicker.Item
-                        label={item}
-                        value={item}
+                        value={item.value}
                         key={index}
                       />
-                    ))}
-                  </SelectPicker>
-                  <AntDesign
-                    style={{position: 'absolute', right: 10}}
-                    name="caretdown"
-                    color="#919191"
-                    size={14}
+                    ))} */}
+                    </SelectPicker>
+                    <AntDesign
+                      style={{position: 'absolute', right: 10}}
+                      name="caretdown"
+                      color="#919191"
+                      size={14}
+                    />
+                  </View>
+                  <TextInput
+                    placeholder="Documento de Identidad"
+                    name="dni"
+                    keyboardType="number-pad"
+                    placeholderTextColor="#919191"
+                    style={styles.input}
+                    onChangeText={handleChange('dni')}
+                    onBlur={handleBlur('dni')}
+                    value={values.dni}
                   />
-                </View>
-                <TextInput
-                  placeholder="Documento de Identidad"
-                  name="dni"
-                  keyboardType="number-pad"
-                  placeholderTextColor="#919191"
-                  style={styles.input}
-                  onChangeText={handleChange('dni')}
-                  onBlur={handleBlur('dni')}
-                  value={values.dni}
-                />
-                <View>
-                  <Select
-                    // mode="dropdown"
-                    style={styles.countryPicker}
-                    minWidth={wp('75%')}
-                    paddingLeft={1}
-                    borderWidth="0"
-                    borderBottomWidth="2"
-                    borderRadius="0"
-                    borderColor="#919191"
-                    alignSelf="center"
-                    placeholder="País"
-                    selectedValue={values.country_id}
-                    onValueChange={id => {
-                      setCountry(id);
-                      values.country_id = id;
-                    }}
-                    _selectedItem={{
-                      bg: 'cyan.600',
-                      endIcon: <CheckIcon size={4} />,
-                    }}>
-                    {Object.values(countryList).map((item, index) => {
-                      return (
-                        <Select.Item
-                          label={item.label}
-                          value={item.value}
-                          key={item.label}
-                        />
-                      );
-                    })}
-                  </Select>
-                </View>
-                <TextInput
-                  placeholder="Teléfono"
-                  name="phone"
-                  keyboardType="number-pad"
-                  placeholderTextColor="#919191"
-                  style={styles.input}
-                  onChangeText={handleChange('phone')}
-                  onBlur={handleBlur('phone')}
+                  <TextInput
+                    placeholder="Teléfono"
+                    name="phone"
+                    keyboardType={
+                      Platform.OS === 'android' ? 'phone-pad' : 'phone-pad'
+                    }
+                    placeholderTextColor="#919191"
+                    style={styles.input}
+                    onChangeText={handleChange('phone')}
+                    onBlur={handleBlur('phone')}
+                    value={values.phone}
+                  />
+                  {/* <PhoneInput
+                  ref={phoneInput}
+                  defaultValue={values.phone}
+                  // containerStyle={{
+                  //   ...styles.input,
+                  //   height: 50,
+                  //   alignSelf: 'center',
+                  //   backgroundColor: 'transparent',
+                  // }}
+                  // textContainerStyle={{
+                  //   backgroundColor: 'transparent',
+                  //   color: '#919191',
+                  // }}
+                  // textInputStyle={{
+                  //   backgroundColor: 'red',
+                  //   textColor: '#919191',
+                  // }}
+                  // codeTextStyle={{color: '#919191'}}
+                  // countryPickerButtonStyle={{color: '#999999'}}
+                  defaultCode="CL"
                   value={values.phone}
-                />
-                <TextInput
-                  placeholder="Email"
-                  name="email"
-                  placeholderTextColor="#919191"
-                  style={styles.input}
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  value={values.email}
-                />
-                <TextInput
-                  placeholder="Address"
-                  name="address"
-                  placeholderTextColor="#919191"
-                  style={styles.input}
-                  onChangeText={handleChange('address')}
-                  onBlur={handleBlur('address')}
-                  value={values.address}
-                />
-                <View
-                  style={{
-                    ...styles.input,
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                  }}>
-                  <SelectPicker
-                    placeholderStyle={{color: '#999999'}}
-                    style={{right: wp('1%')}}
-                    placeholder="Banco"
-                    onSelectedStyle={{color: '#999999'}}
-                    onValueChange={res => {
-                      values.bank_id = res ? res : 0;
-                    }}
-                    onBlur={handleBlur('bank_id')}
-                    selected={values.bank_id}>
-                    {Object.values(banks).map(item => (
-                      <SelectPicker.Item
-                        label={item.name}
-                        value={item.id}
-                        key={item.id}
-                      />
-                    ))}
-                  </SelectPicker>
-                  <AntDesign
-                    style={{position: 'absolute', right: 10}}
-                    name="caretdown"
-                    color="#919191"
-                    size={14}
+                  // onChangeText={handleChange('phone')}
+                  onChangeFormattedText={text => {
+                    handleChange('phone');
+                    console.log(text);
+                  }}
+                  withDarkTheme
+                  withShadow
+                /> */}
+                  <TextInput
+                    placeholder="Email"
+                    name="email"
+                    placeholderTextColor="#919191"
+                    style={styles.input}
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    value={values.email}
                   />
-                </View>
-                <TextInput
-                  placeholder="ID de banco"
-                  name="bank_account"
-                  placeholderTextColor="#919191"
-                  style={styles.input}
-                  onChangeText={handleChange('bank_account')}
-                  onBlur={handleBlur('bank_account')}
-                  value={values.bank_account}
-                />
-              </ScrollView>
+                  <TextInput
+                    placeholder="Dirección"
+                    name="address"
+                    placeholderTextColor="#919191"
+                    style={styles.input}
+                    onChangeText={handleChange('address')}
+                    onBlur={handleBlur('address')}
+                    value={values.address}
+                  />
+                  <View
+                    style={{
+                      ...styles.input,
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                    }}>
+                    <SelectPicker
+                      placeholderStyle={{color: '#999999'}}
+                      style={{right: wp('1%')}}
+                      placeholder="Banco"
+                      onSelectedStyle={{color: '#999999'}}
+                      onValueChange={res => {
+                        values.bank_id = res ? res : 0;
+                      }}
+                      onBlur={handleBlur('bank_id')}
+                      doneButtonText="Hecho"
+                      selected={values.bank_id}>
+                      {bankListState}
+                    </SelectPicker>
+                    <AntDesign
+                      style={{position: 'absolute', right: 10}}
+                      name="caretdown"
+                      color="#919191"
+                      size={14}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      ...styles.input,
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                    }}>
+                    <SelectPicker
+                      placeholderStyle={{color: '#999999'}}
+                      style={{right: wp('1%')}}
+                      placeholder="Tipo de Cuenta"
+                      onSelectedStyle={{color: '#999999'}}
+                      onValueChange={value => {
+                        // Do anything you want with the value.
+                        // For example, save in state.
+                        values.account_type = value;
+                      }}
+                      doneButtonText="Hecho"
+                      selected={values.account_type}>
+                      {Object.values(accountTypes).map((item, index) => (
+                        <SelectPicker.Item
+                          label={item.label}
+                          value={item.name}
+                          key={item.label}
+                          keyId={item.label}
+                        />
+                      ))}
+                    </SelectPicker>
+                    <AntDesign
+                      style={{position: 'absolute', right: 10}}
+                      name="caretdown"
+                      color="#919191"
+                      size={14}
+                    />
+                  </View>
+                  <TextInput
+                    placeholder="Número de Cuenta"
+                    name="bank_account"
+                    placeholderTextColor="#919191"
+                    style={styles.input}
+                    onChangeText={handleChange('bank_account')}
+                    onBlur={handleBlur('bank_account')}
+                    value={values.bank_account}
+                  />
+                </ScrollView>
+              </KeyboardAwareScrollView>
             </View>
 
             <View style={styles.footerButtonContainer}>

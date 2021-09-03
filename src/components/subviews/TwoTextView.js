@@ -15,14 +15,18 @@ export default function TwoTextView({text_gray, text_white, styles}) {
         }}>
         {text_gray}
       </Text>
-      <Text
-        style={{
-          color: '#FFF',
-          fontSize: 18,
-          fontWeight: 'bold',
-        }}>
-        {text_white}
-      </Text>
+      <View style={{flexDirection: 'row', maxWidth: '80%'}}>
+        <View style={{flex: 1}}>
+          <Text
+            style={{
+              color: '#FFF',
+              fontSize: 18,
+              fontWeight: 'bold',
+            }}>
+            {text_white}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }

@@ -37,13 +37,13 @@ import {
 const loginFormSchema = yup.object().shape({
   email: yup
     .string()
-    .email('Please input valid email')
-    .required('Email address is requried'),
+    .email('Ingrese un correo electrónico válido')
+    .required('Se requiere Dirección de correo electrónico'),
   password: yup
     .string()
-    .min(6, ({min}) => `Password must be at least ${min} characters`)
+    .min(6, ({min}) => `La contraseña debe tener al menos ${min} caracteres`)
     .max(32)
-    .required('Password is required'),
+    .required('Se requiere contraseña'),
 });
 
 function LoginScreen({
@@ -71,7 +71,7 @@ function LoginScreen({
             getOrderHistory()
               .then(() => {
                 setLoading(false);
-                Toast.show('Welcome!', Toast.LONG);
+                Toast.show('Bienvenida!', Toast.LONG);
                 if (userinfo.email_verified_at != null) {
                   navigation.navigate('tabs', {screen: 'BalanceScreen'});
                 } else {
@@ -205,8 +205,8 @@ function LoginScreen({
           <Formik
             validationSchema={loginFormSchema}
             initialValues={{
-              email: '',
-              password: '',
+              email: 'josechavez2006@gmail.com',
+              password: 'Test123456789$',
             }}
             onSubmit={values => loginSubmitAPI(values)}>
             {({

@@ -36,7 +36,7 @@ function DepositScreen({navigation, setAccountType, userinfo, token}) {
   const [accounts, setAccounts] = useState([]);
   const [activeSections, setActiveSections] = useState([]);
   const [amount, setAmount] = useState(0);
-  const [method, setMethod] = useState('');
+  const [method, setMethod] = useState('otrospagos');
   const [error, setError] = useState(false);
   const _renderSectionTitle = section => {
     return (
@@ -125,7 +125,7 @@ function DepositScreen({navigation, setAccountType, userinfo, token}) {
         })
         .then(res => {
           setLoading(false);
-          Toast.show('Successfully ordered!', Toast.LONG);
+          Toast.show('Pedido con éxito!', Toast.LONG);
           Linking.openURL(res.data[method].url[0]);
           navigation.navigate('DepositScreen');
         })
@@ -195,7 +195,7 @@ function DepositScreen({navigation, setAccountType, userinfo, token}) {
             onChangeText={setAmount}
             value={amount}
           />
-          <View style={{width: wp('75%'), alignSelf: 'center'}}>
+          {/* <View style={{width: wp('75%'), alignSelf: 'center'}}>
             <RNPickerSelect
               placeholder={{
                 label: 'Medio de Pago',
@@ -211,7 +211,7 @@ function DepositScreen({navigation, setAccountType, userinfo, token}) {
               ]}
               value={method}
             />
-          </View>
+          </View> */}
           <TouchableOpacity onPress={accTypeSubmit}>
             <LinearGradient
               start={{x: 0, y: 0}}

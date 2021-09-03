@@ -30,7 +30,7 @@ const validationSchema = yup.object().shape({
     .string()
     .oneOf([yup.ref('password'), null])
     .required(),
-  acceptTerms: yup.bool().oneOf([true], 'Please check this item.'),
+  acceptTerms: yup.bool().oneOf([true], 'Por favor, marque este elemento.'),
 });
 
 const initial_values = {
