@@ -52,6 +52,7 @@ function BeneficiariosScreen({
   }, [navigation]);
 
   useEffect(() => {
+    console.log(route?.params?.params?.ordering);
     setOrdering(route?.params?.params?.ordering);
   }, [route?.params?.params?.ordering]);
 
@@ -98,7 +99,9 @@ function BeneficiariosScreen({
     // });
     const order = {...new_order, recipient_id: id};
     saveNewOrder(order);
-    navigation.navigate('ReviewEnviarScreen');
+    navigation.navigate('EnviarStack', {
+      screen: 'ReviewEnviarScreen',
+    });
   };
 
   if (isLoading) {

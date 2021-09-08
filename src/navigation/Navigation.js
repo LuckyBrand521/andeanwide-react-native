@@ -103,6 +103,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Balance',
 
+          unmountOnBlur: true,
           tabBarIcon: ({focused, tintColor, color}) => {
             if (focused) {
               return (
@@ -135,11 +136,15 @@ function MyTabs() {
         }}
         name="BalanceStack"
         component={BalanceStack}
+        listeners={({navigation}) => ({
+          blur: () => navigation.setParams({screen: undefined}),
+        })}
       />
 
       <Tab.Screen
         options={{
           tabBarLabel: 'Historial',
+          unmountOnBlur: true,
           tabBarIcon: ({focused, tintColor, color}) => {
             if (focused) {
               return (
@@ -170,11 +175,15 @@ function MyTabs() {
         }}
         name="HistoryStack"
         component={HistoryStack}
+        listeners={({navigation}) => ({
+          blur: () => navigation.setParams({screen: undefined}),
+        })}
       />
 
       <Tab.Screen
         options={{
           tabBarLabel: 'Enviar',
+          unmountOnBlur: true,
           tabBarIcon: ({focused, tintColor, color}) => {
             if (focused) {
               return (
@@ -205,11 +214,15 @@ function MyTabs() {
         }}
         name="EnviarStack"
         component={EnviarStack}
+        listeners={({navigation}) => ({
+          blur: () => navigation.setParams({screen: undefined}),
+        })}
       />
 
       <Tab.Screen
         options={{
           tabBarLabel: 'Beneficiarios',
+          unmountOnBlur: true,
           tabBarIcon: ({focused, tintColor, color}) => {
             if (focused) {
               return (
@@ -240,12 +253,15 @@ function MyTabs() {
         }}
         name="BeneficiariosStack"
         component={BeneficiariosStack}
+        listeners={({navigation}) => ({
+          blur: () => navigation.setParams({screen: undefined}),
+        })}
       />
 
       <Tab.Screen
         options={{
           tabBarLabel: 'Mas',
-
+          unmountOnBlur: true,
           tabBarIcon: ({focused, tintColor, color}) => {
             if (focused) {
               return (
@@ -278,6 +294,9 @@ function MyTabs() {
         }}
         name="MasStack"
         component={MasStack}
+        listeners={({navigation}) => ({
+          blur: () => navigation.setParams({screen: undefined}),
+        })}
       />
     </Tab.Navigator>
   );

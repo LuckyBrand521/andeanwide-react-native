@@ -80,9 +80,16 @@ function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
 
   const submitOrder = () => {
     if (isSelected && purpose != '') {
-      const formData = {...new_order, purpose: purpose};
+      const formData = {
+        pair_id: new_order.pair_id,
+        payment_amount: new_order.payment_amount,
+        priority_id: new_order.priority_id,
+        rate: new_order.rate,
+        recipient_id: new_order.recipient_id,
+        purpose: purpose,
+      };
       axios
-        .post(APP.APP_URL + 'api/orsers', formData, {
+        .post(APP.APP_URL + 'api/orders', formData, {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -90,7 +97,9 @@ function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
           },
         })
         .then(res => {
-          navigation.navigate('OrderRequestCompleted');
+          navigation.navigate('OrderRequestCompleted', {
+            screen: 'OrderRequestCompleted',
+          });
         })
         .catch(err => {
           console.log(err);
@@ -195,13 +204,17 @@ function ReviewEnviarScreen({navigation, token, new_order, saveNewOrder}) {
                 onValueChange={isSelected => setSelection(isSelected)}
                 style={{flex: 1}}
               />
-              <Text style={styles.label}>
+              <Text
+                style={styles.label}
+                onPress={() => {
+                  setSelection(!isSelected);
+                }}>
                 Deseo crear una orden para girar dinero con los datos en
                 pantalla.
               </Text>
             </View>
           </View>
-          <View>
+          <View style={{paddingBottom: 10}}>
             <Text
               style={{
                 ...styles.headerText,

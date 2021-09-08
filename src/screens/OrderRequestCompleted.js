@@ -15,7 +15,17 @@ import {
 } from 'react-native-responsive-screen';
 
 export default function OrderRequestCompleted({navigation}) {
-  return (
+  const [active, setActive] = useState(true);
+  useEffect(() => {
+    setTimeout(() => {
+      setActive(false);
+      navigation.navigate('BalanceStack', {
+        screen: 'BalanceScreen',
+      });
+    }, 5000);
+  }, []);
+
+  return active ? (
     <SafeAreaView style={styles.container}>
       <StatusBar
         barStyle="light-content"
@@ -37,12 +47,17 @@ export default function OrderRequestCompleted({navigation}) {
           Espere hasta que se confirme
         </Text>
 
-        <TouchableOpacity onPress={() => navigation.navigate('BalanceScreen')}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('BalanceStack', {
+              screen: 'BalanceScreen',
+            });
+          }}>
           <Text style={styles.continueButton}>Continuar on Andean Wide</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
-  );
+  ) : null;
 }
 
 const styles = StyleSheet.create({

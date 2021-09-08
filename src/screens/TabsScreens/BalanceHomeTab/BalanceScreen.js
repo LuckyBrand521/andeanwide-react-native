@@ -26,8 +26,8 @@ import Modal from 'react-native-modal';
 import CircleWithLabel from '../../../components/subviews/CircleWithLabel';
 
 import {numberWithCommas} from '../../../data/helpers';
-import {getOrderHistory} from '../../../../actions';
-import {Button} from 'react-native';
+import {getOrderHistory, getMyInfo} from '../../../../actions';
+import {ORDER_STATUS, BANK_ACC_TYPE} from '../../../data/global-constants';
 
 const formatDate = date_str => {
   const d = new Date(date_str);
@@ -81,7 +81,13 @@ const colorLabel = order => {
   // }
 };
 
-function BalanceScreen({navigation, userinfo, orders, getOrderHistory}) {
+function BalanceScreen({
+  navigation,
+  userinfo,
+  orders,
+  getOrderHistory,
+  getMyInfo,
+}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -105,7 +111,7 @@ function BalanceScreen({navigation, userinfo, orders, getOrderHistory}) {
       order_rows.push(
         <Text
           style={{color: '#919191', padding: 8, paddingHorizontal: 20}}
-          key={temp}>
+          key={orders[i].filled_at}>
           {date_label}
         </Text>,
       );
@@ -136,14 +142,16 @@ function BalanceScreen({navigation, userinfo, orders, getOrderHistory}) {
   useEffect(() => {
     navigation.addListener('focus', () => {
       setLoading(true);
-      getOrderHistory()
-        .then(() => {
-          setLoading(false);
-        })
-        .catch(err => {
-          console.log(err);
-          setLoading(false);
-        });
+      getMyInfo().then(() => {
+        getOrderHistory()
+          .then(() => {
+            setLoading(false);
+          })
+          .catch(err => {
+            console.log(err);
+            setLoading(false);
+          });
+      });
     });
   }, [navigation]);
 
@@ -255,7 +263,7 @@ function BalanceScreen({navigation, userinfo, orders, getOrderHistory}) {
                   <View style={{flex: 1}}>
                     <Text style={{color: '#959595'}}>Cuenta:</Text>
                     <Text style={{color: 'white', fontSize: 16}}>
-                      {orders[detailIndex].payment.transaction_number}
+                      {orders[detailIndex].recipient.bank_account}
                     </Text>
                   </View>
                 </View>
@@ -273,7 +281,11 @@ function BalanceScreen({navigation, userinfo, orders, getOrderHistory}) {
                   <View style={{flex: 1}}>
                     <Text style={{color: '#959595'}}>Tipo de cuenta:</Text>
                     <Text style={{color: 'white', fontSize: 16}}>
-                      {orders[detailIndex].recipient.account_type}
+                      {
+                        BANK_ACC_TYPE[
+                          orders[detailIndex].recipient.account_type
+                        ]
+                      }
                     </Text>
                   </View>
                 </View>
@@ -316,14 +328,14 @@ function BalanceScreen({navigation, userinfo, orders, getOrderHistory}) {
                 <Text
                   style={{
                     padding: 5,
-                    fontSize: 10,
+                    fontSize: 12,
                     paddingHorizontal: 30,
-                    color: '#12CF38',
-                    borderColor: '#12CF38',
+                    color: ORDER_STATUS[orders[detailIndex].status].color,
+                    borderColor: ORDER_STATUS[orders[detailIndex].status].color,
                     borderWidth: 1,
                     borderRadius: 20,
                   }}>
-                  {orders[detailIndex].status}
+                  {ORDER_STATUS[orders[detailIndex].status].label}
                 </Text>
               </View>
             </View>
@@ -536,6 +548,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   // removeUserToken: values => dispatch(removeUserToken(null)),
+  getMyInfo: () => dispatch(getMyInfo()),
   getOrderHistory: () => dispatch(getOrderHistory()),
 });
 

@@ -21,6 +21,7 @@ import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import CircleWithLabel from '../../components/subviews/CircleWithLabel';
 import {numberWithCommas} from '../../data/helpers';
+import {ORDER_STATUS, BANK_ACC_TYPE} from '../../data/global-constants';
 
 const formatDate = date_str => {
   const d = new Date(date_str);
@@ -202,7 +203,7 @@ function HistoryScreen({navigation, userinfo, orders}) {
                   <View style={{flex: 1}}>
                     <Text style={{color: '#959595'}}>Cuenta:</Text>
                     <Text style={{color: 'white', fontSize: 16}}>
-                      {orders[detailIndex].payment.transaction_number}
+                      {orders[detailIndex].recipient.bank_account}
                     </Text>
                   </View>
                 </View>
@@ -220,7 +221,11 @@ function HistoryScreen({navigation, userinfo, orders}) {
                   <View style={{flex: 1}}>
                     <Text style={{color: '#959595'}}>Tipo de cuenta:</Text>
                     <Text style={{color: 'white', fontSize: 16}}>
-                      {orders[detailIndex].recipient.account_type}
+                      {
+                        BANK_ACC_TYPE[
+                          orders[detailIndex].recipient.account_type
+                        ]
+                      }
                     </Text>
                   </View>
                 </View>
@@ -263,14 +268,14 @@ function HistoryScreen({navigation, userinfo, orders}) {
                 <Text
                   style={{
                     padding: 5,
-                    fontSize: 10,
+                    fontSize: 12,
                     paddingHorizontal: 30,
-                    color: '#12CF38',
-                    borderColor: '#12CF38',
+                    color: ORDER_STATUS[orders[detailIndex].status].color,
+                    borderColor: ORDER_STATUS[orders[detailIndex].status].color,
                     borderWidth: 1,
                     borderRadius: 20,
                   }}>
-                  {orders[detailIndex].status}
+                  {ORDER_STATUS[orders[detailIndex].status].label}
                 </Text>
               </View>
             </View>

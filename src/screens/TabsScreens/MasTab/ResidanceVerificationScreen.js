@@ -127,8 +127,8 @@ function ResidanceVerificationScreen({navigation, addressVerify, userinfo}) {
               )}
             </View>
 
-            <View style={styles.middleInputsContainer}>
-              <ScrollView>
+            <ScrollView>
+              <View style={styles.middleInputsContainer}>
                 <View>
                   <Select
                     // mode="dropdown"
@@ -203,9 +203,9 @@ function ResidanceVerificationScreen({navigation, addressVerify, userinfo}) {
                   onBlur={handleBlur('address_ext')}
                   value={values.address_ext}
                 />
-              </ScrollView>
-            </View>
-
+              </View>
+            </ScrollView>
+            <View style={{height: hp('10%')}} />
             <View style={styles.footerButtonContainer}>
               <TouchableOpacity
                 disabled={!isValid}
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   },
   middleInputsContainer: {
     backgroundColor: '#18222E',
-    height: hp('60%'),
+    // height: hp('60%'),
     marginTop: hp('1%'),
   },
   input: {

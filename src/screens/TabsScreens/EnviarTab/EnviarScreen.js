@@ -31,7 +31,11 @@ import {
 } from 'react-native-responsive-screen';
 import {getPairs, saveNewOrder} from '../../../../actions';
 import CircleWithLabel from '../../../components/subviews/CircleWithLabel';
-import {numberWithCommas} from '../../../data/helpers';
+import {
+  numberWithCommas,
+  validateCurrency,
+  getFloatFromString,
+} from '../../../data/helpers';
 
 const options = ['CLP', 'USD', 'PEN', 'COP'];
 const trimDigit = value => {
@@ -42,6 +46,7 @@ const trimDigit = value => {
     return number.toFixed(2);
   }
 };
+
 let sendOptions = [];
 let recvOptions = [];
 let sendCurrencies = [];
@@ -224,13 +229,17 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
   }, [navigation]);
 
   const handleNumber1Change = val => {
-    setNumber1(val);
-    setNumber2(trimDigit(val * rate * (intPriority ? 0.95 : 0.9881)));
+    const str = validateCurrency(val);
+    const num1 = getFloatFromString(str);
+    setNumber1(num1);
+    setNumber2(trimDigit(num1 * rate * (intPriority ? 0.95 : 0.9881)));
   };
 
   const handleNumber2Change = val => {
-    setNumber2(val);
-    setNumber1(trimDigit(val / rate / (intPriority ? 0.95 : 0.9881)));
+    const str = validateCurrency(val);
+    const num2 = getFloatFromString(str);
+    setNumber2(num2);
+    setNumber1(trimDigit(num2 / rate / (intPriority ? 0.95 : 0.9881)));
   };
 
   const handleSwitchChange = res => {
@@ -352,10 +361,13 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
         receive_amount: Number(number2),
       };
       saveNewOrder(data);
-      // navigation.navigate('BeneficiariosStack', {screen: 'BeneficiariosScreen'});
-      navigation.navigate('BeneficiariosScreen', {
-        params: {ordering: 'yes'},
+      navigation.navigate('BeneficiariosStack', {
+        screen: 'BeneficiariosScreen',
+        params: {screen: 'BeneficiariosScreen', params: {ordering: 'yes'}},
       });
+      // navigation.navigate('BeneficiariosScreen', {
+      //   params: {ordering: 'yes'},
+      // });
     }
   };
   const toggleModal = () => {
@@ -511,11 +523,11 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
             }}
             keyboardType="numeric"
             maxLength={10}
-            value={numberWithCommas(number1.toString())}
+            value={numberWithCommas(number1)}
             placeholder="0"
             placeholderTextColor="#00AA23"
             onChangeText={res => {
-              handleNumber1Change(res.replace(/\,/g, ''));
+              handleNumber1Change(res);
             }}
           />
         </View>
@@ -589,11 +601,11 @@ function EnviarScreen({navigation, userinfo, pairs, getPairs, saveNewOrder}) {
               }}
               keyboardType="numeric"
               maxLength={10}
-              value={numberWithCommas(number2.toString())}
+              value={numberWithCommas(number2)}
               placeholder="0"
               placeholderTextColor="#00AA23"
               onChangeText={res => {
-                handleNumber2Change(res.replace(/\,/g, ''));
+                handleNumber2Change(res);
               }}
             />
             {currency1 && currency2 && (

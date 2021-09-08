@@ -64,7 +64,8 @@ function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
 
   const sendEmailVerification = () => {
     setModalVisible(false);
-    navigation.navigate('BalanceScreen');
+    s;
+    navigation.navigate('BalanceStack', {screen: 'BalanceScreen'});
   };
   if (isLoading) {
     return (

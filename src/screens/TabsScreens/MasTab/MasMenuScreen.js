@@ -52,10 +52,10 @@ function MasMenuScreen({navigation, setAccountType, userinfo}) {
     setModalVisible(!modalVisible);
   };
 
-  const sendEmailVerification = () => {
-    setModalVisible(false);
-    navigation.navigate('BalanceScreen');
-  };
+  // const sendEmailVerification = () => {
+  //   setModalVisible(false);
+  //   navigation.navigate('BalanceScreen');
+  // };
 
   return (
     <SafeAreaView style={styles.container}>
