@@ -169,6 +169,7 @@ export const setAccountType = values => dispatch => {
 export const personalAccountVerfify = values => dispatch => {
   const accessToken = store.getState().root.token.value;
   //submit the personal form data to the server
+  console.log(APP.APP_URL + 'api/users/identity', values);
   return axios
     .put(APP.APP_URL + 'api/users/identity', values, {
       headers: {

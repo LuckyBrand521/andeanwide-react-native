@@ -25,7 +25,8 @@ import {
 import * as yup from 'yup';
 import LinearGradient from 'react-native-linear-gradient';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-
+//import custom components
+import {WheelPicker} from '../../../components/WheelPicker';
 import {addressVerify} from '../../../../actions';
 import countryList from '../../../data/countries';
 
@@ -47,7 +48,7 @@ const initial_form_data = {
 function ResidanceVerificationScreen({navigation, addressVerify, userinfo}) {
   //inputs are in the same pattern as UI
   // is initial state for country name as Chile
-  if (userinfo) {
+  if (userinfo.address) {
     initial_form_data.address = userinfo.address.address;
     initial_form_data.address_ext = userinfo.address.address_ext;
     initial_form_data.state = userinfo.address.state;
@@ -56,7 +57,7 @@ function ResidanceVerificationScreen({navigation, addressVerify, userinfo}) {
   }
   const [isLoading, setLoading] = useState(false);
   const [countryName, setCountryName] = useState(
-    userinfo ? userinfo.address.country.id : '',
+    userinfo.address ? userinfo.address.country.id : '',
   );
 
   const residenceInfoSubmit = values => {
@@ -74,6 +75,7 @@ function ResidanceVerificationScreen({navigation, addressVerify, userinfo}) {
         }
       })
       .catch(err => {
+        setLoading(false);
         console.log(err);
         Toast.show('Ocurrió un error!', Toast.LONG, ['UIAlertController']);
       });
@@ -129,35 +131,15 @@ function ResidanceVerificationScreen({navigation, addressVerify, userinfo}) {
 
             <ScrollView>
               <View style={styles.middleInputsContainer}>
-                <View>
-                  <Select
-                    // mode="dropdown"
-                    style={styles.countryPicker}
-                    minWidth={wp('75%')}
-                    paddingLeft={1}
-                    borderWidth="0"
-                    borderBottomWidth="2"
-                    borderRadius="0"
-                    borderColor="#919191"
-                    alignSelf="center"
-                    placeholder="País de Emision del Documento"
-                    selectedValue={countryName}
-                    onValueChange={setCountryName}
-                    _selectedItem={{
-                      bg: 'cyan.600',
-                      endIcon: <CheckIcon size={4} />,
-                    }}>
-                    {Object.values(countryList).map((item, index) => {
-                      return (
-                        <Select.Item
-                          label={item.label}
-                          value={item.value}
-                          key={item.label}
-                        />
-                      );
-                    })}
-                  </Select>
-                </View>
+                <WheelPicker
+                  title="País de Emision del Documento"
+                  initialValue=""
+                  items={countryList}
+                  selectedValue={countryName}
+                  onValueChange={index => {
+                    setCountryName(index);
+                  }}
+                />
                 <TextInput
                   placeholder="Estadi/Povinicia/Region"
                   placeholderTextColor="#919191"
@@ -272,17 +254,19 @@ const styles = StyleSheet.create({
     marginTop: hp('1%'),
   },
   middleInputsContainer: {
-    backgroundColor: '#18222E',
+    backgroundColor: '#141A28',
     // height: hp('60%'),
     marginTop: hp('1%'),
   },
   input: {
-    marginTop: hp('0%'),
-    borderBottomWidth: 2,
-    borderBottomColor: '#919191',
-    width: wp('75%'),
+    backgroundColor: '#18222E',
+    marginBottom: 10,
+    borderRadius: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    width: wp('85%'),
     alignSelf: 'center',
-    color: '#919191',
+    color: '#FFF',
   },
   countryPicker: {
     color: '#919191',

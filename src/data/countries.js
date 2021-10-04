@@ -1,45 +1,109 @@
 const countryList = [
   {
-    value: 28,
+    id: 28,
     label: 'Chile',
     abbr: 'CL',
     currency: 'Chilean Peso',
     currency_code: 'CLP',
+    docs: [{id: 1, label: 'RUT', name: 'RUT', min: 8, max: 9}],
+    accountTypes: [
+      {id: 1, label: 'Corriente', name: 'C'},
+      {id: 2, label: 'Ahorros', name: 'S'},
+      {id: 3, label: 'Vista', name: 'V'},
+    ],
   },
   {
-    value: 30,
+    id: 30,
     label: 'Colombia',
     abbr: 'CO',
     currency: 'Colombian Peso',
     currency_code: 'COP',
+    docs: [
+      {id: 1, label: 'NIT', name: 'NIT', min: 10, max: 10},
+      {id: 2, label: 'CC', name: 'CC', min: 6, max: 10},
+      {id: 3, label: 'Carnet de Extranjeria', name: 'CE', min: 1, max: 12},
+      {id: 4, label: 'Pasaporte', name: 'PASS', min: 1, max: 12},
+    ],
+    accountTypes: [
+      {id: 1, label: 'Corriente', name: 'C'},
+      {id: 2, label: 'Ahorros', name: 'S'},
+    ],
   },
   {
-    value: 96,
+    id: 40,
+    label: 'Ecuador',
+    abbr: 'EC',
+    currency: 'Ecuador Sucre',
+    currency_code: 'ECS',
+    docs: [
+      {id: 1, label: 'CI', name: 'CI', min: 10, max: 10},
+      {id: 2, label: 'RUC', name: 'RUC', min: 10, max: 13},
+      {id: 3, label: 'Pasaporte', name: 'PASS', min: 8, max: 12},
+    ],
+    accountTypes: [
+      {id: 1, label: 'Corriente', name: 'C'},
+      {id: 2, label: 'Ahorro', name: 'S'},
+    ],
+  },
+  {
+    id: 96,
     label: 'Mexico',
     abbr: 'MX',
     currency: 'Mexican Nuevo Peso',
     currency_code: 'MXN',
+    docs: [
+      {id: 1, label: 'Pasaporte', name: 'PASS', min: 8, max: 12},
+      {id: 2, label: 'ID', name: 'ID', min: 5, max: 20},
+    ],
+    accountTypes: [{id: 1, label: 'CLABE', name: 'CLABE'}],
   },
   {
-    value: 118,
+    id: 118,
     label: 'Peru',
     abbr: 'PE',
     currency: 'Peruvian Nuevo Sol',
     currency_code: 'PEN',
+    docs: [
+      {id: 1, label: 'DNI', name: 'DNI', min: 8, max: 9},
+      {id: 2, label: 'RUC', name: 'RUC', min: 11, max: 11},
+      {id: 3, label: 'Carnet Extranjería', name: 'CE', min: 7, max: 9},
+      {id: 4, label: 'Pasaporte', name: 'PASS', min: 8, max: 12},
+    ],
+    accountTypes: [
+      {id: 1, label: 'Corriente', name: 'C'},
+      {id: 2, label: 'Ahorro', name: 'S'},
+      {id: 3, label: 'Maestra', name: 'M'},
+    ],
   },
   {
-    value: 155,
+    id: 155,
     label: 'Venezuela',
     abbr: 'VE',
     currency: 'Venezuelan Bolivar',
     currency_code: 'VEF',
+    docs: [
+      {id: 1, label: 'Cedula de Identidad', name: 'CI', min: 7, max: 8},
+      {id: 2, label: 'RIF', name: 'RIF', min: 8, max: 9},
+    ],
+    accountTypes: [
+      {id: 1, label: 'Corriente', name: 'C'},
+      {id: 2, label: 'Ahorro', name: 'S'},
+    ],
   },
   {
-    value: 151,
+    id: 151,
     label: 'United State Of America',
     abbr: 'US',
     currency: 'US Dollar',
     currency_code: 'USD',
+    docs: [
+      {id: 1, label: 'ID', name: 'ID', min: 1, max: 20},
+      {id: 2, label: 'Pasaporte', name: 'PASS', min: 8, max: 12},
+    ],
+    accountTypes: [
+      {id: 1, label: 'Corriente', name: 'C'},
+      {id: 2, label: 'Ahorro', name: 'S'},
+    ],
   },
 ];
 const allCountryList = [

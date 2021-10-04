@@ -210,7 +210,9 @@ function BeneficiariosScreen({
                           ...styles.verifyText,
                           ...styles.listSubtitle,
                         }}>
-                        {item.type + ' ' + item.phone}
+                        {item.type == 'corporation'
+                          ? 'Empresa'
+                          : 'Personal' + ' ' + item.phone}
                       </Text>
                     </View>
                     <View style={{flex: 1}}>

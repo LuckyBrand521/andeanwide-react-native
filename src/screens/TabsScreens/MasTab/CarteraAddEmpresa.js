@@ -210,7 +210,7 @@ function CarteraAddEmpresa({navigation, token, userinfo}) {
                   placeholder="Dirección"
                   placeholderTextColor="#919191"
                   style={styles.input}
-                  name="address"
+                  name="Dirección"
                   onChangeText={handleChange('address')}
                   onBlur={handleBlur('address')}
                   value={values.address}

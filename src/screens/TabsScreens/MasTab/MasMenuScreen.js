@@ -41,7 +41,7 @@ function MasMenuScreen({navigation, setAccountType, userinfo}) {
   // }, [navigation]);
 
   const checkVerified = () => {
-    if (userinfo.veracity_declaration_at == 'null') {
+    if (userinfo.veracity_declaration_at == null) {
       navigation.navigate('CarteraAccountTypeScreen');
     } else {
       toggleModal();

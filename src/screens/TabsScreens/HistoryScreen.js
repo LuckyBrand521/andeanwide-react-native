@@ -137,13 +137,17 @@ function HistoryScreen({navigation, userinfo, orders}) {
         {detailIndex > -1 ? (
           <>
             <View style={styles.modal_container}>
-              <Icon
-                name="times-circle-o"
-                size={20}
-                color="#919191"
-                style={{position: 'absolute', left: 20, top: 15}}
-                onPress={() => setDetailModalVisible(false)}
-              />
+              <TouchableOpacity
+                style={{
+                  position: 'absolute',
+                  left: 20,
+                  top: 15,
+                  width: 30,
+                  height: 30,
+                }}
+                onPress={() => setDetailModalVisible(false)}>
+                <Icon name="times-circle-o" size={20} color="#919191" />
+              </TouchableOpacity>
               <Text
                 style={{
                   color: '#959595',
@@ -168,14 +172,21 @@ function HistoryScreen({navigation, userinfo, orders}) {
                   style={{
                     flexDirection: 'row',
                   }}>
-                  <View style={{flex: 1}}>
-                    <Text style={{color: '#959595'}}>Monto a enviar:</Text>
-                    <Text style={{color: 'white', fontSize: 16}}>
+                  <View style={{flex: 1, paddingRight: 5}}>
+                    <Text style={{color: '#959595', textAlign: 'right'}}>
+                      Monto a enviar:
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 16,
+                        textAlign: 'right',
+                      }}>
                       {orders[detailIndex].payment_amount}{' '}
                       {orders[detailIndex].pair.base.name}
                     </Text>
                   </View>
-                  <View style={{flex: 1}}>
+                  <View style={{flex: 1, paddingLeft: 5}}>
                     <Text style={{color: '#959595'}}>Tipo de cambio:</Text>
                     <Text style={{color: 'white', fontSize: 16}}>
                       1{orders[detailIndex].pair.base.name} ={' '}
@@ -194,13 +205,20 @@ function HistoryScreen({navigation, userinfo, orders}) {
                     flexDirection: 'row',
                     marginBottom: 10,
                   }}>
-                  <View style={{flex: 1}}>
-                    <Text style={{color: '#959595'}}>Nombre:</Text>
-                    <Text style={{color: 'white', fontSize: 16}}>
+                  <View style={{flex: 1, paddingRight: 5}}>
+                    <Text style={{color: '#959595', textAlign: 'right'}}>
+                      Nombre:
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 16,
+                        textAlign: 'right',
+                      }}>
                       {orders[detailIndex].recipient.name}
                     </Text>
                   </View>
-                  <View style={{flex: 1}}>
+                  <View style={{flex: 1, paddingLeft: 5}}>
                     <Text style={{color: '#959595'}}>Cuenta:</Text>
                     <Text style={{color: 'white', fontSize: 16}}>
                       {orders[detailIndex].recipient.bank_account}
@@ -212,13 +230,20 @@ function HistoryScreen({navigation, userinfo, orders}) {
                     flexDirection: 'row',
                     marginBottom: 10,
                   }}>
-                  <View style={{flex: 1}}>
-                    <Text style={{color: '#959595'}}>Banco:</Text>
-                    <Text style={{color: 'white', fontSize: 16}}>
+                  <View style={{flex: 1, paddingRight: 5}}>
+                    <Text style={{color: '#959595', textAlign: 'right'}}>
+                      Banco:
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 16,
+                        textAlign: 'right',
+                      }}>
                       {orders[detailIndex].recipient.bank.name}
                     </Text>
                   </View>
-                  <View style={{flex: 1}}>
+                  <View style={{flex: 1, paddingLeft: 5}}>
                     <Text style={{color: '#959595'}}>Tipo de cuenta:</Text>
                     <Text style={{color: 'white', fontSize: 16}}>
                       {
@@ -233,9 +258,16 @@ function HistoryScreen({navigation, userinfo, orders}) {
                   style={{
                     flexDirection: 'row',
                   }}>
-                  <View style={{flex: 1}}>
-                    <Text style={{color: '#959595'}}>Monto a recibir:</Text>
-                    <Text style={{color: 'white', fontSize: 16}}>
+                  <View style={{flex: 1, paddingRight: 5}}>
+                    <Text style={{color: '#959595', textAlign: 'right'}}>
+                      Monto a recibir:
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 16,
+                        textAlign: 'right',
+                      }}>
                       {orders[detailIndex].received_amount.toFixed(2)}{' '}
                       {orders[detailIndex].pair.quote.name}
                       {'   '}
@@ -257,6 +289,7 @@ function HistoryScreen({navigation, userinfo, orders}) {
                       />
                     </Text>
                   </View>
+                  <View style={{flex: 1}} />
                 </View>
               </View>
               <View

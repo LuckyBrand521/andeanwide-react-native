@@ -50,21 +50,6 @@ const trimName = name => {
 };
 
 const colorLabel = order => {
-  // if (order.status == 'COMPLETED') {
-  //   return (
-  //     <Text
-  //       style={{
-  //         ...styles.btnText,
-  //         fontSize: 14,
-  //         flex: 1,
-  //         textAlign: 'right',
-  //         color: '#0BCE5E',
-  //       }}>
-  //       {order.pair.quote.name} {numberWithCommas(order.payment_amount)}
-  //     </Text>
-  //   );
-  //   // } else if (order.status == 'PAYOUT_RECEIVED') {
-  // } else {
   return (
     <Text
       style={{
@@ -197,13 +182,17 @@ function BalanceScreen({
         {detailIndex > -1 ? (
           <>
             <View style={styles.modal_container}>
-              <Icon
-                name="times-circle-o"
-                size={20}
-                color="#919191"
-                style={{position: 'absolute', left: 20, top: 15}}
-                onPress={() => setDetailModalVisible(false)}
-              />
+              <TouchableOpacity
+                style={{
+                  position: 'absolute',
+                  left: 20,
+                  top: 15,
+                  width: 30,
+                  height: 30,
+                }}
+                onPress={() => setDetailModalVisible(false)}>
+                <Icon name="times-circle-o" size={20} color="#919191" />
+              </TouchableOpacity>
               <Text
                 style={{
                   color: '#959595',
@@ -228,14 +217,21 @@ function BalanceScreen({
                   style={{
                     flexDirection: 'row',
                   }}>
-                  <View style={{flex: 1}}>
-                    <Text style={{color: '#959595'}}>Monto a enviar:</Text>
-                    <Text style={{color: 'white', fontSize: 16}}>
+                  <View style={{flex: 1, paddingRight: 5}}>
+                    <Text style={{color: '#959595', textAlign: 'right'}}>
+                      Monto a enviar:
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 16,
+                        textAlign: 'right',
+                      }}>
                       {orders[detailIndex].payment_amount}{' '}
                       {orders[detailIndex].pair.base.name}
                     </Text>
                   </View>
-                  <View style={{flex: 1}}>
+                  <View style={{flex: 1, paddingLeft: 5}}>
                     <Text style={{color: '#959595'}}>Tipo de cambio:</Text>
                     <Text style={{color: 'white', fontSize: 16}}>
                       1{orders[detailIndex].pair.base.name} ={' '}
@@ -254,13 +250,20 @@ function BalanceScreen({
                     flexDirection: 'row',
                     marginBottom: 10,
                   }}>
-                  <View style={{flex: 1}}>
-                    <Text style={{color: '#959595'}}>Nombre:</Text>
-                    <Text style={{color: 'white', fontSize: 16}}>
+                  <View style={{flex: 1, paddingRight: 5}}>
+                    <Text style={{color: '#959595', textAlign: 'right'}}>
+                      Nombre:
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 16,
+                        textAlign: 'right',
+                      }}>
                       {orders[detailIndex].recipient.name}
                     </Text>
                   </View>
-                  <View style={{flex: 1}}>
+                  <View style={{flex: 1, paddingLeft: 5}}>
                     <Text style={{color: '#959595'}}>Cuenta:</Text>
                     <Text style={{color: 'white', fontSize: 16}}>
                       {orders[detailIndex].recipient.bank_account}
@@ -272,13 +275,20 @@ function BalanceScreen({
                     flexDirection: 'row',
                     marginBottom: 10,
                   }}>
-                  <View style={{flex: 1}}>
-                    <Text style={{color: '#959595'}}>Banco:</Text>
-                    <Text style={{color: 'white', fontSize: 16}}>
+                  <View style={{flex: 1, paddingRight: 5}}>
+                    <Text style={{color: '#959595', textAlign: 'right'}}>
+                      Banco:
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 16,
+                        textAlign: 'right',
+                      }}>
                       {orders[detailIndex].recipient.bank.name}
                     </Text>
                   </View>
-                  <View style={{flex: 1}}>
+                  <View style={{flex: 1, paddingLeft: 5}}>
                     <Text style={{color: '#959595'}}>Tipo de cuenta:</Text>
                     <Text style={{color: 'white', fontSize: 16}}>
                       {
@@ -293,9 +303,16 @@ function BalanceScreen({
                   style={{
                     flexDirection: 'row',
                   }}>
-                  <View style={{flex: 1}}>
-                    <Text style={{color: '#959595'}}>Monto a recibir:</Text>
-                    <Text style={{color: 'white', fontSize: 16}}>
+                  <View style={{flex: 1, paddingRight: 5}}>
+                    <Text style={{color: '#959595', textAlign: 'right'}}>
+                      Monto a recibir:
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 16,
+                        textAlign: 'right',
+                      }}>
                       {orders[detailIndex].received_amount.toFixed(2)}{' '}
                       {orders[detailIndex].pair.quote.name}
                       {'   '}
@@ -317,6 +334,7 @@ function BalanceScreen({
                       />
                     </Text>
                   </View>
+                  <View style={{flex: 1, paddingLeft: 5}} />
                 </View>
               </View>
               <View
@@ -363,7 +381,10 @@ function BalanceScreen({
           <View style={styles.nameHeader}>
             <CircleWithLabel
               label={
-                userinfo.identity.firstname[0] + userinfo.identity.lastname[0]
+                userinfo.identity
+                  ? userinfo.identity.firstname[0] +
+                    userinfo.identity.lastname[0]
+                  : userinfo.name[0]
               }
             />
             <Text style={{...styles.headerText}}>{userinfo.name}</Text>
@@ -414,8 +435,7 @@ function BalanceScreen({
 
             borderWidth: 0,
             backgroundColor: '#2C3240',
-          }}
-          onAnimateNextPage={p => console.log(p)}>
+          }}>
           <View key={1} style={styles.card}>
             <View style={styles.cardButtonContainer}>
               <TouchableOpacity

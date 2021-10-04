@@ -47,9 +47,54 @@ export default function PersonViewPersona() {
 
   const [isLoading, setLoading] = useState(false);
   const [checkTerms, setCheckTerms] = useState(false);
+  const registerSubmit = values => {
+    setLoading(true);
+    axios
+      .post(APP.APP_URL + 'api/users/register', values)
+      .then(res => {
+        setLoading(false);
+        const message = res.data.message;
+        Toast.show(
+          'Registro completado. Por favor revise su bandeja de entrada y confírmelo.',
+          Toast.LONG,
+          ['UIAlertController'],
+        );
+        setTimeout(function () {
+          navigation.navigate('SignupCompleted');
+        }, 3000);
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+        Toast.show('No permite crear cuenta nueva!', Toast.LONG, [
+          'UIAlertController',
+        ]);
+      });
+  };
   const registerSubmitAPI = values => {
     if (values.acceptTerms) {
-      navigation.navigate('PinCodeScreen', {formdata: values});
+      setLoading(true);
+      axios
+        .post(APP.APP_URL + 'api/users/register', values)
+        .then(res => {
+          setLoading(false);
+          const message = res.data.message;
+          Toast.show(
+            'Registro completado. Por favor revise su bandeja de entrada y confírmelo.',
+            Toast.LONG,
+            ['UIAlertController'],
+          );
+          setTimeout(function () {
+            navigation.navigate('SignupCompleted');
+          }, 3000);
+        })
+        .catch(err => {
+          console.log(err);
+          setLoading(false);
+          Toast.show('No permite crear cuenta nueva!', Toast.LONG, [
+            'UIAlertController',
+          ]);
+        });
     }
   };
 

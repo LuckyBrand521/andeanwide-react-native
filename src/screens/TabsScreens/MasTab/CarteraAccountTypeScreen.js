@@ -29,7 +29,7 @@ function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
   // if(navigation.curr)
   useEffect(() => {
     navigation.addListener('focus', () => {
-      if (userinfo.veracity_declaration_at == 'null') {
+      if (userinfo.veracity_declaration_at == null) {
         setModalVisible(false);
       } else {
         setModalVisible(true);
@@ -72,7 +72,7 @@ function CarteraAccountTypeScreen({navigation, setAccountType, userinfo}) {
       <SafeAreaView style={styles.container}>
         <Spinner
           visible={isLoading}
-          textContent={'Submitting...'}
+          textContent={'Sumisión...'}
           textStyle={styles.spinnerTextStyle}
         />
       </SafeAreaView>
