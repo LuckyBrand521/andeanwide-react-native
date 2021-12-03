@@ -1,2 +1,5 @@
 # andeanwide-react-native
-Mobile &amp; iOS app for andeanwide.com
+Android &amp; iOS app for andeanwide.com
+
+
+<img src = "https://user-images.githubusercontent.com/81493223/144619807-a0219246-3c9a-4ce9-9dd5-3b49ecad7752.png" width ="250" />  <img src = "https://user-images.githubusercontent.com/81493223/144620597-aeccdf28-8bb2-4d0c-997c-a5b4dc017eb2.png" width ="250" />  <img src = "https://user-images.githubusercontent.com/81493223/144620611-c1351b03-948f-4e51-9e5a-d83656bfdc87.png" width ="250" />  <img src = "https://user-images.githubusercontent.com/81493223/144620639-61a4dba6-3b02-40ac-8c4c-5402782c213b.png" width ="250" />  <img src = "https://user-images.githubusercontent.com/81493223/144620660-4ed4fe00-26b5-481c-affb-b261a10005df.png" width ="250" />  <img src = "https://user-images.githubusercontent.com/81493223/144620675-ac909c86-7094-42d1-83eb-0947b2e3ca43.png" width ="250" />  <img src = "https://user-images.githubusercontent.com/81493223/144620691-49f0a843-e261-405e-92b9-a45fa3abaf02.png" width ="250" />  <img src = "https://user-images.githubusercontent.com/81493223/144620790-b640ce7e-524b-4fc0-823c-ce4bb68a516d.png" width ="250" />  <img src = "https://user-images.githubusercontent.com/81493223/144620840-195acb6c-ec87-40b6-a0df-3a3e84e392ae.png" width ="250" />
